@@ -53,7 +53,7 @@ include_once("../controller/CategoriemasterController.php");
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
-                    <div class="card-header"><strong>Categories</strong><small> Form</small></div>
+                    <div class="card-header"><strong>Categories Form</strong></div>
                     <form method="POST">
                         <div class="card-body card-block">
                             <div class="form-group">

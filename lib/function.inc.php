@@ -107,4 +107,5 @@ define("BackendPath", "/PDO_MVC_Ecommerce/backend/"); //BackendPath
 define("FrontendPath", "/PDO_MVC_Ecommerce/frontend/"); //FrontendPath
 define("controller", "/PDO_MVC_Ecommerce/controller/"); //controller
 define("NO_RECORED_FOUND", "No Record Found."); //NO_RECORED_FOUND
+define("Categorie_master_details", "This is a categorie master where you can add & manage categories ."); //NO_RECORED_FOUND
 ?>
