@@ -28,9 +28,7 @@ include_once("../controller/CategoriemasterController.php");
             $status = ($operation === 'active') ? 'A' : 'N';
 
             // Update the category status
-            //$CategoriesMaster = $categoryMaster->updateCategoriesMaster((int)$categorieId,(string) $status,(string) $status);
             $CategoriesMaster = $categoryMaster->updateCategoriesMaster((int)$categorieId,(string) $status);
-            //_dx($categoryMaster);
             
             // Check if update was successful
             if (!empty($CategoriesMaster)) {
@@ -105,7 +103,7 @@ include_once("../controller/CategoriemasterController.php");
                                                         echo '<a href="?type=status&operation=inactive&categorieId='.$cat['Categories_Id'].'"><span class="badge badge-Active"><b>Active</b></span></a> | <a href="managecategories.php?type=edit&categorieId=' . $cat['Categories_Id'] . '"><span class="badge badge-Edit"><b>Edit</b></span></a> | <a href="?type=delete&categorieId=' . $cat['Categories_Id'] . '"><span class="badge badge-Deleted"><b>Delete</b></span></a>';
                                                     break;
                                                     case 'N':
-                                                        echo '<a href="?type=status&operation=active&categorieId='.$cat['Categories_Id'] .'"><span class="badge badge-Inactive"><b>Inactive</b></span></a> | <a href="?type=edit&categorieId=' . $cat['Categories_Id'] . '"><span class="badge badge-Edit"><b>Edit</b></span></a> | <a href="?type=delete&categorieId=' . $cat['Categories_Id'] . '"><span class="badge badge-Deleted"><b>Delete</b></span></a>';
+                                                        echo '<a href="?type=status&operation=active&categorieId='.$cat['Categories_Id'] .'"><span class="badge badge-Inactive"><b>Inactive</b></span></a> | <a href="managecategories.php?type=edit&categorieId=' . $cat['Categories_Id'] . '"><span class="badge badge-Edit"><b>Edit</b></span></a> | <a href="?type=delete&categorieId=' . $cat['Categories_Id'] . '"><span class="badge badge-Deleted"><b>Delete</b></span></a>';
                                                     break;
                                                     case 'D':
                                                         echo '<span class="badge badge-Deleted"><b>Deleted</b></span>';

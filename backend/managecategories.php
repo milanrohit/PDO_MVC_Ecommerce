@@ -7,36 +7,55 @@ include_once("../controller/CategoriemasterController.php");
     // Database object
     $database = new Database();
     $db = $database->getConnection();
-
-    // CategoryMasterModel object
+   
     $categoryMaster = new CategoryMasterModel($db);
 
-    // Get category master details
+    $Categories_Name ="";
+    if (isset($_GET['type']) && !empty($_GET['type'])) {
 
-    if(isset($_POST['Categories_Name'])){
+        $type = sanitizeString(((string)$_GET['type']));
+        $categorieId = sanitizeString((int)$_GET['categorieId']);
+
+        $CategoryMaster = $categoryMaster->getdataCategorie((int) $categorieId);
+        $Categories_Name = ($CategoryMaster['Categories_Name']) ?? "default";
+        
+    }
+
+
+    if(isset($_POST['submit'])){
+
+        $Categories_Name = sanitizeString((string)($_POST['Categories_Name']))  ?? "default";
+        $categorieId = sanitizeString((int)($_GET['categorieId'])) ??  "default";
+        
+        if(empty($categorieId)){
+            $AddCategory = $categoryMaster->addCategory((string) $Categories_Name);
+        }else{            
+            $updateCategoriesMaster = $categoryMaster->updateCategoriesMaster((int) $categorieId , (string)$Categories_Status = null);
+        }
+        
+        // Check !empty
+        if (!empty($updateCategoriesMaster) || !empty($AddCategory)) {
+            redirect("categoriemaster.php");
+        } else {
+            $successMessage = "Failed to update Categorie Name.";
+        }
+    }
+
+
+    /*if(isset($_POST['Categories_Name'])){
 
         $Categories_Name = sanitizeString((string)$_POST['Categories_Name']);
         $AddCategory = $categoryMaster->addCategory((string) $Categories_Name);
     
         // Check !empty
         if (!empty($AddCategory)) {
-            $successMessage = "AddCategory successfully.";
+            //$successMessage = "AddCategory successfully.";
             redirect("categoriemaster.php");
         } else {
             $successMessage = "Failed to update status.";
         }
-    }
+    }*/
     
-
-    if (isset($_GET['type']) && !empty($_GET['type'])) {
-
-        $type = sanitizeString(((string)$_GET['type']));
-           
-            $type = sanitizeString((string)$_GET['type']);
-            $categorieId = sanitizeString((int)$_GET['categorieId']);
-            $categoryMaster = $categoryMaster->getdataCategorie((int) $categorieId);
-            //_dx($categoryMaster);
-    }
 ?>
 <div class="content pb-0">
     <div class="animated fadeIn">
@@ -48,7 +67,7 @@ include_once("../controller/CategoriemasterController.php");
                         <div class="card-body card-block">
                             <div class="form-group">
                                 <label for="Categories Name" class=" form-control-label">Categories Name</label>
-                                <input type="text" name="Categories_Name" id="Categories_Name" placeholder="Enter Categories name" class="form-control" required>
+                                <input type="text" name="Categories_Name" id="Categories_Name" value="<?php echo $Categories_Name;?>"placeholder="Enter Categories name" class="form-control" required>
                             </div>
                             <button id="payment-button" name="submit"  type="submit" class="btn btn-lg btn-info btn-block">
                                 <span id="payment-button-amount" >Submit</span>

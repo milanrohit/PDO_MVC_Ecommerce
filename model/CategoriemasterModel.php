@@ -36,10 +36,6 @@ class CategoryMasterModel {
                 $categoryResult = $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
 
-            // Prepare SQL query
-            //$query = "SELECT Categories_Id, Categories_Name, Categories_Status FROM " . $this->table_name;
-            //$stmt = $this->conn->prepare($query);
-
             // Execute the statement
             $stmt->execute();
             $categoryResult = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -57,30 +53,27 @@ class CategoryMasterModel {
      * @param string $Categories_Status
      * @return bool
      */
-    //public function updateCategoriesMaster(int $Categories_Id, string $Categories_Status, string $Categories_Name): bool {
     public function updateCategoriesMaster(int $Categories_Id, string $Categories_Status): bool {
 
         try {
-                // Prepare SQL query
-                $query = "UPDATE $this->table_name SET Categories_Status = :Categories_Status WHERE Categories_Id = :Categories_Id";
-                $stmt = $this->conn->prepare($query);
-            
-            
-            /*if(!empty($Categories_Id) && !empty($Categories_Name)){
-                // Prepare SQL query
-                $query = "UPDATE $this->table_name SET Categories_Name = :Categories_Name WHERE Categories_Id = :Categories_Id";
-                $stmt = $this->conn->prepare($query);
-            }
-            $Categories_Name = sanitizeString(((string)$Categories_Name));    
-            */
-
-            // Sanitize inputs
+           
+            $Categories_Name ='';
+            $Categories_Name = sanitizeString(((string)$_POST['Categories_Name']));
             $Categories_Status = sanitizeString(((string)$Categories_Status));
             $Categories_Id = sanitizeString(((int)$Categories_Id));
 
+            if(!empty($Categories_Id) && !empty($Categories_Status)){
+                // Prepare SQL query
+                $query = "UPDATE $this->table_name SET Categories_Status = :Categories_Status WHERE Categories_Id = :Categories_Id";
+                $stmt = $this->conn->prepare($query);
+                $stmt->bindParam(':Categories_Status', $Categories_Status, PDO::PARAM_STR);
+            }else{
+                $query = "UPDATE $this->table_name SET Categories_Name = :Categories_Name WHERE Categories_Id = :Categories_Id";
+                $stmt = $this->conn->prepare($query);
+                $stmt->bindParam(':Categories_Name', $Categories_Name, PDO::PARAM_STR);
+            }
+           
             // Bind parameters
-            //$stmt->bindParam(':Categories_Name', $Categories_Name, PDO::PARAM_STR);
-            $stmt->bindParam(':Categories_Status', $Categories_Status, PDO::PARAM_STR);
             $stmt->bindParam(':Categories_Id', $Categories_Id, PDO::PARAM_INT);
 
             // Execute the statement
@@ -119,7 +112,7 @@ class CategoryMasterModel {
     public function addCategory(string $Categories_Name) {
         try{
             // Prepare an SQL statement with a placeholder for the category name
-            $query = "INSERT INTO $this->table_name (Categories_Name) VALUES (:Categories_Name)";
+            $query = "INSERT INTO $this->table_name (Categories_Name,Categories_Status) VALUES (:Categories_Name,'N') LIMIT 1";
             $stmt = $this->conn->prepare($query);
 
             // Sanitize inputs
@@ -148,12 +141,10 @@ class CategoryMasterModel {
             // Execute the statement
             $stmt->execute();
             $categoryResult = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            //_dx($categoryResult);
         
             // Execute the statement
             if ($stmt->execute()) {
-                return true; 
+                return $categoryResult; 
             } else {
                 return false;
             }
