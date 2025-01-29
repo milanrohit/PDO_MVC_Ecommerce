@@ -1,5 +1,4 @@
 <?php
-
 // Debugging functions
 function _d($arr): void {
     echo "<pre>";
@@ -52,9 +51,8 @@ function redirect(string $url): void {
 
 // Function to sanitize input
 function sanitizeString(string $input): string {
-
     $input = trim($input);
-    
+
     // Remove HTML tags
     $sanitized = strip_tags($input);
 
@@ -70,7 +68,6 @@ function redirectWithError(string $url, string $error): void {
     header('Location: ' . $url);
     exit();
 }
-
 
 function getFileInfo($filePath) {
     $fileInfo = new SplFileInfo($filePath);
@@ -101,11 +98,11 @@ function designdevelopeby(){
    echo "<b>Designed & Developed by <a href='#'>MilanRohit</a></b>";
 }
 
+// Path constants
+define("BackendPath", "/PDO_MVC_Ecommerce/backend/"); // BackendPath
+define("FrontendPath", "/PDO_MVC_Ecommerce/frontend/"); // FrontendPath
+define("controller", "/PDO_MVC_Ecommerce/controller/"); // controller
+define("NO_RECORED_FOUND", "No Record Found."); // NO_RECORED_FOUND
+define("Categorie_master_details", "This is a categorie master where you can add & manage categories ."); // Categorie master details
 
-//pathinfo
-define("BackendPath", "/PDO_MVC_Ecommerce/backend/"); //BackendPath
-define("FrontendPath", "/PDO_MVC_Ecommerce/frontend/"); //FrontendPath
-define("controller", "/PDO_MVC_Ecommerce/controller/"); //controller
-define("NO_RECORED_FOUND", "No Record Found."); //NO_RECORED_FOUND
-define("Categorie_master_details", "This is a categorie master where you can add & manage categories ."); //NO_RECORED_FOUND
 ?>
