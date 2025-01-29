@@ -52,6 +52,9 @@ function redirect(string $url): void {
 
 // Function to sanitize input
 function sanitizeString(string $input): string {
+
+    $input = trim($input);
+    
     // Remove HTML tags
     $sanitized = strip_tags($input);
 

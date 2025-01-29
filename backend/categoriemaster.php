@@ -61,6 +61,7 @@ include_once("../controller/CategoriemasterController.php");
                 <div class="card">
                     <div class="card-body">
                         <h4 class="box-title">Category Master </h4>
+                        <h4 class="box-title left">Category Master </h4>
                         <h4 class="box-link"><a href="managecategories.php"> Add Category </a></h4>
                     </div>
                 <?php if(!empty($CategoryMasterDetails)) {?>

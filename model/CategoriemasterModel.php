@@ -95,15 +95,22 @@ class CategoryMasterModel {
      */
     public function deleteCategoriesMaster(int $Categories_Id) {
         try {
-            // Prepare SQL query
-            $query = "DELETE FROM $this->table_name WHERE Categories_Id = :Categories_Id";
-            $stmt = $this->conn->prepare($query);
+            $categorieId ='';
+            $categorieId = sanitizeString(((int)$_GET['categorieId']));
+            
+            if(!empty($categorieId)){
+                $query = "DELETE FROM $this->table_name WHERE Categories_Id = :Categories_Id";
+                $stmt = $this->conn->prepare($query);
 
-            // Bind parameter
-            $stmt->bindParam(':Categories_Id', $Categories_Id, PDO::PARAM_INT);
-            $stmt->execute();
-
-            echo "Category deleted successfully.";
+                // Bind parameter
+                $stmt->bindParam(':Categories_Id', $categorieId, PDO::PARAM_INT);
+                // Execute the statement
+                if ($stmt->execute()) {
+                    return true; 
+                }
+            }else {
+                return false;
+            }
         } catch (PDOException $e) {
             echo "Failed to delete category: " . $e->getMessage();
         }

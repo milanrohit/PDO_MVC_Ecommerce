@@ -16,9 +16,16 @@ include_once("../controller/CategoriemasterController.php");
         $type = sanitizeString(((string)$_GET['type']));
         $categorieId = sanitizeString((int)$_GET['categorieId']);
 
-        $CategoryMaster = $categoryMaster->getdataCategorie((int) $categorieId);
-        $Categories_Name = ($CategoryMaster['Categories_Name']) ?? "default";
-        
+        if(!empty($categorieId)){
+            $CategoryMaster = $categoryMaster->getdataCategorie((int) $categorieId);
+            if(!empty($categorieId)){
+                $Categories_Name = ($CategoryMaster['Categories_Name']) ?? "";
+            }else{
+                redirect("categoriemaster.php");
+            }
+        }else{
+            redirect("categoriemaster.php");
+        }
     }
 
     if(isset($_POST['submit'])){
