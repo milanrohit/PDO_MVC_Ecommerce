@@ -59,11 +59,16 @@ include_once("../controller/CategoriemasterController.php");
         <div class="row">
             <div class="col-xl-12">
                 <div class="card">
-                    <div class="card-body">
-                        <h4 class="box-title">Category Master </h4>
-                        <h4 class="box-title left">Category Master </h4>
-                        <h4 class="box-link"><a href="managecategories.php"> Add Category </a></h4>
+                    <div class="container">
+                        <div class="card mt-4">
+                            <div class="card-body">
+                                <h5 class="card-title">Category Master</h5>
+                                <p class="card-text"><?php echo Categorie_master_details ;?></p>
+                                <a href="managecategories.php" class="btn btn-primary float-right">Add Category</a>
+                            </div>
+                        </div>
                     </div>
+  
                 <?php if(!empty($CategoryMasterDetails)) {?>
 
                     <div class="card-body--">
