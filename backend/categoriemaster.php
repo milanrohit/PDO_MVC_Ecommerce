@@ -6,9 +6,6 @@ include_once("header.inc.php"); //Header menu calling
 include_once("../controller/CategoriemasterController.php");
 
 
-    // Database object
-    $database = new Database();
-    $db = $database->getConnection();
 
     // CategoryMasterModel object
     $categoryMaster = new CategoryMasterModel($db);
@@ -31,7 +28,8 @@ include_once("../controller/CategoriemasterController.php");
             $status = ($operation === 'active') ? 'A' : 'N';
 
             // Update the category status
-            //$CategoriesMaster = $categoryMaster->updateCategoriesMaster((int)$categorieId,(string) $status);
+            //$CategoriesMaster = $categoryMaster->updateCategoriesMaster((int)$categorieId,(string) $status,(string) $status);
+            $CategoriesMaster = $categoryMaster->updateCategoriesMaster((int)$categorieId,(string) $status);
 
             // Check if update was successful
             if (!empty($CategoriesMaster)) {

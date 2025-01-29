@@ -30,19 +30,12 @@ include_once("../controller/CategoriemasterController.php");
 
     if (isset($_GET['type']) && !empty($_GET['type'])) {
 
-
         $type = sanitizeString(((string)$_GET['type']));
-    
-            
+           
             $type = sanitizeString((string)$_GET['type']);
             $categorieId = sanitizeString((int)$_GET['categorieId']);
-            
-          
-
             $categoryMaster = $categoryMaster->getdataCategorie((int) $categorieId);
-            _dx($categoryMaster);
-
-           
+            //_dx($categoryMaster);
     }
 ?>
 <div class="content pb-0">

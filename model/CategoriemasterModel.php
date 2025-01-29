@@ -57,29 +57,29 @@ class CategoryMasterModel {
      * @param string $Categories_Status
      * @return bool
      */
-    public function updateCategoriesMaster(int $Categories_Id, string $Categories_Status, string $Categories_Name): bool {
+    //public function updateCategoriesMaster(int $Categories_Id, string $Categories_Status, string $Categories_Name): bool {
+    public function updateCategoriesMaster(int $Categories_Id, string $Categories_Status): bool {
 
         try {
-               
-            if(!empty($Categories_Id) && !empty($Categories_Status)){
                 // Prepare SQL query
                 $query = "UPDATE $this->table_name SET Categories_Status = :Categories_Status WHERE Categories_Id = :Categories_Id";
                 $stmt = $this->conn->prepare($query);
-            }
             
-            if(!empty($Categories_Id) && !empty($Categories_Name)){
+            
+            /*if(!empty($Categories_Id) && !empty($Categories_Name)){
                 // Prepare SQL query
                 $query = "UPDATE $this->table_name SET Categories_Name = :Categories_Name WHERE Categories_Id = :Categories_Id";
                 $stmt = $this->conn->prepare($query);
             }
+            $Categories_Name = sanitizeString(((string)$Categories_Name));    
+            */
 
             // Sanitize inputs
-            $Categories_Name = sanitizeString(((string)$Categories_Name));
             $Categories_Status = sanitizeString(((string)$Categories_Status));
             $Categories_Id = sanitizeString(((int)$Categories_Id));
 
             // Bind parameters
-            $stmt->bindParam(':Categories_Name', $Categories_Name, PDO::PARAM_STR);
+            //$stmt->bindParam(':Categories_Name', $Categories_Name, PDO::PARAM_STR);
             $stmt->bindParam(':Categories_Status', $Categories_Status, PDO::PARAM_STR);
             $stmt->bindParam(':Categories_Id', $Categories_Id, PDO::PARAM_INT);
 
@@ -149,7 +149,7 @@ class CategoryMasterModel {
             $stmt->execute();
             $categoryResult = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            _dx($categoryResult);
+            //_dx($categoryResult);
         
             // Execute the statement
             if ($stmt->execute()) {
