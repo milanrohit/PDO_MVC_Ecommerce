@@ -30,10 +30,10 @@ include_once("../controller/CategoriemasterController.php");
             // Update the category status
             //$CategoriesMaster = $categoryMaster->updateCategoriesMaster((int)$categorieId,(string) $status,(string) $status);
             $CategoriesMaster = $categoryMaster->updateCategoriesMaster((int)$categorieId,(string) $status);
-
+            //_dx($categoryMaster);
+            
             // Check if update was successful
             if (!empty($CategoriesMaster)) {
-                //$successMessage = "Status updated successfully.";
                 redirect("categoriemaster.php");
             } else {
                 $successMessage = "Failed to update status.";
@@ -49,7 +49,6 @@ include_once("../controller/CategoriemasterController.php");
             
             // Check if update was successful
             if (!empty($CategoriesMasterStatus)) {
-
                 redirect("categoriemaster.php");
             } else {
                 $successMessage = "Failed to Delete the category CategoriesMaster.";
@@ -66,6 +65,8 @@ include_once("../controller/CategoriemasterController.php");
                         <h4 class="box-title">Category Master </h4>
                         <h4 class="box-link"><a href="managecategories.php"> Add Category </a></h4>
                     </div>
+                <?php if(!empty($CategoryMasterDetails)) {?>
+
                     <div class="card-body--">
                     <div class="table-stats order-table ov-h">
                     <?php if (!empty($successMessage)): ?>
@@ -99,14 +100,11 @@ include_once("../controller/CategoriemasterController.php");
                                         <td>
                                             <?php 
                                                 $Categories_Status = $cat['Categories_Status']; 
-
                                                 switch($Categories_Status){
                                                     case 'A':
-                                                        //echo '<a href="?type=status&operation=inactive&categorieId='.$cat['Categories_Id'].'"><span class="badge badge-Active"><b>Active</b></span></a> | <a href="?type=delete&categorieId=' . $cat['Categories_Id'] . '"><span class="badge badge-Deleted"><b>Delete</b></span></a>';                                                    
                                                         echo '<a href="?type=status&operation=inactive&categorieId='.$cat['Categories_Id'].'"><span class="badge badge-Active"><b>Active</b></span></a> | <a href="managecategories.php?type=edit&categorieId=' . $cat['Categories_Id'] . '"><span class="badge badge-Edit"><b>Edit</b></span></a> | <a href="?type=delete&categorieId=' . $cat['Categories_Id'] . '"><span class="badge badge-Deleted"><b>Delete</b></span></a>';
                                                     break;
                                                     case 'N':
-                                                        //echo '<a href="?type=status&operation=active&categorieId='.$cat['Categories_Id'] .'"><span class="badge badge-Inactive"><b>Inactive</b></span></a> | <a href="?type=delete&categorieId=' . $cat['Categories_Id'] . '"><span class="badge badge-Deleted"><b>Delete</b></span></a>';
                                                         echo '<a href="?type=status&operation=active&categorieId='.$cat['Categories_Id'] .'"><span class="badge badge-Inactive"><b>Inactive</b></span></a> | <a href="?type=edit&categorieId=' . $cat['Categories_Id'] . '"><span class="badge badge-Edit"><b>Edit</b></span></a> | <a href="?type=delete&categorieId=' . $cat['Categories_Id'] . '"><span class="badge badge-Deleted"><b>Delete</b></span></a>';
                                                     break;
                                                     case 'D':
@@ -121,6 +119,11 @@ include_once("../controller/CategoriemasterController.php");
                         </table>
                     </div>
                     </div>
+                    <?php  }else { ?>
+                        <div class="card-body">
+                            <h4 class="box-title"><?php echo NO_RECORED_FOUND ; ?></h4>
+                        </div>
+                    <?php  } ?>
                 </div>
             </div>
         </div>
