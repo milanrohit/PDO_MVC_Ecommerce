@@ -112,9 +112,9 @@ class CategoryMasterModel {
     public function addCategory(string $Categories_Name) {
         try{
             // Prepare an SQL statement with a placeholder for the category name
-            $query = "INSERT INTO $this->table_name (Categories_Name,Categories_Status) VALUES (:Categories_Name,'N') LIMIT 1";
+            $query = "INSERT INTO $this->table_name (Categories_Name) VALUES (:Categories_Name) LIMIT 1";
             $stmt = $this->conn->prepare($query);
-
+            
             // Sanitize inputs
             $Categories_Name = sanitizeString((string) $Categories_Name);
 

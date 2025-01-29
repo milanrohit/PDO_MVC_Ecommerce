@@ -21,9 +21,9 @@ include_once("../controller/CategoriemasterController.php");
         
     }
 
-
     if(isset($_POST['submit'])){
 
+        $categorieId ='';
         $Categories_Name = sanitizeString((string)($_POST['Categories_Name']))  ?? "default";
         $categorieId = sanitizeString((int)($_GET['categorieId'])) ??  "default";
         
@@ -40,22 +40,6 @@ include_once("../controller/CategoriemasterController.php");
             $successMessage = "Failed to update Categorie Name.";
         }
     }
-
-
-    /*if(isset($_POST['Categories_Name'])){
-
-        $Categories_Name = sanitizeString((string)$_POST['Categories_Name']);
-        $AddCategory = $categoryMaster->addCategory((string) $Categories_Name);
-    
-        // Check !empty
-        if (!empty($AddCategory)) {
-            //$successMessage = "AddCategory successfully.";
-            redirect("categoriemaster.php");
-        } else {
-            $successMessage = "Failed to update status.";
-        }
-    }*/
-    
 ?>
 <div class="content pb-0">
     <div class="animated fadeIn">
