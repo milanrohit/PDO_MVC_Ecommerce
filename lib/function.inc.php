@@ -102,8 +102,6 @@ function designdevelopeby(){
 //pathinfo
 define("BackendPath", "/PDO_MVC_Ecommerce/backend/"); //BackendPath
 define("FrontendPath", "/PDO_MVC_Ecommerce/frontend/"); //FrontendPath
-
-define("controller", "/PDO_MVC_Ecommerce/controller/"); //FrontendPath
-
-define("NO_RECORED_FOUND", "No Record Found."); //FrontendPath
+define("controller", "/PDO_MVC_Ecommerce/controller/"); //controller
+define("NO_RECORED_FOUND", "No Record Found."); //NO_RECORED_FOUND
 ?>
