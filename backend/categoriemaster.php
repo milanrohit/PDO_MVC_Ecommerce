@@ -59,7 +59,7 @@ if (isset($_GET['type']) && !empty($_GET['type'])) {
             <div class="col-xl-12">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Category Master</h5>
+                        <h5 class="card-title"><b>Category Master</b></h5>
                         <p class="card-text"><?php echo Categorie_master_details; ?></p>
                         <a href="managecategories.php" class="btn btn-primary float-right">Add Category</a>
                     </div>
