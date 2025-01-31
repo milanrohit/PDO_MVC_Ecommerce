@@ -19,7 +19,9 @@ class CategoryMasterModel {
      */
     public function getCategoryMasterDetails(): array {
         try {
+
             if(!empty($Categories_Id)){
+
                 $query = "SELECT Categories_Id, Categories_Name, Categories_Status FROM ".$this->table_name." WHERE Categories_Id = :Categories_Id LIMIT 1";
                 $stmt = $this->conn->prepare($query);
 
@@ -157,6 +159,24 @@ class CategoryMasterModel {
             }
         }catch (PDOException $e) {
             echo "Failed to fetch category: " . $e->getMessage();
+        }
+    }
+
+    public function checkDuplicatercd(){
+
+        $Categories_Name ='';
+        $Categories_Name = $_POST['Categories_Name'] ?? null;
+        
+        // Adding a duplicate check
+        $duplicateQuery = "SELECT COUNT(*) as cnt FROM " . $this->table_name . " WHERE Categories_Name = :Categories_Name";
+        $stmtDuplicate = $this->conn->prepare($duplicateQuery);
+        $stmtDuplicate->bindParam(':Categories_Name', $Categories_Name, PDO::PARAM_STR);
+        $stmtDuplicate->execute();
+        $duplicateCheck = $stmtDuplicate->fetch(PDO::FETCH_ASSOC);
+        
+        if ($duplicateCheck['cnt'] > 0 ) {
+            echo "Duplicate entry found for category name: " . $Categories_Name;
+            return $duplicateCheck['cnt'] ;
         }
     }
 }
