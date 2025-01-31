@@ -10,58 +10,61 @@ include_once("../controller/CategoriemasterController.php");
    
     $categoryMaster = new CategoryMasterModel($db);
 
+    $type ="";
+    $categorieId = "";
     $Categories_Name ="";
-    if (isset($_GET['type']) && !empty($_GET['type'])) {
+    $AddCategory = "";
+    $updateCategoriesMaster = "";
 
-        $type = sanitizeString(((string)$_GET['type']));
-        $categorieId = sanitizeString((int)$_GET['categorieId']);
-
-        if(!empty($categorieId)){
-            $CategoryMaster = $categoryMaster->getdataCategorie((int) $categorieId);
-            if(!empty($categorieId)){
-                $Categories_Name = ($CategoryMaster['Categories_Name']) ?? "";
-            }else{
-                redirect("categoriemaster.php");
-            }
-        }else{
-            redirect("categoriemaster.php");
-        }
+    if(isset($_GET['type'])){
+        $type = sanitizeString((string)$_GET['type']) ?? "";
     }
 
-    if(isset($_POST['submit'])){
+    if(isset($_GET['categorieId'])){
+        $categorieId = sanitizeString((int)$_GET['categorieId']) ?? 0;
+    }
 
-
-        $categorieId ='';
-        $categorieId = sanitizeString((int)($_GET['categorieId'])) ??  "default";
-        $Categories_Name = sanitizeString((string)($_POST['Categories_Name']))  ?? "default";
-
-        if(empty($categorieId)){
-            $AddCategory = $categoryMaster->addCategory((string) $Categories_Name);
-        }else{        
-            $updateCategoriesMaster = $categoryMaster->updateCategoriesMaster((int) $categorieId , (string)$Categories_Status = null);
-        }
-
-        // Check !empty
-        if (!empty($updateCategoriesMaster) || !empty($AddCategory)) {
-            redirect("categoriemaster.php");
-        } else {
-            $successMessage = "Failed to update Categorie Name.";
-        }
-
-        $checkDuplicatercd ='';
-        $checkDuplicatercd = $categoryMaster->checkDuplicatercd((string) $Categories_Name);
-        // Check !empty
-        if (!empty($checkDuplicatercd)) {
-            echo $checkDuplicatercd;
-            //redirect("categoriemaster.php");
-        } else {
-            $successMessage = "Failed to update Categorie Name.";
-        }
-    } 
-        
-
+    if(isset($_POST['Categories_Name'])){
+        $Categories_Name = sanitizeString((string)$_POST['Categories_Name']) ?? "";
+    }
     
 
+    if (isset($type)) {
+        if(!empty($categorieId)){
+
+            $CategoryMaster = $categoryMaster->getdataCategorie((int) $categorieId);
+
+            if(!empty($categorieId)){
+
+                $Categories_Name = !empty($CategoryMaster['Categories_Name']) ? sanitizeString((string)$CategoryMaster['Categories_Name']) : "";
+            }else{
+
+                redirect("categoriemaster.php");
+            }
+        }
+    }
+    
+    if(isset($_POST['submit'])){
+
+        if(!empty($categorieId)){
+
+            $updateCategoriesMaster = $categoryMaster->updateCategoriesMaster((int) $categorieId , (string)$Categories_Status = null);       
+            // Check !empty
+            if (!empty($updateCategoriesMaster)) {
+                redirect("categoriemaster.php");
+            } else {
+                $successMessage = "Failed to update Categorie Name.";
+            }
+        }else{
+            $AddCategory = $categoryMaster->addCategory((string) $Categories_Name);
+            if (!empty($AddCategory)) {
+                redirect("categoriemaster.php");
+            } else {
+                $successMessage = "Categorie Name not add";
+            }
+        }
+    }
+    
     
 ?>
 <div class="content pb-0">

@@ -13,15 +13,19 @@ $CategoryMasterDetails = $categoryMaster->getCategoryMasterDetails();
 
 $successMessage = "";
 
-// Update category master status
-if (isset($_GET['type']) && !empty($_GET['type'])) {
+if(isset($_GET['type']) || isset($_GET['operation']) || isset($_GET['categorieId'])){
 
-    $type = sanitizeString((string)$_GET['type']);
+    $type = sanitizeString((string)$_GET['type']) ?? "";
+    $operation = sanitizeString((string)$_GET['operation'])?? "";
+    $categorieId = sanitizeString((int)$_GET['categorieId'])?? 0;
+}
+
+// Update category master status
+if (isset($type) && !empty($type)) {
 
     if ($type === 'status') {
 
-        $operation = sanitizeString((string)$_GET['operation']);
-        $categorieId = sanitizeString((int)$_GET['categorieId']);
+        $operation = sanitizeString((string)$_GET['operation'])?? "";
 
         // Determine status based on operation
         $status = ($operation === 'active') ? 'A' : 'N';
@@ -38,8 +42,6 @@ if (isset($_GET['type']) && !empty($_GET['type'])) {
     }
 
     if ($type === 'delete' && $type != '') {
-
-        $categorieId = sanitizeString((int)$_GET['categorieId']);
 
         // Delete the category CategoriesMaster
         $CategoriesMasterStatus = $categoryMaster->deleteCategoriesMaster((int)$categorieId);
