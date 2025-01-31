@@ -94,9 +94,8 @@ include_once("../controller/CategoriemasterController.php");
                             <button id="payment-button" name="submit"  type="submit" class="btn btn-lg btn-info btn-block">
                                 <span id="payment-button-amount" >Submit</span>
                             </button>
-                            <div class="form-group">
-                                <label for="Categories Name" class=" form-control-label">
-                                    <?php echo ($chkduplicate_msg) ?? "";?></label>
+                            <div class="container mt-5" id="chkduplicate_msg">
+                                <div class="alert alert-primary" role="alert"><?php echo ($chkduplicate_msg) ?? "";?> </div>
                             </div>
                         </div>
                     </form>
@@ -105,6 +104,14 @@ include_once("../controller/CategoriemasterController.php");
         </div>
     </div>
 </div>
+<script>
+         $(document).ready(function() {
+               // Remove the error message
+               setTimeout(function () {
+                  $('#chkduplicate_msg').remove();
+               },2000);
+         });
+      </script>
 
 <?php
     include_once("footer.inc.php"); //Footer calling
