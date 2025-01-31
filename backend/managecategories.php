@@ -44,17 +44,18 @@ include_once("../controller/CategoriemasterController.php");
         }
     }
     
+    $chkduplicate ="";
+    $chkduplicate_msg ="";
+
     if(isset($_POST['submit'])){
 
-        if(!empty($categorieId)){
-
-            $updateCategoriesMaster = $categoryMaster->updateCategoriesMaster((int) $categorieId , (string)$Categories_Status = null);       
-            // Check !empty
-            if (!empty($updateCategoriesMaster)) {
-                redirect("categoriemaster.php");
-            } else {
-                $successMessage = "Failed to update Categorie Name.";
-            }
+        
+        $chkduplicate = $categoryMaster->checkDuplicatercd((string) $Categories_Name);
+        
+        if(!empty($chkduplicate)){
+            
+            $chkduplicate_msg = $Categories_Name.':'."Categorie Name exist in Categoriemaster.";
+            
         }else{
             $AddCategory = $categoryMaster->addCategory((string) $Categories_Name);
             if (!empty($AddCategory)) {
@@ -62,9 +63,20 @@ include_once("../controller/CategoriemasterController.php");
             } else {
                 $successMessage = "Categorie Name not add";
             }
+            
+        }
+    
+        if(!empty($categorieId)){
+            
+            $updateCategoriesMaster = $categoryMaster->updateCategoriesMaster((int) $categorieId , (string)$Categories_Status = null);       
+            // Check !empty
+            if (!empty($updateCategoriesMaster)) {
+                redirect("categoriemaster.php");
+            } else {
+                $successMessage = "Failed to update Categorie Name.";
+            }
         }
     }
-    
     
 ?>
 <div class="content pb-0">
@@ -82,6 +94,10 @@ include_once("../controller/CategoriemasterController.php");
                             <button id="payment-button" name="submit"  type="submit" class="btn btn-lg btn-info btn-block">
                                 <span id="payment-button-amount" >Submit</span>
                             </button>
+                            <div class="form-group">
+                                <label for="Categories Name" class=" form-control-label">
+                                    <?php echo ($chkduplicate_msg) ?? "";?></label>
+                            </div>
                         </div>
                     </form>
                 </div>

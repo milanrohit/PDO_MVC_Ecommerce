@@ -162,21 +162,27 @@ class CategoryMasterModel {
         }
     }
 
-    public function checkDuplicatercd(){
+    public function checkDuplicatercd($Categories_Name){
 
         $Categories_Name ='';
-        $Categories_Name = $_POST['Categories_Name'] ?? null;
+        $Categories_Name = sanitizeString($_POST['Categories_Name']) ?? null;
         
-        // Adding a duplicate check
-        $duplicateQuery = "SELECT COUNT(*) as cnt FROM " . $this->table_name . " WHERE Categories_Name = :Categories_Name";
-        $stmtDuplicate = $this->conn->prepare($duplicateQuery);
-        $stmtDuplicate->bindParam(':Categories_Name', $Categories_Name, PDO::PARAM_STR);
-        $stmtDuplicate->execute();
-        $duplicateCheck = $stmtDuplicate->fetch(PDO::FETCH_ASSOC);
-        
-        if ($duplicateCheck['cnt'] > 0 ) {
-            echo "Duplicate entry found for category name: " . $Categories_Name;
-            return $duplicateCheck['cnt'] ;
+        if(!empty($Categories_Name)){
+            // Adding a duplicate check
+            $duplicateQuery = "SELECT COUNT(*) as cnt FROM " . $this->table_name . " WHERE Categories_Name = :Categories_Name";
+            $stmtDuplicate = $this->conn->prepare($duplicateQuery);
+            $stmtDuplicate->bindParam(':Categories_Name', $Categories_Name, PDO::PARAM_STR);
+            $stmtDuplicate->execute();
+            $duplicateCheck = $stmtDuplicate->fetch(PDO::FETCH_ASSOC);
+            
+            if (!empty($duplicateCheck['cnt']) > 0 ) {
+                return 1 ;
+            }else{
+                return 0;
+            }
+            
+        }else{
+            return false;
         }
     }
 }
