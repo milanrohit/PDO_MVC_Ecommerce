@@ -30,23 +30,39 @@ include_once("../controller/CategoriemasterController.php");
 
     if(isset($_POST['submit'])){
 
+
         $categorieId ='';
-        $Categories_Name = sanitizeString((string)($_POST['Categories_Name']))  ?? "default";
         $categorieId = sanitizeString((int)($_GET['categorieId'])) ??  "default";
-        
+        $Categories_Name = sanitizeString((string)($_POST['Categories_Name']))  ?? "default";
+
         if(empty($categorieId)){
             $AddCategory = $categoryMaster->addCategory((string) $Categories_Name);
-        }else{            
+        }else{        
             $updateCategoriesMaster = $categoryMaster->updateCategoriesMaster((int) $categorieId , (string)$Categories_Status = null);
         }
-        
+
         // Check !empty
         if (!empty($updateCategoriesMaster) || !empty($AddCategory)) {
             redirect("categoriemaster.php");
         } else {
             $successMessage = "Failed to update Categorie Name.";
         }
-    }
+
+        $checkDuplicatercd ='';
+        $checkDuplicatercd = $categoryMaster->checkDuplicatercd((string) $Categories_Name);
+        // Check !empty
+        if (!empty($checkDuplicatercd)) {
+            echo $checkDuplicatercd;
+            //redirect("categoriemaster.php");
+        } else {
+            $successMessage = "Failed to update Categorie Name.";
+        }
+    } 
+        
+
+    
+
+    
 ?>
 <div class="content pb-0">
     <div class="animated fadeIn">
