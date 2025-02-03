@@ -56,14 +56,20 @@
          <div class="container">
             <div class="login-content">
                <div class="login-form mt-150">
-                  <form method="POST">
+                  <form method="POST" action="">
                      <div class="form-group">
                         <label>Email address</label>
-                        <input type="text" name="Admin_Username" class="form-control" placeholder="Admin Username" required>
+                        <input type="text" name="Admin_Username" class="form-control" placeholder="Admin Username" 
+                        <?php if (!empty($Admin_Username)): ?>
+                        value="<?php echo sanitizeString((string) $Admin_Username ?? '', ENT_QUOTES); ?>" 
+                        <?php endif; ?> required>
                      </div>
                      <div class="form-group">
                         <label>Password</label>
-                        <input type="text"  name="Admin_Password" class="form-control" placeholder="Admin Password" required>
+                        <input type="text" name="Admin_Password" class="form-control" placeholder="Admin Password" 
+                        <?php if (!empty($Admin_Password)): ?>
+                        value="<?php echo sanitizeString((string) $Admin_Password ?? '', ENT_QUOTES); ?>" 
+                        <?php endif; ?> required>
                      </div>
                      <button type="submit" name="submit" class="btn btn-success btn-flat m-b-30 m-t-30">Sign in</button>
 					   </form>

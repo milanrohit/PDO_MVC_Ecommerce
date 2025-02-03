@@ -45,7 +45,6 @@
              return [];
          }
       }
-     
    }
   
   // Database obj
