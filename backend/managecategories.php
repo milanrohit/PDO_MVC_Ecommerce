@@ -54,7 +54,7 @@ include_once("../controller/CategoriemasterController.php");
            
         if($chkduplicate == 1){
 
-            $chkduplicate_msg = $Categories_Name.':'." Categories availble in master";
+            $chkduplicate_msg = $Categories_Name.' : '." Categories availble in master";
         }else{
             if($chkduplicate_msg ==''){
 
@@ -99,7 +99,7 @@ include_once("../controller/CategoriemasterController.php");
 
                             <?php if(!empty($chkduplicate_msg)){?>
                             <div class="container mt-5" id="chkduplicate_msg">
-                                <div class="alert alert-primary" role="alert"><?php echo ($chkduplicate_msg) ?? "";?> </div>
+                                <div class="alert alert-warning" role="alert"><?php echo ($chkduplicate_msg) ?? "";?> </div>
                             </div>
                             <?php }?>
                         </div>
