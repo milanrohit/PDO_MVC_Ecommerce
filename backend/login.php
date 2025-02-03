@@ -1,66 +1,35 @@
 <?php 
    include_once("../config/connection.php");
    include_once("../lib/function.inc.php");
+   include_once("../controller/LoginmasterController.php");
+    // Database object
+    $database = new Database();
+    $db = $database->getConnection();
 
-   class User {
-      private $conn;
-      private $table_name = "adminmaster";
-  
-      public function __construct($db) {
-          $this->conn = $db;
-      }
+    $LoginmasterModel = new LoginmasterModel($db);
 
+    $errormsg ='';
+   
+   if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
+            
+     if (!empty($_POST['Admin_Username']) && !empty($_POST['Admin_Password'])) {
 
-      public function getAdminmasterdetails(){
-      
-         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
-             
-            if (!empty($_POST['Admin_Username']) && !empty($_POST['Admin_Password'])) {
+         $Admin_Username = ($_POST['Admin_Username']) ? ((string)$_POST['Admin_Username']) : "";
+         $Admin_Password = ($_POST['Admin_Password']) ? ((string)$_POST['Admin_Password']) : "";
 
-               // Validate and sanitize input
-               $Admin_Username = sanitizeString($_POST['Admin_Username']);
-               $Admin_Password = sanitizeString($_POST['Admin_Password']);
-
-               // Prepare SQL query
-               $query = "SELECT * FROM " . $this->table_name . " WHERE Admin_Username = :Admin_Username AND Admin_Password = :Admin_Password LIMIT 1";
+         $Adminmasterdetails ='';
+         $Adminmasterdetails = $LoginmasterModel->getAdminmasterdetails($Admin_Username,$Admin_Password);
+         
+         if (count($Adminmasterdetails) > 0) {
+               redirect("categoriemaster.php");
+         } else {
                
-               $stmt = $this->conn->prepare($query);
-
-               // Bind parameters
-               $stmt->bindParam(':Admin_Username', $Admin_Username);
-               $stmt->bindParam(':Admin_Password', $Admin_Password);
-               
-               // Execute the statement
-               $stmt->execute();
-               $adminResult = $stmt->fetch(PDO::FETCH_ASSOC);
-                  
-               // Verify the password if the user exists
-               if (!empty($adminResult)) {
-               
-                  $_SESSION['Admin_Login'] = 'YES';
-                  $_SESSION["Admin_Username"];
-                  $_SESSION["Admin_Password"];
-                  
-                  redirect("categoriemaster.php");
-                  
-               }else {
-                  $errormsg ="Invalid username and password";
-               } 
-            }
+            $errormsg = "Invalid username or password";
+            //redirect("login.php");
          }
       }
-  }
-  
-  // Database obj
-  $database = new Database();
-  $db = $database->getConnection();
-  
-  // User obj
-  $user = new User($db);
-  $user = $user->getAdminmasterdetails();
-
-  $errormsg = (isset($_POST['submit']) && $_POST['Admin_Username'] && $_POST['Admin_Password']) ? $errormsg ="Invalid username and password" : $errormsg ="Please enter username or password";
-  
+   }
+    
 ?>
 
 <!doctype html>
@@ -98,7 +67,10 @@
                      </div>
                      <button type="submit" name="submit" class="btn btn-success btn-flat m-b-30 m-t-30">Sign in</button>
 					   </form>
-               <div class="field_error" id="field_error"><?php echo $errormsg ?></div> 
+
+                  <?php if (!empty($errormsg)): ?>
+                     <br/><div class="alert alert-danger" id="field_error" role="alert"> <?php echo $errormsg; ?> </div>
+                  <?php endif; ?>
                </div>
             </div>
          </div>
@@ -113,7 +85,7 @@
                // Remove the error message
                setTimeout(function () {
                   $('#field_error').remove();
-               },2000);
+               },3000);
          });
       </script>
    </body>
