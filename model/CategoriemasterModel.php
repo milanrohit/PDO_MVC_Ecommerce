@@ -30,7 +30,7 @@ class CategoryMasterModel {
                 $categoryResult = $stmt->fetch(PDO::FETCH_ASSOC);
             }else{
 
-                $query = "SELECT Categories_Id, Categories_Name, Categories_Status FROM " . $this->table_name;
+                $query = "SELECT Categories_Id, Categories_Name, Categories_Status FROM ".$this->table_name." ORDER BY Categories_Id DESC";
                 $stmt = $this->conn->prepare($query);
 
                 // Execute the statement
