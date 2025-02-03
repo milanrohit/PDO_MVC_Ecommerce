@@ -26,7 +26,7 @@
                      <a href="<?php echo BackendPath; ?>usermaster.php" > User Master</a>
                   </li>
                   <li class="menu-item-has-children dropdown">
-                     <a href="<?php echo BackendPath; ?>contact.php" > Contact Us</a>
+                     <a href="<?php echo BackendPath; ?>contactus.php" > Contact Us</a>
                   </li>
                </ul>
             </div>
