@@ -79,22 +79,26 @@ if (isset($type) && !empty($type)) {
                                 <table class="table">
                                     <thead>
                                         <tr>
-                                            <th class="avatar">Avatar</th>
                                             <th class="serial">#</th>
+                                            <th class="avatar">Avatar</th>
                                             <th><b>Categorie ID</b></th>
                                             <th><b>Categorie Name</b></th>
                                             <th><b>Categorie Status</b></th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php foreach ($CategoryMasterDetails as $cat): ?>
+                                        <?php 
+                                        $index = 0;
+                                        foreach ($CategoryMasterDetails as $cat):
+                                            $index ++;
+                                        ?>
                                             <tr>
+                                                <td class="serial"><?php echo $index; ?>.</td>
                                                 <td class="avatar">
                                                     <div class="round-img">
                                                         <a href="#"><img class="rounded-circle" src="images/avatar/1.jpg" alt=""></a>
                                                     </div>
                                                 </td>
-                                                <td class="serial">2.</td>
                                                 <td><span class="count"><?php echo $cat['Categories_Id']; ?></span></td>
                                                 <td><span class="name"><?php echo $cat['Categories_Name']; ?></span></td>
                                                 <td>
