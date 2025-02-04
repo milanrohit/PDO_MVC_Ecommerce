@@ -156,7 +156,7 @@ class ContactusModel {
 
     public function getdataContactus(int $contactus_id) {
         try{
-            $query = "contactus_id, contactus_name, contactus_email, contactus_mobile, contactus_status, contactus_comment, contactus_add_datetime, contactus_update_datetime FROM ".$this->table_name." WHERE contactus_id = :contactus_id LIMIT 1";
+            $query = "SELECT contactus_id, contactus_name, contactus_email, contactus_mobile, contactus_status, contactus_comment, contactus_add_datetime, contactus_update_datetime FROM ".$this->table_name." WHERE contactus_id = :contactus_id LIMIT 1";
             $stmt = $this->conn->prepare($query);
             // Bind parameter
             $stmt->bindParam(':contactus_id', $contactus_id, PDO::PARAM_INT);
