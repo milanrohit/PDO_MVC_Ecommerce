@@ -10,6 +10,8 @@ include_once("../model/ProductMasterModel.php");
    
     // Productmaster obj
     $ProductmasterModel = new ProductMasterModel($db);
+
+    $productMasterDetails = '';
     $productMasterDetails = $ProductmasterModel->getProductMasterDetails();
     
 ?>
@@ -40,6 +42,7 @@ include_once("../model/ProductMasterModel.php");
                                             <th class="serial">#</th>
                                             <th class="avatar">Avatar</th>
                                             <th><b>Name</b></th>
+                                            <th><b>Category Name</b></th>
                                             <th><b>Mrp</b></th>
                                             <th><b>SellPrice</b></th>
                                             <th><b>Qty</b></th>
@@ -64,6 +67,7 @@ include_once("../model/ProductMasterModel.php");
                                                     </div>
                                                 </td>
                                                 <td><?php echo sanitizeString($val['Product_Name']); ?></td>
+                                                <td><?php echo sanitizeString($val['Categories_Name']); ?></td>
                                                 <td><?php echo sanitizeString($val['Product_Mrp']); ?></td>
                                                 <td><?php echo sanitizeString($val['Product_SellPrice']); ?></td>
                                                 <td><?php echo sanitizeString($val['Product_Qty']); ?></td>

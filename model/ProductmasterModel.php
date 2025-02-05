@@ -5,7 +5,8 @@
 class ProductmasterModel {
 
     private $conn;
-    private $tableName = "productmaster";
+    private $productMaster = "productmaster";
+    private $categoriesMaster = "categoriesmaster";
 
     public function __construct($db) {
         $this->conn = $db;
@@ -16,7 +17,7 @@ class ProductmasterModel {
             $productId ='';
             if(!empty($productId)){
 
-                $query = "SELECT Product_Id, Product_CategorieId, Product_Name, Product_Mrp, Product_SellPrice, Product_Qty, Product_Img, Product_ShortDesc, Product_LongDesc, Product_MetaTitle, Product_MetaDesc, Product_Satus, Product_datetime FROM ".$this->tableName." WHERE Product_Id = :Product_Id LIMIT 1";
+                $query = "SELECT Product_Id, Product_CategorieId, Product_Name, Product_Mrp, Product_SellPrice, Product_Qty, Product_Img, Product_ShortDesc, Product_LongDesc, Product_MetaTitle, Product_MetaDesc, Product_Satus, Product_datetime FROM ".$this->productMaster." WHERE Product_Id = :Product_Id LIMIT 1";
                 $stmt = $this->conn->prepare($query);
 
                 // Execute the statement
@@ -24,8 +25,31 @@ class ProductmasterModel {
                 $stmt->fetch(\PDO::FETCH_ASSOC);
             }else{
 
-                $query = "SELECT Product_Id, Product_CategorieId, Product_Name, Product_Mrp, Product_SellPrice, Product_Qty, Product_Img, Product_ShortDesc, Product_LongDesc, Product_MetaTitle, Product_MetaDesc, Product_Satus, Product_datetime FROM ".$this->tableName." ORDER BY Product_Id DESC";
-                $stmt = $this->conn->prepare($query);
+                $query = "SELECT
+                            pm.Product_Id,
+                            pm.Product_CategorieId,
+                            cm.Categories_Id,
+                            cm.Categories_Name,
+                            pm.Product_Name,
+                            pm.Product_Mrp,
+                            pm.Product_SellPrice,
+                            pm.Product_Qty,
+                            pm.Product_Img,
+                            pm.Product_ShortDesc,
+                            pm.Product_LongDesc,
+                            pm.Product_MetaTitle,
+                            pm.Product_MetaDesc,
+                            pm.Product_Satus,
+                            pm.Product_datetime
+                        FROM
+                            $this->productMaster AS pm
+                        INNER JOIN $this->categoriesMaster AS cm
+                        ON
+                            pm.Product_CategorieId = cm.Categories_Id
+                        ORDER BY
+                            pm.Product_Id
+                        DESC";
+                    $stmt = $this->conn->prepare($query);
 
                 // Execute the statement
                 $stmt->execute();
@@ -44,14 +68,13 @@ class ProductmasterModel {
     public function updateProductMaster($productId,$productStatus): bool
     {
         try {
-
             if (!empty($productId) && !empty($productStatus)) {
-                $query = "UPDATE {$this->tableName} SET Product_Status = :ProductStatus WHERE Product_Id = :ProductId";
-                $stmt = $this->conn->prepare($query);
+                $updateQuery = "UPDATE {$this->productMaster} SET Product_Status = :ProductStatus WHERE Product_Id = :ProductId";
+                $stmt = $this->conn->prepare($updateQuery);
                 $stmt->bindParam(':ProductStatus', $Product_Status, \PDO::PARAM_STR);
             } else {
-                $query = "UPDATE {$this->tableName} SET Product_Name = :ProductName WHERE Product_Id = :ProductId";
-                $stmt = $this->conn->prepare($query);
+                $updateQuery = "UPDATE {$this->productMaster} SET Product_Name = :ProductName WHERE Product_Id = :ProductId";
+                $stmt = $this->conn->prepare($updateQuery);
                 $stmt->bindParam(':ProductName', $Product_Name, \PDO::PARAM_STR);
             }
 
@@ -70,8 +93,8 @@ class ProductmasterModel {
             $productId = sanitizeString($productId, FILTER_SANITIZE_NUMBER_INT);
             
             if (!empty($productId)) {
-                $query = "DELETE FROM {$this->tableName} WHERE Product_Id = :productId";
-                $stmt = $this->conn->prepare($query);
+                $queryDelete = "DELETE FROM {$this->productMaster} WHERE Product_Id = :productId";
+                $stmt = $this->conn->prepare($queryDelete);
                 $stmt->bindParam(':productId', $productId, \PDO::PARAM_INT);
 
                 return $stmt->execute();
@@ -85,9 +108,9 @@ class ProductmasterModel {
         }
     }
 
-    public function addProduct(): bool {
+    public function insertProductMaster(): bool {
         try {
-            $query = "INSERT INTO $this->tableName (
+            $queryInsert = "INSERT INTO $this->productMaster (
                             Product_CategorieId,
                             Product_Name,
                             Product_Mrp,
@@ -111,7 +134,7 @@ class ProductmasterModel {
                             :productMetaDesc
                         ) LIMIT 1";
 
-            $stmt = $this->conn->prepare($query);
+            $stmt = $this->conn->prepare($queryInsert);
 
             $productCategorieId ='';
             $productName ='';
@@ -149,7 +172,7 @@ class ProductmasterModel {
 
     public function getDataProduct(int $productId): ?array
     {
-        $query = "SELECT
+        $querySelect = "SELECT
                     Product_Id,
                     Product_CategorieId,
                     Product_Name,
@@ -161,12 +184,12 @@ class ProductmasterModel {
                     Product_LongDesc,
                     Product_MetaTitle,
                     Product_MetaDesc
-                  FROM ".$this->tableName."
+                  FROM ".$this->productMaster."
                   WHERE Product_Id = :productId
                   LIMIT 1";
 
         try {
-            $stmt = $this->conn->prepare($query);
+            $stmt = $this->conn->prepare($querySelect);
             // Bind parameter
             $stmt->bindParam(':productId', sanitizeString((int) $productId), \PDO::PARAM_INT);
             // Execute the statement
@@ -189,9 +212,9 @@ class ProductmasterModel {
         $productName = sanitizeString((string)($productName));
         
         if (!empty($productName)) {
-            $duplicateQuery = "SELECT COUNT(*) as cnt FROM " . $this->tableName . " WHERE Product_Name = :productName";
+            $duplicateSelectQuery = "SELECT COUNT(*) as cnt FROM " . $this->productMaster . " WHERE Product_Name = :productName";
             try {
-                $stmtDuplicate = $this->conn->prepare($duplicateQuery);
+                $stmtDuplicate = $this->conn->prepare($duplicateSelectQuery);
                 $stmtDuplicate->bindParam(':productName', $productName, \PDO::PARAM_STR);
                 $stmtDuplicate->execute();
                 $duplicateCheck = $stmtDuplicate->fetch(\PDO::FETCH_ASSOC);
