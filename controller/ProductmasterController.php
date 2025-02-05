@@ -1,10 +1,9 @@
 <?php
 include_once("../config/connection.php");
 include_once("../lib/function.inc.php");
-include_once("../model/ProductmasterModel.php");
-include_once("../controller/ProductmasterController.php");
+include_once("../model/ProductMasterModel.php");
 
-class ProductmasterController extends ProductmasterModel {
+class ProductMasterController extends ProductMasterModel {
     private $conn;
     
     public function __construct($db) {

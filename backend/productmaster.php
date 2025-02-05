@@ -3,14 +3,13 @@ include_once("../config/connection.php");
 include_once("../lib/function.inc.php");
 include_once("header.inc.php");
 include_once("../model/ProductMasterModel.php");
-include_once("../controller/ProductMasterController.php");
 
     // Database object
     $database = new Database();
     $db = $database->getConnection();
    
     // Productmaster obj
-    $ProductmasterModel = new ProductmasterModel($db);
+    $ProductmasterModel = new ProductMasterModel($db);
     $productMasterDetails = $ProductmasterModel->getProductMasterDetails();
     
 ?>
