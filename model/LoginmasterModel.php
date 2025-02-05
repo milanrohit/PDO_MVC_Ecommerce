@@ -1,26 +1,25 @@
-<?php 
+<?php
    include_once("../config/connection.php");
    include_once("../lib/function.inc.php");
 
-   class LoginmasterModel {
-      private $conn;
-      private $table_name = "adminmaster";
-  
-      public function __construct($db) {
-          $this->conn = $db;
-      }
+    class LoginMasterModel {
+        private $conn;
+        private $tableName = "adminmaster";
+        
+        public function __construct() {
+            $this->conn = (new Database())->getConnection();
+        }
 
-
-      public function getAdminmasterdetails(string $Admin_Username, string $Admin_Password): array {
+        public function getAdminmasterdetails(string $adminUsername, string $adminPassword): array {
          try {
              // Prepare SQL query
-             $query = "SELECT * FROM " . $this->table_name . " WHERE Admin_Username = :Admin_Username AND Admin_Password = :Admin_Password LIMIT 1";
+             $query = "SELECT * FROM " . $this->tableName . " WHERE Admin_Username = :adminUsername AND Admin_Password = :adminPassword LIMIT 1";
              
              $stmt = $this->conn->prepare($query);
      
              // Bind parameters
-             $stmt->bindParam(':Admin_Username', $Admin_Username, PDO::PARAM_STR);
-             $stmt->bindParam(':Admin_Password', $Admin_Password, PDO::PARAM_STR);
+             $stmt->bindParam(':adminUsername', $adminUsername, PDO::PARAM_STR);
+             $stmt->bindParam(':adminPassword', $adminPassword, PDO::PARAM_STR);
              
              // Execute the statement
              $stmt->execute();
@@ -29,12 +28,10 @@
              // Verify the password if the user exists
              if (!empty($adminResult)) {
                  $_SESSION['Admin_Login'] = 'YES';
-                 $_SESSION["Admin_Username"] = $Admin_Username;
-                 $_SESSION["Admin_Password"] = $Admin_Password;
+                 $_SESSION["adminUsername"] = $adminUsername;
+                 $_SESSION["adminPassword"] = $adminPassword;
      
-                 $finalarray = array_merge($_SESSION, $adminResult);
-     
-                 return $finalarray;
+                 return array_merge($_SESSION, $adminResult);
              } else {
                  // Return an empty array if no user is found
                  return [];
@@ -48,7 +45,6 @@
    }
   
   // Database obj
-  $database = new Database();
-  $db = $database->getConnection();
-  
+  $dataBase = new Database();
+  $db = $dataBase->getConnection();
   ?>

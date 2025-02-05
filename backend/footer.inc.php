@@ -8,7 +8,7 @@
             <div class="footer-inner bg-white">
                <div class="row">
                   <div class="col-sm-6">
-                     <?php Copyright(); ?>
+                     <?php copyRight(); ?>
                   </div>
                   <div class="col-sm-6 text-right">
                      <?php designdevelopeby(); ?>

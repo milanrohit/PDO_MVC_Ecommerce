@@ -1,7 +1,9 @@
 <?php 
    include_once("../config/connection.php");
    include_once("../lib/function.inc.php");
-   include_once("../controller/LoginmasterController.php");
+   include_once("../controller/LoginMasterController.php");
+   include_once("../model/LoginMasterModel.php");
+
     // Database object
     $database = new Database();
     $db = $database->getConnection();
@@ -25,7 +27,6 @@
          } else {
                
             $errormsg = "Invalid username or password";
-            //redirect("login.php");
          }
       }
    }

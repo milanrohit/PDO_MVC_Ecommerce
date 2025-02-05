@@ -3,15 +3,15 @@
 include_once("../config/connection.php");
 include_once("../lib/function.inc.php");
 include_once("../model/ContactusModel.php");
+include_once("../controller/CategoryMasterController.php");
 //Header menu calling
 
 class ContactusController extends ContactusModel {
     private $conn;
-    //private $table_name = "contactus";
 
     public function __construct($db) {
         $this->conn = $db;
-    }    
+    }
 }
 
 // Database obj

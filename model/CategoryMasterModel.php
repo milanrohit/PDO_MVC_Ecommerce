@@ -11,12 +11,6 @@ class CategoryMasterModel {
     public function __construct($db) {
         $this->conn = $db;
     }
-
-    /**
-     * Get details of all categories.
-     * 
-     * @return array
-     */
     public function getCategoryMasterDetails(): array {
         try {
 
@@ -27,7 +21,7 @@ class CategoryMasterModel {
 
                 // Execute the statement
                 $stmt->execute();
-                $categoryResult = $stmt->fetch(PDO::FETCH_ASSOC);
+                $stmt->fetch(PDO::FETCH_ASSOC);
             }else{
 
                 $query = "SELECT Categories_Id, Categories_Name, Categories_Status FROM ".$this->table_name." ORDER BY Categories_Id DESC";
@@ -35,14 +29,12 @@ class CategoryMasterModel {
 
                 // Execute the statement
                 $stmt->execute();
-                $categoryResult = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
 
             // Execute the statement
             $stmt->execute();
-            $categoryResult = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            return $categoryResult;
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             echo "Failed to Select a category: " . $e->getMessage();
         }
@@ -190,5 +182,4 @@ class CategoryMasterModel {
 // Database object
 $database = new Database();
 $db = $database->getConnection();
-
 ?>

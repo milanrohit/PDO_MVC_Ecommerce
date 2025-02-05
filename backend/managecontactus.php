@@ -1,8 +1,9 @@
 <?php
-include_once("../config/connection.php");
-include_once("../lib/function.inc.php");
-include_once("header.inc.php"); //Header menu calling
-include_once("../controller/ContactusController.php");
+    include_once("../config/connection.php");
+    include_once("../lib/function.inc.php");
+    include_once("header.inc.php");
+    include_once("../controller/ContactusController.php");
+    include_once("../model/CategoryMasterModel.php");
 
     // Database object
     $database = new Database();

@@ -1,108 +1,109 @@
 <?php
-// Debugging functions
-function _d($arr): void {
-    echo "<pre>";
-    print_r($arr);
-    echo "</pre>";
-}
+    // Debugging functions
+    function _d($arr): void {
+        echo "<pre>";
+        print_r($arr);
+        echo "</pre>";
+    }
 
-// Debugging functions with exit
-function _dx($arr): void {
-    echo "<pre>";
-    print_r($arr);
-    echo "</pre>";
-    exit;
-}
+    // Debugging functions with exit
+    function _dx($arr): void {
+        echo "<pre>";
+        print_r($arr);
+        echo "</pre>";
+        exit;
+    }
 
-// Convert array to object
-function arrayToObject(array $array): object {
-    $object = new stdClass();
-    foreach ($array as $key => $value) {
-        if (is_array($value)) {
-            $value = arrayToObject($value);
+    // Convert array to object
+    function arrayToObject(array $array): object {
+        $object = new stdClass();
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $value = arrayToObject($value);
+            }
+            $object->$key = $value;
         }
-        $object->$key = $value;
-    }
-    return $object;
-}
-
-// Convert object to array
-function objectToArray($object): array {
-    if (is_object($object)) {
-        $object = get_object_vars($object);
-    }
-    if (is_array($object)) {
-        return array_map('objectToArray', $object);
-    } else {
         return $object;
     }
-}
 
-// Return PDO fetch associative constant
-function fetchAssociative(): int {
-    return PDO::FETCH_ASSOC;
-}
+    // Convert object to array
+    function objectToArray($object): array {
+        if (is_object($object)) {
+            $object = get_object_vars($object);
+        }
+        if (is_array($object)) {
+            return array_map('objectToArray', $object);
+        } else {
+            return $object;
+        }
+    }
 
-// Function to handle redirection
-function redirect(string $url): void {
-    header('Location: ' . $url);
-    exit();
-}
+    // Return PDO fetch associative constant
+    function fetchAssociative(): int {
+        return PDO::FETCH_ASSOC;
+    }
 
-// Function to sanitize input
-function sanitizeString(string $input): string {
-    $input = trim($input);
+    // Function to handle redirection
+    function redirect(string $url): void {
+        header('Location: ' . $url);
+        exit();
+    }
 
-    // Remove HTML tags
-    $sanitized = strip_tags($input);
+    // Function to sanitize input
+    function sanitizeString(string $input): string {
+        $input = trim($input);
 
-    // Encode special characters
-    $sanitized = htmlspecialchars($sanitized, ENT_QUOTES, 'UTF-8');
+        // Remove HTML tags
+        $sanitized = strip_tags($input);
 
-    return $sanitized;
-}
+        // Encode special characters
+        $sanitized = htmlspecialchars($sanitized, ENT_QUOTES, 'UTF-8');
 
-// Function to handle redirection with an error message
-function redirectWithError(string $url, string $error): void {
-    $_SESSION['error_msg'] = $error;
-    header('Location: ' . $url);
-    exit();
-}
+        return $sanitized;
+    }
 
-function getFileInfo($filePath) {
-    $fileInfo = new SplFileInfo($filePath);
-    return [
-        'name' => $fileInfo->getFilename(),
-        'path' => $fileInfo->getRealPath(),
-        'type' => $fileInfo->getType(),
-        'directory' => $fileInfo->getPath()
-    ];
-}
+    // Function to handle redirection with an error message
+    function redirectWithError(string $url, string $error): void {
+        $_SESSION['error_msg'] = $error;
+        header('Location: ' . $url);
+        exit();
+    }
 
-// Function to hash the password
-function hashPassword($password) {
-    return password_hash($password, PASSWORD_DEFAULT);
-}
+    function getFileInfo($filePath) {
+        $fileInfo = new SplFileInfo($filePath);
+        return [
+            'name' => $fileInfo->getFilename(),
+            'path' => $fileInfo->getRealPath(),
+            'type' => $fileInfo->getType(),
+            'directory' => $fileInfo->getPath()
+        ];
+    }
 
-// Function to verify the password
-function verifyPassword($enteredPassword, $storedHashedPassword) {
-    return password_verify($enteredPassword, $storedHashedPassword);
-}
+    // Function to hash the password
+    function hashPassword($password) {
+        return password_hash($password, PASSWORD_DEFAULT);
+    }
 
-function Copyright(){
-    $yr = date("Y");
-    echo "<b>Copyright &copy; $yr MilanRohit</b>";
-}
+    // Function to verify the password
+    function verifyPassword($enteredPassword, $storedHashedPassword) {
+        return password_verify($enteredPassword, $storedHashedPassword);
+    }
 
-function designdevelopeby(){
-   echo "<b>Designed & Developed by <a href='#'>MilanRohit</a></b>";
-}
+    function copyRight(){
+        $yr = date("Y");
+        echo "<b>Copyright &copy; $yr MilanRohit</b>";
+    }
 
-// Path constants
-define("BackendPath", "/PDO_MVC_Ecommerce/backend/"); // BackendPath
-define("FrontendPath", "/PDO_MVC_Ecommerce/frontend/"); // FrontendPath
-define("controller", "/PDO_MVC_Ecommerce/controller/"); // controller
-define("NO_RECORED_FOUND", "No Record Found."); // NO_RECORED_FOUND
-define("Categorie_master_details", "This is a categorie master where you can add & manage categories ."); // Categorie master details
+    function designdevelopeby(){
+    echo "<b>Designed & Developed by <a href='#'>MilanRohit</a></b>";
+    }
+
+    // Path constants
+    const BackendPath="/PDO_MVC_Ecommerce/backend/"; // BackendPath
+    const FrontendPath="/PDO_MVC_Ecommerce/frontend/"; // FrontendPath
+    const controller="/PDO_MVC_Ecommerce/controller/"; // controller
+    const NO_RECORED_FOUND="No Record Found."; // NO_RECORED_FOUND
+    const Categorie_master_details="This is a categorie master where you can add & manage categories ."; // Categorie master details
+    const Product_master_details="This is a product master where you can add & manage product ."; // Product master details
 
 ?>
