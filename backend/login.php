@@ -1,4 +1,5 @@
 <?php 
+//use App\Config\Database;
    include_once("../config/connection.php");
    include_once("../lib/function.inc.php");
    include_once("../controller/LoginMasterController.php");

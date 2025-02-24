@@ -123,8 +123,10 @@ class CategoryMasterModel {
             $stmt->bindParam(':Categories_Name', $Categories_Name, PDO::PARAM_STR);
         
             // Execute the statement
-            if ($stmt->execute()) {
-                return true; 
+            $stmt->execute();
+
+            if($stmt->rowCount() > 0) {
+                return true;
             } else {
                 return false;
             }
