@@ -11,199 +11,147 @@ class ProductmasterModel {
     public function __construct($db) {
         $this->conn = $db;
     }
+
     public function getProductMasterDetails(): array {
         try {
-            
-            $productId ='';
-            if(!empty($productId)){
-
-                $query = "SELECT Product_Id, Product_CategorieId, Product_Name, Product_Mrp, Product_SellPrice, Product_Qty, Product_Img, Product_ShortDesc, Product_LongDesc, Product_MetaTitle, Product_MetaDesc, Product_Satus, Product_datetime FROM ".$this->productMaster." WHERE Product_Id = :Product_Id LIMIT 1";
-                $stmt = $this->conn->prepare($query);
-
-                // Execute the statement
-                $stmt->execute();
-                $stmt->fetch(\PDO::FETCH_ASSOC);
-            }else{
-
-                $query = "SELECT
-                            pm.Product_Id,
-                            pm.Product_CategorieId,
-                            cm.Categories_Id,
-                            cm.Categories_Name,
-                            pm.Product_Name,
-                            pm.Product_Mrp,
-                            pm.Product_SellPrice,
-                            pm.Product_Qty,
-                            pm.Product_Img,
-                            pm.Product_ShortDesc,
-                            pm.Product_LongDesc,
-                            pm.Product_MetaTitle,
-                            pm.Product_MetaDesc,
-                            pm.Product_Satus,
-                            pm.Product_datetime
-                        FROM
-                            $this->productMaster AS pm
-                        INNER JOIN $this->categoriesMaster AS cm
-                        ON
-                            pm.Product_CategorieId = cm.Categories_Id
-                        ORDER BY
-                            pm.Product_Id
-                        DESC";
-                    $stmt = $this->conn->prepare($query);
-
-                // Execute the statement
-                $stmt->execute();
-                $stmt->fetchAll(\PDO::FETCH_ASSOC);
-            }
-
-            // Execute the statement
-            $stmt->execute();
-            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        }
-        catch (\PDOException $e) {
-            echo "Failed to Select a Product: " . $e->getMessage();
-        }
-    }
-
-    public function updateProductMaster($productId,$productStatus): bool
-    {
-        try {
-            if (!empty($productId) && !empty($productStatus)) {
-                $updateQuery = "UPDATE {$this->productMaster} SET Product_Status = :ProductStatus WHERE Product_Id = :ProductId";
-                $stmt = $this->conn->prepare($updateQuery);
-                $stmt->bindParam(':ProductStatus', $Product_Status, \PDO::PARAM_STR);
-            } else {
-                $updateQuery = "UPDATE {$this->productMaster} SET Product_Name = :ProductName WHERE Product_Id = :ProductId";
-                $stmt = $this->conn->prepare($updateQuery);
-                $stmt->bindParam(':ProductName', $Product_Name, \PDO::PARAM_STR);
-            }
-
-            $stmt->bindParam(':ProductId', $productId, \PDO::PARAM_INT);
-            return $stmt->execute();
-        }
-        catch (\PDOException $e) {
-            error_log("Failed to update Product: " . $e->getMessage());
-            return false;
-        }
-    }
-
-    public function deleteProductMaster(int $productId): bool
-    {
-        try {
-            $productId = sanitizeString($productId, FILTER_SANITIZE_NUMBER_INT);
-            
+            $productId = '';
+            $selectQuery = !empty($productId) ?
+                "SELECT Product_Id, Product_CategorieId, Product_Name, Product_Mrp, Product_SellPrice, Product_Qty, Product_Img, Product_ShortDesc, Product_LongDesc, Product_MetaTitle, Product_MetaDesc, Product_Satus, Product_datetime 
+                FROM ".$this->productMaster." WHERE Product_Id = :Product_Id LIMIT 1":
+                "SELECT
+                    pm.Product_Id,
+                    pm.Product_CategorieId,
+                    cm.Categories_Id,
+                    cm.Categories_Name,
+                    pm.Product_Name,
+                    pm.Product_Mrp,
+                    pm.Product_SellPrice,
+                    pm.Product_Qty,
+                    pm.Product_Img,
+                    pm.Product_ShortDesc,
+                    pm.Product_LongDesc,
+                    pm.Product_MetaTitle,
+                    pm.Product_MetaDesc,
+                    pm.Product_Satus,
+                    pm.Product_datetime
+                FROM ".$this->productMaster." AS pm
+                INNER JOIN ".$this->categoriesMaster." AS cm
+                ON pm.Product_CategorieId = cm.Categories_Id
+                ORDER BY pm.Product_Id DESC";
+            $stmt = $this->conn->prepare($selectQuery);
             if (!empty($productId)) {
-                $queryDelete = "DELETE FROM {$this->productMaster} WHERE Product_Id = :productId";
-                $stmt = $this->conn->prepare($queryDelete);
-                $stmt->bindParam(':productId', $productId, \PDO::PARAM_INT);
-
-                return $stmt->execute();
-            } else {
-                return false;
+                $stmt->bindParam(':Product_Id', $productId, PDO::PARAM_INT);
             }
-        }
-        catch (\PDOException $e) {
-            error_log("Failed to delete Product: " . $e->getMessage());
-            return false;
+            $stmt->execute();
+            return !empty($productId) ? $stmt->fetch(PDO::FETCH_ASSOC):$stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+            return [];
         }
     }
 
-    public function insertProductMaster(): bool {
+    public function insertMasterProduct($pdo, $data) {
         try {
-            $queryInsert = "INSERT INTO $this->productMaster (
-                            Product_CategorieId,
-                            Product_Name,
-                            Product_Mrp,
-                            Product_SellPrice,
-                            Product_Qty,
-                            Product_Img,
-                            Product_ShortDesc,
-                            Product_LongDesc,
-                            Product_MetaTitle,
-                            Product_MetaDesc
-                        ) VALUES (
-                            :productCategorieId,
-                            :productName,
-                            :productMrp,
-                            :productSellPrice,
-                            :productQty,
-                            :productImg,
-                            :productShortDesc,
-                            :productLongDesc,
-                            :productMetaTitle,
-                            :productMetaDesc
-                        ) LIMIT 1";
-
-            $stmt = $this->conn->prepare($queryInsert);
-
-            $productCategorieId ='';
-            $productName ='';
-            $productMrp ='';
-            $productSellPrice ='';
-            $productQty ='';
-            $productImg ='';
-            $productShortDesc ='';
-            $productLongDesc ='';
-            $productMetaTitle ='';
-            $productMetaDesc ='';
-
-            // Bind the parameters
-            $stmt->bindParam(':productCategorieId', sanitizeString((int) $productCategorieId), \PDO::PARAM_INT);
-            $stmt->bindParam(':productName', sanitizeString((string) $productName), \PDO::PARAM_STR);
-            $stmt->bindParam(':productMrp', sanitizeString((int) $productMrp), \PDO::PARAM_INT);
-            $stmt->bindParam(':productSellPrice', sanitizeString((int) $productSellPrice), \PDO::PARAM_INT);
-            $stmt->bindParam(':productQty', sanitizeString((int) $productQty), \PDO::PARAM_INT);
-            $stmt->bindParam(':productImg', sanitizeString((string) $productImg), \PDO::PARAM_STR);
-            $stmt->bindParam(':productShortDesc', sanitizeString((string) $productShortDesc), \PDO::PARAM_STR);
-            $stmt->bindParam(':productLongDesc', sanitizeString((string) $productLongDesc), \PDO::PARAM_STR);
-            $stmt->bindParam(':productMetaTitle', sanitizeString((string) $productMetaTitle), \PDO::PARAM_STR);
-            $stmt->bindParam(':productMetaDesc', sanitizeString((string) $productMetaDesc), \PDO::PARAM_STR);
-
-            // Execute the statement
-            if ($stmt->execute()){
-                return true;
-            }
-        }
-        catch (Exception $e) {
-            error_log('Failed to Add Product: ' . $e->getMessage());
-            return false;
-        }
-    }
-
-    public function getDataProduct(int $productId): ?array
-    {
-        $querySelect = "SELECT
-                    Product_Id,
-                    Product_CategorieId,
-                    Product_Name,
-                    Product_Mrp,
-                    Product_SellPrice,
-                    Product_Qty,
-                    Product_Img,
-                    Product_ShortDesc,
-                    Product_LongDesc,
-                    Product_MetaTitle,
-                    Product_MetaDesc
-                  FROM ".$this->productMaster."
-                  WHERE Product_Id = :productId
-                  LIMIT 1";
-
-        try {
-            $stmt = $this->conn->prepare($querySelect);
-            // Bind parameter
-            $stmt->bindParam(':productId', sanitizeString((int) $productId), \PDO::PARAM_INT);
+            // Prepare the SQL statement
+            $insertSql = "INSERT INTO ".$this->productMaster."(
+                                Product_CategorieId,
+                                Product_Name,
+                                Product_Mrp,
+                                Product_SellPrice,
+                                Product_Qty,
+                                Product_ShortDesc,
+                                Product_LongDesc,
+                                Product_MetaTitle,
+                                Product_MetaDesc,
+                                Product_Status
+                            )
+                            VALUES(
+                                :Product_CategorieId,
+                                :Product_Name,
+                                :Product_Mrp,
+                                :Product_SellPrice,
+                                :Product_Qty,
+                                :Product_ShortDesc,
+                                :Product_LongDesc,
+                                :Product_MetaTitle,
+                                :Product_MetaDesc,
+                                :Product_Status
+                            ) ";
+            $stmt = $pdo->prepare($insertSql);
+    
+            // Sanitize and bind inputs
+            $stmt->bindParam(':Product_CategorieId', sanitizeString((int) $data['Product_CategorieId']), PDO::PARAM_STR);
+            $stmt->bindParam(':Product_Name', sanitizeString((string) $data['Product_Name']), PDO::PARAM_STR);
+            $stmt->bindParam(':Product_Mrp', sanitizeString((int) $data['Product_Mrp']), PDO::PARAM_STR);
+            $stmt->bindParam(':Product_SellPrice', sanitizeString((int) $data['Product_SellPrice']), PDO::PARAM_STR);
+            $stmt->bindParam(':Product_Qty', sanitizeString((int) $data['Product_Qty']), PDO::PARAM_STR);
+            $stmt->bindParam(':Product_ShortDesc', sanitizeString((string) $data['Product_ShortDesc']), PDO::PARAM_STR);
+            $stmt->bindParam(':Product_LongDesc', sanitizeString((string) $data['Product_LongDesc']), PDO::PARAM_STR);
+            $stmt->bindParam(':Product_MetaTitle', sanitizeString((string) $data['Product_MetaTitle']), PDO::PARAM_STR);
+            $stmt->bindParam(':Product_MetaDesc', sanitizeString((string) $data['Product_MetaDesc']), PDO::PARAM_STR);
+            $stmt->bindParam(':Product_Status', sanitizeString((string) $data['Product_Status']), PDO::PARAM_STR);
+            
             // Execute the statement
             $stmt->execute();
-
-            $productResult ='';
-            $productResult = $stmt->fetch(\PDO::FETCH_ASSOC);
-            
-            // Return the result
-            return $productResult ?: null;
+    
+            // Check for successful insertion
+            if($stmt->rowCount() > 0) {
+                return 1;
+            } else {
+                return 0;
+            }
         } catch (Exception $e) {
-            error_log('General error: ' . $e->getMessage());
-            return null;
+            // Log or handle the error
+            error_log($e->getMessage());
+            return 0;
         }
+    }
+
+    // Select function
+    public function selectProducts($pdo) {
+        $sql = "SELECT * FROM products";
+        $stmt = $pdo->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Update function
+    public function updateProduct($pdo, $data) {
+        // Sanitize inputs
+        $productId = sanitizeString((int) $data['Product_Id']) ?? 0;
+
+        if (isset($productId) && !empty($productId) && filter_var($productId, FILTER_VALIDATE_INT) !== false){
+
+            $sql = "UPDATE
+                    products
+                SET
+                    Product_CategorieId = :Product_CategorieId,
+                    Product_Name = :Product_Name,
+                    Product_Mrp = :Product_Mrp,
+                    Product_SellPrice = :Product_SellPrice,
+                    Product_Qty = :Product_Qty,
+                    Product_ShortDesc = :Product_ShortDesc,
+                    Product_LongDesc = :Product_LongDesc,
+                    Product_MetaTitle = :Product_MetaTitle,
+                    Product_MetaDesc = :Product_MetaDesc,
+                    Product_Status = :Product_Status
+                WHERE
+                    Product_Id = :Product_Id ";
+                $stmt = $pdo->prepare($sql);
+                            // Bind parameters
+                $productId = $stmt->bindParam(':Product_Id', $productId, PDO::PARAM_INT);
+                $stmt->execute($data);
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    // Delete function
+    public function deleteProduct($pdo, $id) {
+        $sql = "DELETE FROM products WHERE id = :id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['id' => $id]);
     }
 
     public function checkDuplicateRcd(string $productName): int
