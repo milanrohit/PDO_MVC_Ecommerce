@@ -104,6 +104,6 @@
     const controller="/PDO_MVC_Ecommerce/controller/"; // controller
     const NO_RECORED_FOUND="No Record Found."; // NO_RECORED_FOUND
     const Categorie_master_details="This is a categorie master where you can add & manage categories ."; // Categorie master details
-    const Product_master_details="This is a product master where you can add & manage product ."; // Product master details
+    const PRODUCTMASTERDETAILS="This is a product master where you can add & manage product ."; // Product master details
 
 ?>

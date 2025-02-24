@@ -1,6 +1,25 @@
 @import "https://fonts.googleapis.com/css?family=Open+Sans:400,600,700";
-@import "https://fonts.googleapis.com/css?family=Open+Sans:400,600,700";
 
+.card-body-- {
+    overflow-x: auto; /* Enable horizontal scrolling if needed */
+}
+.table-stats {
+    width: 100%; /* Ensure the table takes full width */
+}
+.success-message {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+.error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
 .invalid-feedback {
     display: none;
 }
