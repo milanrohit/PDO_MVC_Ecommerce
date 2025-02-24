@@ -12,13 +12,29 @@ class ProductmasterModel {
         $this->conn = $db;
     }
 
-    public function getProductMasterDetails(): array {
+    public function getProductMasterDetails(?int $productId = null): array {
         try {
-            $productId = '';
-            $selectQuery = !empty($productId) ?
-                "SELECT Product_Id, Product_CategorieId, Product_Name, Product_Mrp, Product_SellPrice, Product_Qty, Product_Img, Product_ShortDesc, Product_LongDesc, Product_MetaTitle, Product_MetaDesc, Product_Satus, Product_datetime 
-                FROM ".$this->productMaster." WHERE Product_Id = :Product_Id LIMIT 1":
+            $selectQuery = $productId !== null ?
                 "SELECT
+                    Product_Id,
+                    Product_CategorieId,
+                    Product_Name,
+                    Product_Mrp,
+                    Product_SellPrice,
+                    Product_Qty,
+                    Product_Img,
+                    Product_ShortDesc,
+                    Product_LongDesc,
+                    Product_MetaTitle,
+                    Product_MetaDesc,
+                    Product_Status,
+                    Product_datetime
+                FROM
+                    {$this->productMaster}
+                WHERE
+                    Product_Id = :Product_Id
+                LIMIT 1" :"
+                SELECT
                     pm.Product_Id,
                     pm.Product_CategorieId,
                     cm.Categories_Id,
@@ -32,25 +48,29 @@ class ProductmasterModel {
                     pm.Product_LongDesc,
                     pm.Product_MetaTitle,
                     pm.Product_MetaDesc,
-                    pm.Product_Satus,
+                    pm.Product_Status,
                     pm.Product_datetime
-                FROM ".$this->productMaster." AS pm
-                INNER JOIN ".$this->categoriesMaster." AS cm
+                FROM {$this->productMaster} AS pm
+                INNER JOIN {$this->categoriesMaster} AS cm
                 ON pm.Product_CategorieId = cm.Categories_Id
                 ORDER BY pm.Product_Id DESC";
+
             $stmt = $this->conn->prepare($selectQuery);
-            if (!empty($productId)) {
+
+            if ($productId !== null) {
                 $stmt->bindParam(':Product_Id', $productId, PDO::PARAM_INT);
             }
+
             $stmt->execute();
-            return !empty($productId) ? $stmt->fetch(PDO::FETCH_ASSOC):$stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $productId !== null ? $stmt->fetch(PDO::FETCH_ASSOC) : $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             error_log($e->getMessage());
             return [];
         }
     }
 
-    public function insertMasterProduct($pdo, $data) {
+    public function insertMasterProduct($data): int {
         try {
             // Prepare the SQL statement
             $insertSql = "INSERT INTO ".$this->productMaster."(
@@ -77,26 +97,25 @@ class ProductmasterModel {
                                 :Product_MetaDesc,
                                 :Product_Status
                             ) ";
-            $stmt = $pdo->prepare($insertSql);
+            $stmt = $this->conn->prepare($insertSql);
     
-            // Sanitize and bind inputs
-            $stmt->bindParam(':Product_CategorieId', sanitizeString((int) $data['Product_CategorieId']), PDO::PARAM_STR);
-            $stmt->bindParam(':Product_Name', sanitizeString((string) $data['Product_Name']), PDO::PARAM_STR);
-            $stmt->bindParam(':Product_Mrp', sanitizeString((int) $data['Product_Mrp']), PDO::PARAM_STR);
-            $stmt->bindParam(':Product_SellPrice', sanitizeString((int) $data['Product_SellPrice']), PDO::PARAM_STR);
-            $stmt->bindParam(':Product_Qty', sanitizeString((int) $data['Product_Qty']), PDO::PARAM_STR);
-            $stmt->bindParam(':Product_ShortDesc', sanitizeString((string) $data['Product_ShortDesc']), PDO::PARAM_STR);
-            $stmt->bindParam(':Product_LongDesc', sanitizeString((string) $data['Product_LongDesc']), PDO::PARAM_STR);
-            $stmt->bindParam(':Product_MetaTitle', sanitizeString((string) $data['Product_MetaTitle']), PDO::PARAM_STR);
-            $stmt->bindParam(':Product_MetaDesc', sanitizeString((string) $data['Product_MetaDesc']), PDO::PARAM_STR);
-            $stmt->bindParam(':Product_Status', sanitizeString((string) $data['Product_Status']), PDO::PARAM_STR);
-            
-            // Execute the statement
+            // Bind parameters using bindValue
+            $stmt->bindValue(':Product_CategorieId', $data['Product_CategorieId'], PDO::PARAM_INT);
+            $stmt->bindValue(':Product_Name', $data['Product_Name'], PDO::PARAM_STR);
+            $stmt->bindValue(':Product_Mrp', $data['Product_Mrp'], PDO::PARAM_STR);
+            $stmt->bindValue(':Product_SellPrice', $data['Product_SellPrice'], PDO::PARAM_STR);
+            $stmt->bindValue(':Product_Qty', $data['Product_Qty'], PDO::PARAM_INT);
+            $stmt->bindValue(':Product_ShortDesc', $data['Product_ShortDesc'], PDO::PARAM_STR);
+            $stmt->bindValue(':Product_LongDesc', $data['Product_LongDesc'], PDO::PARAM_STR);
+            $stmt->bindValue(':Product_MetaTitle', $data['Product_MetaTitle'], PDO::PARAM_STR);
+            $stmt->bindValue(':Product_MetaDesc', $data['Product_MetaDesc'], PDO::PARAM_STR);
+            $stmt->bindValue(':Product_Status', $data['Product_Status'], PDO::PARAM_INT);
+
             $stmt->execute();
     
             // Check for successful insertion
             if($stmt->rowCount() > 0) {
-                return 1;
+                return (int) $this->conn->lastInsertId();
             } else {
                 return 0;
             }
@@ -114,35 +133,30 @@ class ProductmasterModel {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Update function
-    public function updateProduct($pdo, $data) {
+    // Update ProductMaster function
+    public function updateProductMaster($productId, $data) {
         // Sanitize inputs
-        $productId = sanitizeString((int) $data['Product_Id']) ?? 0;
+        $productId = sanitizeString((int) $productId) ?? 0;
 
-        if (isset($productId) && !empty($productId) && filter_var($productId, FILTER_VALIDATE_INT) !== false){
+        if (isset($productId) && !empty($productId) && filter_var($productId, FILTER_VALIDATE_INT) !== false) {
+            // Build the SET part of the query dynamically based on provided data
+            $setPart = [];
+            foreach ($data as $key => $value) {
+                $setPart[] = "$key = :$key";
+            }
+            $setPart = implode(', ', $setPart);
 
-            $sql = "UPDATE
-                    products
-                SET
-                    Product_CategorieId = :Product_CategorieId,
-                    Product_Name = :Product_Name,
-                    Product_Mrp = :Product_Mrp,
-                    Product_SellPrice = :Product_SellPrice,
-                    Product_Qty = :Product_Qty,
-                    Product_ShortDesc = :Product_ShortDesc,
-                    Product_LongDesc = :Product_LongDesc,
-                    Product_MetaTitle = :Product_MetaTitle,
-                    Product_MetaDesc = :Product_MetaDesc,
-                    Product_Status = :Product_Status
-                WHERE
-                    Product_Id = :Product_Id ";
-                $stmt = $pdo->prepare($sql);
-                            // Bind parameters
-                $productId = $stmt->bindParam(':Product_Id', $productId, PDO::PARAM_INT);
-                $stmt->execute($data);
-        }
-        else
-        {
+            $sql = "UPDATE {$this->productMaster} SET $setPart WHERE Product_Id = :Product_Id";
+            $stmt = $this->conn->prepare($sql);
+
+            // Bind parameters
+            $stmt->bindParam(':Product_Id', $productId, PDO::PARAM_INT);
+            foreach ($data as $key => $value) {
+                $stmt->bindValue(":$key", $value);
+            }
+
+            return $stmt->execute();
+        } else {
             return false;
         }
     }
@@ -150,7 +164,7 @@ class ProductmasterModel {
     // Delete function
     public function deleteProduct($pdo, $id) {
         $sql = "DELETE FROM products WHERE id = :id";
-        $stmt = $pdo->prepare($sql);
+        $stmt = $this->conn->prepare($sql);
         $stmt->execute(['id' => $id]);
     }
 
@@ -176,6 +190,26 @@ class ProductmasterModel {
         } else {
             return 0;
         }
+    }
+
+    // Optimized getProductById function
+    public function getProductById($productId) {
+        $sql = "SELECT * FROM {$this->productMaster} WHERE Product_Id = :productId";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':productId', $productId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Function to compare current product data with new data
+    public function getChangedValues($currentData, $newData) {
+        $changedValues = [];
+        foreach ($newData as $key => $value) {
+            if ($currentData[$key] != $value) {
+                $changedValues[$key] = $value;
+            }
+        }
+        return $changedValues;
     }
 }
 
