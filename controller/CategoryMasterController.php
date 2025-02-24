@@ -3,7 +3,6 @@ include_once("../config/connection.php");
 include_once("../lib/function.inc.php");
 include_once("../model/CategoryMasterModel.php");
 
-
 class CategoryMasterController extends CategoryMasterModel {
     private $conn;
     public function __construct($db) {
@@ -15,9 +14,13 @@ class CategoryMasterController extends CategoryMasterModel {
 $database = new Database();
 $db = $database->getConnection();
 
-// Categoriemaster obj
-$CategoryMasterModel = new CategoryMasterModel($db);
-$data="";
-$CategoryMasterDetails = $CategoryMasterModel->getCategoryMasterDetails($data);
+// Categoriemaster objs
+$catMasterController = new CategoryMasterController($db);
+$catMasterModel = new CategoryMasterModel($db);
 
+// Retrieve category details
+$catId = !empty($_GET['catId']) ? (int)$_GET['catId'] : null;
+$categoryDetails = $catMasterModel->getCategoryMasterDetails((int) $catId);
+
+$catFromMaster = $catMasterModel->getCatFromMaster();
 ?>

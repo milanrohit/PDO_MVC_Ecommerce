@@ -4,7 +4,7 @@ include_once("../config/connection.php");
 include_once("../lib/function.inc.php");
 include_once("header.inc.php"); //Header menu calling
 include_once("../controller/CategoryMasterController.php");
-include_once("header.inc.php"); 
+include_once("../model/CategoryMasterModel.php");
 
 // CategoryMasterModel object
 $categoryMaster = new CategoryMasterModel($db);
