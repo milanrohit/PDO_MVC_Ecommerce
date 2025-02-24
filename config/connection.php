@@ -1,5 +1,5 @@
 <?php
-//namespace Config;
+//namespace App\Config\Database;
 
 // Start the session
 session_start();

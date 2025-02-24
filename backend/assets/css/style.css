@@ -1,6 +1,13 @@
 @import "https://fonts.googleapis.com/css?family=Open+Sans:400,600,700";
 @import "https://fonts.googleapis.com/css?family=Open+Sans:400,600,700";
 
+.invalid-feedback {
+    display: none;
+}
+.is-invalid .invalid-feedback {
+    display: block;
+}
+
 .field_error{
     color: #dc3545;
     margin-top: 15px;
