@@ -1,7 +1,16 @@
 @import "https://fonts.googleapis.com/css?family=Open+Sans:400,600,700";
 
+.round-img img {
+    border-radius: 50%;
+}
+.status-column {
+    width: 500px; /* Adjust the width as needed */
+}
 .card-body-- {
     overflow-x: auto; /* Enable horizontal scrolling if needed */
+}
+.card-title {
+    font-weight: bold;
 }
 .table-stats {
     width: 100%; /* Ensure the table takes full width */
