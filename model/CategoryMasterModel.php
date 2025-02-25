@@ -20,10 +20,14 @@ class CategoryMasterModel {
                 $catId = null;
             }
 
-            $query = "SELECT Categories_Id, Categories_Name, Categories_Status FROM " . $this->tableName;
+            $query = "SELECT
+                            Categories_Id,
+                            Categories_Name,
+                            Categories_Status
+                        FROM  {$this->tableName} ";
 
             if (!is_null($catId)) {
-                $query .= " WHERE Categories_Id = :Categories_Id LIMIT 1";
+                $query .= " WHERE Categories_Id = :CatId";
             } else {
                 $query .= " ORDER BY Categories_Id DESC";
             }
@@ -31,7 +35,7 @@ class CategoryMasterModel {
             $stmt = $this->conn->prepare($query);
 
             if (!is_null($catId)) {
-                $stmt->bindParam(':Categories_Id', $catId, PDO::PARAM_INT);
+                $stmt->bindParam(':CatId', $catId, PDO::PARAM_INT);
             }
 
             $stmt->execute();
@@ -49,28 +53,26 @@ class CategoryMasterModel {
      * @param string $Categories_Status
      * @return bool
      */
-    public function updateCategoriesMaster(int $Categories_Id, string $Categories_Status): bool {
+    public function updateCategoriesMaster(int $catId, string $catStatus): bool {
 
         try {
-           
-            $Categories_Name ='';
-            $Categories_Name = sanitizeString(((string)$_POST['Categories_Name']));
-            $Categories_Status = sanitizeString(((string)$Categories_Status));
-            $Categories_Id = sanitizeString(((int)$Categories_Id));
+            $catName = sanitizeString(((string)$_POST['Categories_Name']));
+            $catStatus = sanitizeString(((string)$catStatus));
+            $catId = sanitizeString(((int)$catId));
 
-            if(!empty($Categories_Id) && !empty($Categories_Status)){
+            if(!empty($catId) && !empty($catStatus)){
                 // Prepare SQL query
-                $query = "UPDATE $this->tableName SET Categories_Status = :Categories_Status WHERE Categories_Id = :Categories_Id";
+                $query = "UPDATE $this->tableName SET Categories_Status = :catStatus WHERE Categories_Id = :catId";
                 $stmt = $this->conn->prepare($query);
-                $stmt->bindParam(':Categories_Status', $Categories_Status, PDO::PARAM_STR);
+                $stmt->bindParam(':catStatus', $catStatus, PDO::PARAM_STR);
             }else{
-                $query = "UPDATE $this->tableName SET Categories_Name = :Categories_Name WHERE Categories_Id = :Categories_Id";
+                $query = "UPDATE $this->tableName SET Categories_Name = :catName WHERE Categories_Id = :catId";
                 $stmt = $this->conn->prepare($query);
-                $stmt->bindParam(':Categories_Name', $Categories_Name, PDO::PARAM_STR);
+                $stmt->bindParam(':catName', $catName, PDO::PARAM_STR);
             }
            
             // Bind parameters
-            $stmt->bindParam(':Categories_Id', $Categories_Id, PDO::PARAM_INT);
+            $stmt->bindParam(':catId', $catId, PDO::PARAM_INT);
 
             // Execute the statement
             if ($stmt->execute()) {
