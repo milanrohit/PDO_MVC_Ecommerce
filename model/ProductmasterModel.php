@@ -2,7 +2,7 @@
   include_once("../config/connection.php");
   include_once("../lib/function.inc.php");
 
-class ProductmasterModel {
+class ProductMasterModel {
 
     private $conn;
     private $productMaster = "productmaster";
@@ -25,6 +25,7 @@ class ProductmasterModel {
             'Product_MetaTitle' => sanitizeString($postData['Product_MetaTitle'] ?? null),
             'Product_MetaDesc' => sanitizeString($postData['Product_MetaDesc'] ?? null),
             'Product_Status' => sanitizeString($postData['Product_Status'] ?? null),
+            'Product_Img' => $postData['Product_Img'] ?? null
         ];
     }
 
@@ -48,7 +49,7 @@ class ProductmasterModel {
                 FROM
                     {$this->productMaster}
                 WHERE
-                    Product_Id = :Product_Id
+                    Product_Id = :pId
                 LIMIT 1" :"
                 SELECT
                     pm.Product_Id,
@@ -74,7 +75,7 @@ class ProductmasterModel {
             $stmt = $this->conn->prepare($selectQuery);
 
             if ($productId !== null) {
-                $stmt->bindParam(':Product_Id', $productId, PDO::PARAM_INT);
+                $stmt->bindParam(':pId', $productId, PDO::PARAM_INT);
             }
 
             $stmt->execute();
@@ -104,7 +105,8 @@ class ProductmasterModel {
                             Product_LongDesc,
                             Product_MetaTitle,
                             Product_MetaDesc,
-                            Product_Status
+                            Product_Status,
+                            Product_Img
                         ) VALUES (
                             :Product_CategorieId,
                             :Product_Name,
@@ -115,7 +117,8 @@ class ProductmasterModel {
                             :Product_LongDesc,
                             :Product_MetaTitle,
                             :Product_MetaDesc,
-                            :Product_Status
+                            :Product_Status,
+                            :Product_Img
                         )";
             $stmt = $this->conn->prepare($insertSql);
 
@@ -130,6 +133,7 @@ class ProductmasterModel {
             $stmt->bindValue(':Product_MetaTitle', $data['Product_MetaTitle'], PDO::PARAM_STR);
             $stmt->bindValue(':Product_MetaDesc', $data['Product_MetaDesc'], PDO::PARAM_STR);
             $stmt->bindValue(':Product_Status', $data['Product_Status'], PDO::PARAM_INT);
+            $stmt->bindValue(':Product_Img', $data['Product_Img'], PDO::PARAM_LOB);
 
             $stmt->execute();
 
@@ -170,12 +174,6 @@ class ProductmasterModel {
 
     public function updateProductMaster(int $productId, array $data): bool {
         try {
-            /*Start Code for : Check for duplicate product name*/
-            /*if ($this->checkDuplicateRcd($data['Product_Name']) > 0) {
-                return false;
-            }*/
-            /*End Code for : Check for duplicate product name*/
-
             $setPart = array_map(fn($key) => "$key = :$key", array_keys($data));
             $setPart = implode(', ', $setPart);
 

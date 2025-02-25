@@ -26,6 +26,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($pId)) {
     $insertArray = $productMasterModel->createProductArray($_POST);
     $errorMessage = '';
 
+    /* Start Product_Img upload code */
+
+    // Allowed image extensions
+    $allowedExtensions = ['jpg', 'jpeg', 'png'];
+
+    // Handle product image upload
+    if (isset($_FILES['Product_Img']) && $_FILES['Product_Img']['error'] === UPLOAD_ERR_OK) {
+        $uploadDir = PRODUCT_IMGES_UPLOAD_DIR;
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+        $uploadFile = $uploadDir . basename($_FILES['Product_Img']['name']);
+        $fileExtension = pathinfo($uploadFile, PATHINFO_EXTENSION);
+        $fileSize = $_FILES['Product_Img']['size'];
+
+        // Check file extension
+        if (in_array(strtolower($fileExtension), $allowedExtensions)) {
+            // Check file size (3MB limit)
+            if ($fileSize <= 3 * 1024 * 1024) {
+                if (move_uploaded_file($_FILES['Product_Img']['tmp_name'], $uploadFile)) {
+                    $insertArray['Product_Img'] = $uploadFile;
+                } else {
+                    $errorMessage .= 'Product image not uploaded, something went wrong.<br>';
+                }
+            } else {
+                $errorMessage .= 'File size exceeds 3MB limit.<br>';
+            }
+        } else {
+            $errorMessage .= 'Invalid file format. Only JPG, JPEG, and PNG are allowed.<br>';
+        }
+    }
+    /* End Product_Img upload code */
+
     if ($productName !== '') {
         $chkduplicate = $productMasterModel->checkDuplicatercd($productName);
 
@@ -60,6 +93,7 @@ if ($pId !== '' && $type === 'edit') {
         $pMetaTitle = sanitizeString($productMasterData['Product_MetaTitle']);
         $pMetaDesc = sanitizeString($productMasterData['Product_MetaDesc']);
         $pStatus = sanitizeString($productMasterData['Product_Status']);
+        $pImg = sanitizeString($productMasterData['Product_Img']);
     } else {
         redirect("productmaster.php");
     }
@@ -171,6 +205,13 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && !empty($pId)) {
                                         <textarea class="form-control" id="Product_MetaDesc" name="Product_MetaDesc" rows="3" required><?php echo $pMetaDesc ?? ''; ?></textarea>
                                         <div class="invalid-feedback">Please provide a meta description.</div>
                                     </div>
+
+                                    <div class="form-group">
+                                        <label for="Product_Img">Product Image Upload</label>
+                                        <input type="file" id="Product_Img" name="Product_Img" class="form-control-file" required>
+                                        <div class="invalid-feedback">Please upload a product image.</div>
+                                    </div>
+
                                     <div class="form-group">
                                         <label for="Product_Status">Product Status</label>
                                         <select class="form-control" id="Product_Status" name="Product_Status" required>
