@@ -115,6 +115,9 @@ if (isset($type) && !empty($type)) {
                                                         case 'D':
                                                             echo '<span class="badge badge-Deleted"><b>Deleted</b></span>';
                                                             break;
+                                                        default:
+                                                            echo '<span class="badge badge-Unknown"><b>Unknown Status</b></span>';
+                                                            break;
                                                     }
                                                     ?>
                                                 </td>
