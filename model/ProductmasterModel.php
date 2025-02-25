@@ -170,10 +170,11 @@ class ProductmasterModel {
 
     public function updateProductMaster(int $productId, array $data): bool {
         try {
-            // Check for duplicate product name
-            if ($this->checkDuplicateRcd($data['Product_Name']) > 0) {
+            /*Start Code for : Check for duplicate product name*/
+            /*if ($this->checkDuplicateRcd($data['Product_Name']) > 0) {
                 return false;
-            }
+            }*/
+            /*End Code for : Check for duplicate product name*/
 
             $setPart = array_map(fn($key) => "$key = :$key", array_keys($data));
             $setPart = implode(', ', $setPart);
@@ -195,9 +196,10 @@ class ProductmasterModel {
     public function deleteProductMaster($id) {
         try {
             $id = sanitizeString((int)($id));
-            $sql = "DELETE FROM products WHERE id = :id";
+            $sql = "DELETE FROM {$this->productMaster} WHERE Product_Id = :Product_Id";
             $stmt = $this->conn->prepare($sql);
-            $stmt->execute(['id' => $id]);
+            $stmt->bindParam(':Product_Id', $id, PDO::PARAM_INT);
+            $stmt->execute();
         } catch (PDOException $e) {
             error_log($e->getMessage());
             return false;

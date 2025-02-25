@@ -24,12 +24,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($pId)) {
     $productName = sanitizeString($_POST['Product_Name'] ?? '');
     $chkduplicateMsg = '';
     $insertArray = $productMasterModel->createProductArray($_POST);
+    $errorMessage = '';
 
     if ($productName !== '') {
         $chkduplicate = $productMasterModel->checkDuplicatercd($productName);
 
         if ($chkduplicate === 1) {
-            $chkduplicateMsg = "$productName : Product name available in master";
+            $chkduplicateMsg = "<b>$productName</b> " . DUPLICATE_PRODUCT_NAME;
         } else {
             if ($chkduplicateMsg === '' && !empty($insertArray)) {
                 $addProduct = $productMasterModel->insertMasterProduct($insertArray);
@@ -37,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($pId)) {
                     redirect("productmaster.php");
                 } else {
                     echo "<div class='alert alert-danger'>Product Name not added, something went wrong.</div>";
+                    echo "<div class='alert alert-danger'>$errorMessage</div>";
                 }
             }
         }
@@ -65,8 +67,6 @@ if ($pId !== '' && $type === 'edit') {
 
 // Update existing product | Update a product
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($pId)) {
-    $chkduplicateMsg = '';
-    $productName = sanitizeString($_POST['Product_Name'] ?? '');
     $updateArray = $productMasterModel->createProductArray($_POST);
 
     // Fetch the current product data
@@ -75,16 +75,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($pId)) {
     // Get the changed values only
     $updateArray = $productMasterModel->getChangedValues($currentProduct, $updateArray);
 
-    if ($productName !== '') {
-        $chkduplicate = $productMasterModel->checkDuplicatercd($productName);
-        if ($chkduplicate === 1) {
-            $chkduplicateMsg = "<b>$productName</b> " . DUPLICATE_PRODUCT_NAME;
+    if (!empty($updateArray) && !empty($pId)) {
+        $updateProduct = $productMasterModel->updateProductMaster((int)$pId, $updateArray);
+        if (!empty($updateProduct)) {
+            redirect("productmaster.php");
         } else {
-            $updateProduct = $productMasterModel->updateProductMaster((int)$pId, $updateArray);
-
-            if ($updateProduct) {
-                redirect("productmaster.php");
-            }
+            $errorMessage = "Failed to update product.";
+            echo "<div class='alert alert-danger'>$errorMessage</div>";
         }
     }
 }
@@ -121,96 +118,77 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && !empty($pId)) {
                                         <select id="dropdown" name="Product_CategorieId" class="form-control" required>
                                             <option value="" selected disabled>Select a category from cat master</option>
                                             <?php
-                                                $catMasterDetails = $pCategorieId ? $categoryMasterModel->getCategoryMasterDetails($pCategorieId) : $categoryMasterModel->getCategoryMasterDetails();
-                                                
+                                                $catMasterDetails = $categoryMasterModel->getCategoryMasterDetails();
                                                 if (!empty($catMasterDetails) && is_array($catMasterDetails)) {
                                                     foreach ($catMasterDetails as $val) {
                                                         $categoryId = sanitizeString($val['Categories_Id']);
                                                         $categoryName = sanitizeString($val['Categories_Name']);
-                                                        
-                                                        $selected = ($pCategorieId && $pCategorieId === $categoryId) ? 'selected' : '';
-                                                        ?>
-                                                        <option value="<?= $categoryId; ?>" <?= $selected; ?>>
-                                                            <?= $categoryName; ?>
-                                                        </option>
-                                                        <?php
+                                                        $selected = ($pCategorieId !== null && $pCategorieId === $categoryId) ? 'selected' : '';
+                                                        echo '<option value="' . $categoryId . '" ' . $selected . '>' . $categoryName . '</option>';
                                                     }
                                                 }
                                             ?>
                                         </select>
-                                        <div class="invalid-feedback">Please choose an option.</div>
+                                        <div class="invalid-feedback">Please choose a Category option.</div>
                                     </div>
-
                                     <div class="form-group">
                                         <label for="Product_Name">Product Name</label>
                                         <input type="text" id="Product_Name" name="Product_Name" value="<?php echo $pName ?? ''; ?>" class="form-control" required>
-                                        <div class="invalid-feedback">
-                                            Please provide some text.
-                                        </div>
+                                        <div class="invalid-feedback">Please provide some text.</div>
                                     </div>
                                     <div class="form-group">
                                         <label for="Product_Mrp">Product Mrp</label>
-                                        <input type="number" id="Product_Mrp" name="Product_Mrp" value="<?php echo $pMrp?? ''; ?>" class="form-control" onkeypress="return isNumberKey(event)" required>
-                                        <div class="invalid-feedback">
-                                            Please provide Product Mrp.
-                                        </div>
+                                        <input type="number" id="Product_Mrp" name="Product_Mrp" value="<?php echo $pMrp ?? ''; ?>" class="form-control" onkeypress="return isNumberKey(event)" required>
+                                        <div class="invalid-feedback">Please provide Product Mrp.</div>
                                     </div>
                                     <div class="form-group">
                                         <label for="Product_SellPrice">Product Sell Price</label>
                                         <input type="number" id="Product_SellPrice" name="Product_SellPrice" value="<?php echo $pSellPrice ?? ''; ?>" class="form-control" onkeypress="return isNumberKey(event)" required>
-                                        <div class="invalid-feedback">
-                                            Please provide Product Sell Price.
-                                        </div>
+                                        <div class="invalid-feedback">Please provide Product Sell Price.</div>
                                     </div>
                                     <div class="form-group">
                                         <label for="Product_Qty">Product Quantity</label>
                                         <input type="number" id="Product_Qty" name="Product_Qty" value="<?php echo $pQty ?? ''; ?>" class="form-control" onkeypress="return isNumberKey(event)" required>
-                                        <div class="invalid-feedback">
-                                            Please provide Product Quantity.
-                                        </div>
+                                        <div class="invalid-feedback">Please provide Product Quantity.</div>
                                     </div>
                                     <div class="form-group">
                                         <label for="Product_ShortDesc">Product Short Description</label>
                                         <textarea class="form-control" id="Product_ShortDesc" name="Product_ShortDesc" rows="3" required><?php echo $pShortDesc ?? ''; ?></textarea>
-                                        <div class="invalid-feedback">
-                                            Please provide a short description.
-                                        </div>
+                                        <div class="invalid-feedback">Please provide a short description.</div>
                                     </div>
                                     <div class="form-group">
                                         <label for="Product_LongDesc">Product Long Description</label>
                                         <textarea class="form-control" id="Product_LongDesc" name="Product_LongDesc" rows="5" required><?php echo $pLongDesc ?? ''; ?></textarea>
-                                        <div class="invalid-feedback">
-                                            Please provide a long description.
-                                        </div>
+                                        <div class="invalid-feedback">Please provide a long description.</div>
                                     </div>
                                     <div class="form-group">
                                         <label for="Product_MetaTitle">Product Meta Title</label>
                                         <textarea class="form-control" id="Product_MetaTitle" name="Product_MetaTitle" rows="3" required><?php echo $pMetaTitle ?? ''; ?></textarea>
-                                        <div class="invalid-feedback">
-                                            Please provide a meta title.
-                                        </div>
+                                        <div class="invalid-feedback">Please provide a meta title.</div>
                                     </div>
                                     <div class="form-group">
                                         <label for="Product_MetaDesc">Product Meta Description</label>
                                         <textarea class="form-control" id="Product_MetaDesc" name="Product_MetaDesc" rows="3" required><?php echo $pMetaDesc ?? ''; ?></textarea>
-                                        <div class="invalid-feedback">
-                                            Please provide a meta description.
-                                        </div>
+                                        <div class="invalid-feedback">Please provide a meta description.</div>
                                     </div>
-
-                                    <div class="container mt-5">
-                                        <div class="form-group">
-                                            <label for="Product_Status">Product Status</label>
-                                            <select class="form-control" id="Product_Status" name="Product_Status" required>
-                                                <option value="">Select Product Status</option>
-                                                <option value="A" <?php echo ($pStatus == 'A') ? 'selected' : ''; ?>>Active</option>
-                                                <option value="N" <?php echo ($pStatus == 'N') ? 'selected' : ''; ?>>Inactive</option>
-                                                <option value="D" <?php echo ($pStatus == 'D') ? 'selected' : ''; ?>>Deleted</option>
-                                            </select>
-                                            <div class="invalid-feedback">
-                                                Please select a product status.
-                                            </div>
-                                        </div>
+                                    <div class="form-group">
+                                        <label for="Product_Status">Product Status</label>
+                                        <select class="form-control" id="Product_Status" name="Product_Status" required>
+                                            <option value="" disabled <?php echo ($pStatus === '') ? 'selected' : ''; ?>>Select Product Status</option>
+                                            <?php
+                                                $statusOptions = [
+                                                    'A' => 'Active',
+                                                    'N' => 'Inactive',
+                                                    'D' => 'Deleted'
+                                                ];
+                                                foreach ($statusOptions as $key => $value) {
+                                                    $sanitizedValue = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+                                                    $selected = ($pStatus === $key) ? 'selected' : '';
+                                                    echo '<option value="' . $key . '" ' . $selected . '>' . $sanitizedValue . '</option>';
+                                                }
+                                            ?>
+                                        </select>
+                                        <div class="invalid-feedback">Please select a product status.</div>
                                     </div>
                                     <button name="submit" type="submit" class="btn btn-primary float-right">Submit</button>
                                 </div>
