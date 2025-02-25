@@ -12,6 +12,22 @@ class ProductmasterModel {
         $this->conn = $db;
     }
 
+    // Independent function to handle array creation
+    public function createProductArray(array $postData): array {
+        return [
+            'Product_CategorieId' => sanitizeString($postData['Product_CategorieId'] ?? null),
+            'Product_Name' => sanitizeString($postData['Product_Name'] ?? null),
+            'Product_Mrp' => sanitizeString($postData['Product_Mrp'] ?? null),
+            'Product_SellPrice' => sanitizeString($postData['Product_SellPrice'] ?? null),
+            'Product_Qty' => sanitizeString($postData['Product_Qty'] ?? null),
+            'Product_ShortDesc' => sanitizeString($postData['Product_ShortDesc'] ?? null),
+            'Product_LongDesc' => sanitizeString($postData['Product_LongDesc'] ?? null),
+            'Product_MetaTitle' => sanitizeString($postData['Product_MetaTitle'] ?? null),
+            'Product_MetaDesc' => sanitizeString($postData['Product_MetaDesc'] ?? null),
+            'Product_Status' => sanitizeString($postData['Product_Status'] ?? null),
+        ];
+    }
+
     public function getProductMasterDetails(?int $productId = null): array {
         try {
             $selectQuery = $productId !== null ?
@@ -70,36 +86,40 @@ class ProductmasterModel {
         }
     }
 
-    public function insertMasterProduct($data): int {
+    public function insertMasterProduct(array $data): int {
         try {
+            // Check for duplicate product name
+            if ($this->checkDuplicateRcd($data['Product_Name']) > 0) {
+                return 0;
+            }
+
             // Prepare the SQL statement
-            $insertSql = "INSERT INTO ".$this->productMaster."(
-                                Product_CategorieId,
-                                Product_Name,
-                                Product_Mrp,
-                                Product_SellPrice,
-                                Product_Qty,
-                                Product_ShortDesc,
-                                Product_LongDesc,
-                                Product_MetaTitle,
-                                Product_MetaDesc,
-                                Product_Status
-                            )
-                            VALUES(
-                                :Product_CategorieId,
-                                :Product_Name,
-                                :Product_Mrp,
-                                :Product_SellPrice,
-                                :Product_Qty,
-                                :Product_ShortDesc,
-                                :Product_LongDesc,
-                                :Product_MetaTitle,
-                                :Product_MetaDesc,
-                                :Product_Status
-                            ) ";
+            $insertSql = "INSERT INTO {$this->productMaster} (
+                            Product_CategorieId,
+                            Product_Name,
+                            Product_Mrp,
+                            Product_SellPrice,
+                            Product_Qty,
+                            Product_ShortDesc,
+                            Product_LongDesc,
+                            Product_MetaTitle,
+                            Product_MetaDesc,
+                            Product_Status
+                        ) VALUES (
+                            :Product_CategorieId,
+                            :Product_Name,
+                            :Product_Mrp,
+                            :Product_SellPrice,
+                            :Product_Qty,
+                            :Product_ShortDesc,
+                            :Product_LongDesc,
+                            :Product_MetaTitle,
+                            :Product_MetaDesc,
+                            :Product_Status
+                        )";
             $stmt = $this->conn->prepare($insertSql);
-    
-            // Bind parameters using bindValue
+
+            // Bind parameters
             $stmt->bindValue(':Product_CategorieId', $data['Product_CategorieId'], PDO::PARAM_INT);
             $stmt->bindValue(':Product_Name', $data['Product_Name'], PDO::PARAM_STR);
             $stmt->bindValue(':Product_Mrp', $data['Product_Mrp'], PDO::PARAM_STR);
@@ -112,60 +132,76 @@ class ProductmasterModel {
             $stmt->bindValue(':Product_Status', $data['Product_Status'], PDO::PARAM_INT);
 
             $stmt->execute();
-    
-            // Check for successful insertion
-            if($stmt->rowCount() > 0) {
-                return (int) $this->conn->lastInsertId();
-            } else {
-                return 0;
-            }
+
+            // Return the last inserted ID or 0 if insertion failed
+            return $stmt->rowCount() > 0 ? (int) $this->conn->lastInsertId() : 0;
         } catch (Exception $e) {
-            // Log or handle the error
+            // Log the error
             error_log($e->getMessage());
             return 0;
         }
     }
+    
 
-    // Select function
-    public function selectProducts($pdo) {
-        $sql = "SELECT * FROM products";
-        $stmt = $pdo->query($sql);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // Select ProductMaster function
+    public function getAllProductsMaster(): array {
+        try {
+            $selectSql = "SELECT * FROM {$this->productMaster}";
+            $stmt = $this->conn->query($selectSql);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+            return [];
+        }
     }
 
-    // Update ProductMaster function
-    public function updateProductMaster($productId, $data) {
-        // Sanitize inputs
-        $productId = sanitizeString((int) $productId) ?? 0;
+    public function updateProductStatus(int $productId, string $status): bool {
+        try {
+            $sql = "UPDATE {$this->productMaster} SET Product_Status = :status WHERE Product_Id = :productId";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':productId', $productId, PDO::PARAM_INT);
+            $stmt->bindParam(':status', $status, PDO::PARAM_STR);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+            return false;
+        }
+    }
 
-        if (isset($productId) && !empty($productId) && filter_var($productId, FILTER_VALIDATE_INT) !== false) {
-            // Build the SET part of the query dynamically based on provided data
-            $setPart = [];
-            foreach ($data as $key => $value) {
-                $setPart[] = "$key = :$key";
+    public function updateProductMaster(int $productId, array $data): bool {
+        try {
+            // Check for duplicate product name
+            if ($this->checkDuplicateRcd($data['Product_Name']) > 0) {
+                return false;
             }
+
+            $setPart = array_map(fn($key) => "$key = :$key", array_keys($data));
             $setPart = implode(', ', $setPart);
 
             $sql = "UPDATE {$this->productMaster} SET $setPart WHERE Product_Id = :Product_Id";
             $stmt = $this->conn->prepare($sql);
-
-            // Bind parameters
             $stmt->bindParam(':Product_Id', $productId, PDO::PARAM_INT);
             foreach ($data as $key => $value) {
                 $stmt->bindValue(":$key", $value);
             }
-
             return $stmt->execute();
-        } else {
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
             return false;
         }
     }
 
     // Delete function
-    public function deleteProduct($pdo, $id) {
-        $sql = "DELETE FROM products WHERE id = :id";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute(['id' => $id]);
+    public function deleteProductMaster($id) {
+        try {
+            $id = sanitizeString((int)($id));
+            $sql = "DELETE FROM products WHERE id = :id";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute(['id' => $id]);
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+            return false;
+        }
     }
 
     public function checkDuplicateRcd(string $productName): int

@@ -9,9 +9,52 @@ $database = new Database();
 $db = $database->getConnection();
 
 // Productmaster obj
-$ProductMasterModel = new ProductMasterModel($db);
+$productMasterModel = new ProductMasterModel($db);
+$productMasterDetails = $productMasterModel->getProductMasterDetails();
 
-$productMasterDetails = $ProductMasterModel->getProductMasterDetails();
+if(isset($_GET['type']) || isset($_GET['operation']) || isset($_GET['pId'])){
+
+    $type = sanitizeString((string)$_GET['type']) ?? "";
+    $operation = sanitizeString((string)$_GET['operation'])?? "";
+    $pId = sanitizeString((int)$_GET['pId'])?? 0;
+}
+
+// Update Product master status
+if (isset($type) && !empty($type)) {
+
+    if ($type === 'status') {
+
+        $operation = sanitizeString((string)$_GET['operation'])?? "";
+
+        // Determine status based on operation
+        $status = ($operation === 'active') ? 'A' : 'N';
+
+        // Update the product status
+        $productMaster = $productMasterModel->updateProductStatus((int)$pId,$status) ;
+
+        // Check if update was successful
+        if (!empty($productMaster)) {
+            redirect("productmaster.php");
+        } else {
+            $successMessage = "Failed to update status.";
+        }
+    }
+
+    if ($type === 'delete' && $type != '') {
+        // Delete the category ProductMaster
+        if(!empty($pId)){
+            $deleteProductMaster = $productMasterModel->deleteProductMaster((int)$pId);
+        }
+
+        // Check if update was successful
+        if (!empty($deleteProductMaster)) {
+            redirect("productmaster.php");
+        } else {
+            $successMessage = "Failed to Delete this Record from Product Master.";
+        }
+    }
+}
+
 ?>
 <div class="content pb-0">
     <div class="orders">
@@ -74,19 +117,16 @@ $productMasterDetails = $ProductMasterModel->getProductMasterDetails();
                                                 <td><?php echo sanitizeString($val['Product_MetaDesc']); ?></td>
                                                 <td>
                                                     <?php
-                                                    $productStatus = sanitizeString($val['Product_Status']);
+                                                    $productStatus = $val['Product_Status'];
                                                     switch ($productStatus) {
                                                         case 'A':
-                                                            echo '<a href="?type=status&operation=inactive&pId=' . sanitizeString($val['Product_Id']) . '"><span class="badge badge-Active"><b>Active</b></span></a> | <a href="manageproduct.php?type=edit&pId=' . sanitizeString($val['Product_Id']) . '"><span class="badge badge-Edit"><b>Edit</b></span></a> | <a href="?type=delete&pId=' . sanitizeString($val['Product_Id']) . '"><span class="badge badge-Deleted"><b>Delete</b></span></a>';
+                                                            echo '<a href="?type=status&operation=inactive&pId=' . ($val['Product_Id']) . '"><span class="badge badge-Active"><b>Active</b></span></a> | <a href="manageproduct.php?type=edit&pId=' . ($val['Product_Id']) . '"><span class="badge badge-Edit"><b>Edit</b></span></a> | <a href="?type=delete&pId=' . ($val['Product_Id']) . '"><span class="badge badge-Deleted"><b>Delete</b></span></a>';
                                                             break;
                                                         case 'N':
-                                                            echo '<a href="?type=status&operation=active&pId=' . sanitizeString($val['Product_Id']) . '"><span class="badge badge-Inactive"><b>Inactive</b></span></a> | <a href="manageproduct.php?type=edit&pId=' . sanitizeString($val['Product_Id']) . '"><span class="badge badge-Edit"><b>Edit</b></span></a> | <a href="?type=delete&pId=' . sanitizeString($val['Product_Id']) . '"><span class="badge badge-Deleted"><b>Delete</b></span></a>';
+                                                            echo '<a href="?type=status&operation=active&pId=' . ($val['Product_Id']) . '"><span class="badge badge-Inactive"><b>Inactive</b></span></a> | <a href="manageproduct.php?type=edit&pId=' . ($val['Product_Id']) . '"><span class="badge badge-Edit"><b>Edit</b></span></a> | <a href="?type=delete&pId=' . ($val['Product_Id']) . '"><span class="badge badge-Deleted"><b>Delete</b></span></a>';
                                                             break;
                                                         case 'D':
                                                             echo '<span class="badge badge-Deleted"><b>Deleted</b></span>';
-                                                            break;
-                                                        default:
-                                                            error();
                                                             break;
                                                     }
                                                     ?>
