@@ -1,6 +1,6 @@
 <?php
 include_once("../config/connection.php");
-include_once("../lib/function.inc.php");
+include_once("../lib/Incfunctions.php");
 include_once("../model/CategoryMasterModel.php");
 
 class CategoryMasterController extends CategoryMasterModel {
@@ -10,9 +10,12 @@ class CategoryMasterController extends CategoryMasterModel {
     }
 }
 
-// Database obj
+
+// Initialize database connection
 $database = new Database();
 $db = $database->getConnection();
+$incFunctions = new IncFunctions($db);
+
 
 // Categoriemaster objs
 $catMasterController = new CategoryMasterController($db);
