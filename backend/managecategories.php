@@ -48,7 +48,7 @@
             $Categories_Name = ($_POST['Categories_Name']) ? ((string)$_POST['Categories_Name']) : "";        
         }
 
-        $chkduplicate = $categoryMaster->checkDuplicatercd((string) $Categories_Name);
+        $chkduplicate = $categoryMaster->checkDuplicateRecord((string) $Categories_Name);
         
         $chkduplicate_msg = "";
            

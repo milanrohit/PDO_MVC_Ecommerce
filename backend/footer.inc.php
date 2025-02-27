@@ -13,10 +13,10 @@
             <div class="footer-inner bg-white">
                <div class="row">
                   <div class="col-sm-6">
-                     <?php $incFunctions->copyRight(); ?>
+                     <?php copyRight(); ?>
                   </div>
                   <div class="col-sm-6 text-right">
-                     <?php $incFunctions->designdevelopeby(); ?>
+                     <?php designdevelopeby(); ?>
                   </div>
                </div>
             </div>

@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST['pId'])) {
                 $productImg = $_FILES['Product_Img'] ?? '';
 
                 if (isset($productImg) && $productImg['error'] === UPLOAD_ERR_OK) {
-                    $productImg = $incFunctions->imageUpload($productImg);
+                    $productImg = imageUpload($productImg);
                     $insertArray['Product_Img'] = $productImg; // Add image path to the array
                 } else {
                     $insertArray['Product_Img'] = '';

@@ -9,7 +9,6 @@ include_once("../controller/ContactusController.php");
 $database = new Database();
 $db = $database->getConnection();
 
-$incFunctions = new IncFunctions($db);
 $Contactus = new ContactusModel($db);
 
 // Get contactus  details
@@ -17,7 +16,7 @@ $ContactusDetails = $Contactus->getContactusDetails();
 
 $successMessage = "";
 
-if(isset($_GET['type']) || isset($_GET['operation']) || isset($_GET['contactus_id '])){
+if(isset($_GET['type']) || isset($_GET['operation']) || isset($_GET['contactus_id'])){
 
     $type = ($_GET['type']) ? sanitizeString((string)$_GET['type']) : "" ;
     $operation =  ($_GET['operation']) ? sanitizeString((string)$_GET['operation']) : "" ;
