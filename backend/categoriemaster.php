@@ -10,8 +10,6 @@ include_once("../model/CategoryMasterModel.php");
 $database = new Database();
 $db = $database->getConnection();
 
-$incFunctions = new IncFunctions($db);
-
 // CategoryMasterModel object
 $categoryMaster = new CategoryMasterModel($db);
 
@@ -22,9 +20,9 @@ $successMessage = "";
 
 if(isset($_GET['type']) || isset($_GET['operation']) || isset($_GET['categorieId'])){
 
-    $type = $incFunctions->sanitizeString((string)$_GET['type']) ?? "";
-    $operation = $incFunctions->sanitizeString((string)$_GET['operation'])?? "";
-    $categorieId = $incFunctions->sanitizeString((int)$_GET['categorieId'])?? 0;
+    $type = sanitizeString((string)$_GET['type']) ?? "";
+    $operation = sanitizeString((string)$_GET['operation'])?? "";
+    $categorieId = sanitizeString((int)$_GET['categorieId'])?? 0;
 }
 
 // Update category master status
@@ -32,7 +30,7 @@ if (isset($type) && !empty($type)) {
 
     if ($type === 'status') {
 
-        $operation = $incFunctions->sanitizeString((string)$_GET['operation'])?? "";
+        $operation = sanitizeString((string)$_GET['operation'])?? "";
 
         // Determine status based on operation
         $status = ($operation === 'active') ? 'A' : 'N';
@@ -42,7 +40,7 @@ if (isset($type) && !empty($type)) {
 
         // Check if update was successful
         if (!empty($CategoriesMaster)) {
-            $incFunctions->redirect("categoriemaster.php");
+            redirect("categoriemaster.php");
         } else {
             $successMessage = "Failed to update status.";
         }
@@ -55,7 +53,7 @@ if (isset($type) && !empty($type)) {
 
         // Check if update was successful
         if (!empty($CategoriesMasterStatus)) {
-            $incFunctions->redirect("categoriemaster.php");
+            redirect("categoriemaster.php");
         } else {
             $successMessage = "Failed to Delete the category CategoriesMaster.";
         }

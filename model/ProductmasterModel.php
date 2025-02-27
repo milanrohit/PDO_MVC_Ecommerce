@@ -7,28 +7,33 @@ class ProductMasterModel {
     private $conn;
     private $productMaster = "productmaster";
     private $categoriesMaster = "categoriesmaster";
-
+    
     public function __construct($db) {
         $this->conn = $db;
     }
     
     // Independent function to handle array creation
     public function createProductArray(array $postData): array {
+
+        // Trim all values in the array
+        $postData = array_map('trim', $postData);
+
         return [
-            'Product_Id' => ($postData['Product_Id'] ?? null),
-            'Product_CategorieId' => sanitizeString($postData['Product_CategorieId'] ?? null),
-            'Product_Name' => sanitizeString($postData['Product_Name'] ?? null),
-            'Product_Mrp' => sanitizeString($postData['Product_Mrp'] ?? null),
-            'Product_SellPrice' => sanitizeString($postData['Product_SellPrice'] ?? null),
-            'Product_Qty' => sanitizeString($postData['Product_Qty'] ?? null),
-            'Product_ShortDesc' => sanitizeString($postData['Product_ShortDesc'] ?? null),
-            'Product_LongDesc' => sanitizeString($postData['Product_LongDesc'] ?? null),
-            'Product_MetaTitle' => sanitizeString($postData['Product_MetaTitle'] ?? null),
-            'Product_MetaDesc' => sanitizeString($postData['Product_MetaDesc'] ?? null),
-            'Product_Status' => sanitizeString($postData['Product_Status'] ?? null),
+            'Product_Id' => $postData['Product_Id'] ?? null,
+            'Product_CategorieId' => $postData['Product_CategorieId'] ?? null,
+            'Product_Name' => $postData['Product_Name'] ?? null,
+            'Product_Mrp' => $postData['Product_Mrp'] ?? null,
+            'Product_SellPrice' => $postData['Product_SellPrice'] ?? null,
+            'Product_Qty' => $postData['Product_Qty'] ?? null,
+            'Product_ShortDesc' => $postData['Product_ShortDesc'] ?? null,
+            'Product_LongDesc' => $postData['Product_LongDesc'] ?? null,
+            'Product_MetaTitle' => $postData['Product_MetaTitle'] ?? null,
+            'Product_MetaDesc' => $postData['Product_MetaDesc'] ?? null,
+            'Product_Status' => $postData['Product_Status'] ?? null,
             'Product_Img' => $postData['Product_Img']['name'] ?? null
         ];
     }
+
 
     public function getProductMasterDetails(?int $productId = null): array {
         try {
@@ -206,11 +211,10 @@ class ProductMasterModel {
         }
     }
 
-    public function checkDuplicateRcd(string $productName): int
-    {
+    public function checkDuplicateRcd(string $productName): int{
         // Sanitize the input
-        $productName = sanitizeString((string)($productName));
-        
+        $productName = sanitizeString($productName);
+
         if (!empty($productName)) {
             $duplicateSelectQuery = "SELECT COUNT(*) as cnt FROM " . $this->productMaster . " WHERE Product_Name = :productName";
             try {
@@ -218,10 +222,9 @@ class ProductMasterModel {
                 $stmtDuplicate->bindParam(':productName', $productName, \PDO::PARAM_STR);
                 $stmtDuplicate->execute();
                 $duplicateCheck = $stmtDuplicate->fetch(\PDO::FETCH_ASSOC);
-                
-                return !empty($duplicateCheck['cnt']) ? (int) $duplicateCheck['cnt'] : 0;
-            }
-            catch (Exception $e) {
+
+                return !empty($duplicateCheck['cnt']) ? (int)$duplicateCheck['cnt'] : 0;
+            } catch (Exception $e) {
                 error_log('General error: ' . $e->getMessage());
                 return 0;
             }
@@ -254,5 +257,7 @@ class ProductMasterModel {
 // Database object
 $dataBase = new Database();
 $db = $dataBase->getConnection();
-$incFunctions = new IncFunctions($db);
+$productMasterModel = new ProductMasterModel($db);
 ?>
+
+

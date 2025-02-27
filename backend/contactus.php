@@ -19,9 +19,9 @@ $successMessage = "";
 
 if(isset($_GET['type']) || isset($_GET['operation']) || isset($_GET['contactus_id '])){
 
-    $type = ($_GET['type']) ? $incFunctions->sanitizeString((string)$_GET['type']) : "" ;
-    $operation =  ($_GET['operation']) ? $incFunctions->sanitizeString((string)$_GET['operation']) : "" ;
-    $contactus_id = ($_GET['contactus_id']) ? $incFunctions->sanitizeString((int)$_GET['contactus_id']) : 0 ;
+    $type = ($_GET['type']) ? sanitizeString((string)$_GET['type']) : "" ;
+    $operation =  ($_GET['operation']) ? sanitizeString((string)$_GET['operation']) : "" ;
+    $contactus_id = ($_GET['contactus_id']) ? sanitizeString((int)$_GET['contactus_id']) : 0 ;
 }
 
 // Update contactus status
@@ -29,7 +29,7 @@ if (isset($type) && !empty($type)) {
 
     if ($type === 'status') {
 
-        $operation = $incFunctions->sanitizeString((string)$_GET['operation'])?? "";
+        $operation = sanitizeString((string)$_GET['operation'])?? "";
 
         // Determine status based on operation
         $status = ($operation === 'active') ? 'A' : 'N';
@@ -39,7 +39,7 @@ if (isset($type) && !empty($type)) {
 
         // Check if update was successful
         if (!empty($ContactusMaster)) {
-            $incFunctions->redirect("contactus.php");
+            redirect("contactus.php");
         } else {
             $successMessage = "Failed to update status.";
         }
@@ -52,7 +52,7 @@ if (isset($type) && !empty($type)) {
 
         // Check if update was successful
         if (!empty($DeleteContactus)) {
-            $incFunctions->redirect("contactus.php");
+            redirect("contactus.php");
         } else {
             $successMessage = "Failed to Delete the category CategoriesMaster.";
         }

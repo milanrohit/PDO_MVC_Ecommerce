@@ -5,8 +5,7 @@
    // Initialize database connection
    $database = new Database();
    $db = $database->getConnection();
-   $incFunctions = new IncFunctions($db);
-   (isset($_SESSION['Admin_Login']) && $_SESSION['Admin_Login']!='') ?  : $incFunctions->redirect("categoriemaster.php");
+   (isset($_SESSION['Admin_Login']) && $_SESSION['Admin_Login']!='') ?  : redirect("categoriemaster.php");
 ?>
 <!doctype html>
 <html class="no-js" lang="">

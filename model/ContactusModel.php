@@ -58,8 +58,8 @@ class ContactusModel {
     public function updateContactusDetails(int $contactusId, string $contactus_status): bool {
         try {
             // Ensure proper sanitization
-            $contactusName = isset($_POST['contactus_name']) ? $this->incFunctions->sanitizeString((string)$_POST['contactus_name']) : "";
-            $contactus_status = $this->incFunctions->sanitizeString((string)$contactus_status);
+            $contactusName = isset($_POST['contactus_name']) ? sanitizeString((string)$_POST['contactus_name']) : "";
+            $contactus_status = sanitizeString((string)$contactus_status);
 
             if ($contactusId && $contactus_status) {
                 // Update status query
@@ -100,10 +100,10 @@ class ContactusModel {
     public function addContactus(array $data): bool {
         try {
             // Validate and sanitize input fields
-            $contactusName = isset($data['contactus_name']) ? $this->incFunctions->sanitizeString((string)$data['contactus_name']) : '';
-            $contactusEmail = isset($data['contactus_email']) ? $this->incFunctions->sanitizeString((string)$data['contactus_email']) : '';
-            $contactusMobile = isset($data['contactus_mobile']) ? $this->incFunctions->sanitizeString((string)$data['contactus_mobile']) : '';
-            $contactusComment = isset($data['contactus_comment']) ? $this->incFunctions->sanitizeString((string)$data['contactus_comment']) : '';
+            $contactusName = isset($data['contactus_name']) ? sanitizeString((string)$data['contactus_name']) : '';
+            $contactusEmail = isset($data['contactus_email']) ? sanitizeString((string)$data['contactus_email']) : '';
+            $contactusMobile = isset($data['contactus_mobile']) ? sanitizeString((string)$data['contactus_mobile']) : '';
+            $contactusComment = isset($data['contactus_comment']) ? sanitizeString((string)$data['contactus_comment']) : '';
 
             $query = "INSERT INTO $this->tableName (contactus_name, contactus_email, contactus_mobile, contactus_comment) VALUES (:contactUsname, :contactUsemail, :contactUsmobile, :contactUscomment)";
             $stmt = $this->conn->prepare($query);
@@ -135,7 +135,7 @@ class ContactusModel {
 
     public function checkDuplicatercd(string $contactusName): bool {
         try {
-            $contactusName = $this->incFunctions->sanitizeString($contactusName);
+            $contactusName = sanitizeString($contactusName);
             if (!empty($contactusName)) {
                 $duplicateQuery = "SELECT COUNT(*) as cnt FROM $this->tableName WHERE contactus_name = :contactUsname";
                 $stmtDuplicate = $this->conn->prepare($duplicateQuery);
@@ -155,6 +155,4 @@ class ContactusModel {
 // Initialize database connection
 $database = new Database();
 $db = $database->getConnection();
-
-$incFunctions = new IncFunctions($db);
 ?>

@@ -47,5 +47,5 @@ class LoginMasterModel {
 $database = new Database();
 $db = $database->getConnection();
 
-$incFunctions = new IncFunctions($db);
+$LoginMasterModel = new LoginMasterModel();
 ?>

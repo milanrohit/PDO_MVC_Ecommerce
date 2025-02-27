@@ -5,7 +5,6 @@ include_once("header.inc.php"); //Header menu calling
   // Initialize database connection
   $database = new Database();
   $db = $database->getConnection();
-  $incFunctions = new IncFunctions($db);
 ?>
 
 

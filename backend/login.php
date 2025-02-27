@@ -5,31 +5,26 @@
    include_once("../controller/LoginMasterController.php");
    include_once("../model/LoginMasterModel.php");
    
-   
    // Initialize database connection
    $database = new Database();
    $db = $database->getConnection();
-   $incFunctions = new IncFunctions($db);
    $LoginmasterModel = new LoginmasterModel($db);
 
     $errormsg ='';
    
-   if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
+   if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit']) && !empty($_POST['Admin_Username']) &&  !empty($_POST['Admin_Password'])) {
             
-     if (!empty($_POST['Admin_Username']) && !empty($_POST['Admin_Password'])) {
+      $Admin_Username = ($_POST['Admin_Username']) ? ((string)$_POST['Admin_Username']) : "";
+      $Admin_Password = ($_POST['Admin_Password']) ? ((string)$_POST['Admin_Password']) : "";
 
-         $Admin_Username = ($_POST['Admin_Username']) ? ((string)$_POST['Admin_Username']) : "";
-         $Admin_Password = ($_POST['Admin_Password']) ? ((string)$_POST['Admin_Password']) : "";
-
-         $Adminmasterdetails ='';
-         $Adminmasterdetails = $LoginmasterModel->getAdminmasterdetails($Admin_Username,$Admin_Password);
-         
-         if (count($Adminmasterdetails) > 0) {
-               $incFunctions->redirect("categoriemaster.php");
-         } else {
-               
-            $errormsg = "Invalid username or password";
-         }
+      $Adminmasterdetails ='';
+      $Adminmasterdetails = $LoginmasterModel->getAdminmasterdetails($Admin_Username,$Admin_Password);
+      
+      if (count($Adminmasterdetails) > 0) {
+            redirect("categoriemaster.php");
+      } else {
+            
+         $errormsg = "Invalid username or password";
       }
    }
     

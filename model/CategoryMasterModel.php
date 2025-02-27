@@ -6,7 +6,7 @@ include_once("../lib/Incfunctions.php");
 class CategoryMasterModel {
 
     private $conn;
-    private string $tableName = "categoriesmaster";
+    public $tableName = "categoriesmaster";
 
     public function __construct($db) {
         $this->conn = $db;
@@ -49,9 +49,9 @@ class CategoryMasterModel {
     public function updateCategoriesMaster(int $catId, string $catStatus): bool {
 
         try {
-            $catName = $incFunctions->sanitizeString(((string)$_POST['Categories_Name']));
-            $catStatus = $incFunctions->sanitizeString(((string)$catStatus));
-            $catId = $incFunctions->sanitizeString(((int)$catId));
+            $catName = sanitizeString(((string)$_POST['Categories_Name']));
+            $catStatus = sanitizeString(((string)$catStatus));
+            $catId = sanitizeString(((int)$catId));
 
             if(!empty($catId) && !empty($catStatus)){
                 // Prepare SQL query
@@ -81,7 +81,7 @@ class CategoryMasterModel {
 
     public function deleteCategoriesMaster(int $categoriesId) {
         try {
-            $categorieId = $incFunctions->sanitizeString(((int)$_GET['categorieId']));
+            $categorieId = sanitizeString(((int)$_GET['categorieId']));
             
             if(!empty($categorieId)){
                 $query = "DELETE FROM $this->tableName WHERE Categories_Id = :categoriesId";
@@ -108,7 +108,7 @@ class CategoryMasterModel {
             $stmt = $this->conn->prepare($query);
     
             // Sanitize and validate the category name
-            $categoriesName = $incFunctions->sanitizeString($categoriesName);
+            $categoriesName = sanitizeString($categoriesName);
     
             // Bind the category name to the placeholder
             $stmt->bindParam(':categoriesName', $categoriesName, PDO::PARAM_STR);
@@ -147,7 +147,7 @@ class CategoryMasterModel {
 
     public function checkDuplicateRecord(string $categoriesName): bool {
         // Sanitize input
-        $categoriesName = $incFunctions->sanitizeString($categoriesName);
+        $categoriesName = sanitizeString($categoriesName);
     
         if (!empty($categoriesName)) {
             try {
@@ -197,6 +197,6 @@ class CategoryMasterModel {
 // Initialize database connection
 $database = new Database();
 $db = $database->getConnection();
-
-$incFunctions = new IncFunctions($db);
+$CategoryMasterModel = new CategoryMasterModel($db);
 ?>
+

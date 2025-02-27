@@ -1,8 +1,6 @@
 <?php
-
-class IncFunctions {
     // Debugging functions with exit
-    public function _dx($arr): void {
+    function _dx($arr): void {
         echo "<pre>";
         print_r($arr);
         echo "</pre>";
@@ -10,7 +8,7 @@ class IncFunctions {
     }
 
     // Convert array to object
-    public function arrayToObject(array $array): object {
+    function arrayToObject(array $array): object {
         $object = new stdClass();
         foreach ($array as $key => $value) {
             if (is_array($value)) {
@@ -22,7 +20,7 @@ class IncFunctions {
     }
 
     // Convert object to array
-    public function objectToArray($object): array {
+    function objectToArray($object): array {
         if (is_object($object)) {
             $object = get_object_vars($object);
         }
@@ -34,18 +32,18 @@ class IncFunctions {
     }
 
     // Return PDO fetch associative constant
-    public function fetchAssociative(): int {
+    function fetchAssociative(): int {
         return PDO::FETCH_ASSOC;
     }
 
     // Function to handle redirection
-    public function redirect(string $url): void {
+    function redirect(string $url): void {
         header('Location: ' . $url);
         exit();
     }
 
     // Function to sanitize input
-    public function sanitizeString(string $input): string {
+    function sanitizeString(string $input): string {
         $input = trim($input);
 
         // Remove HTML tags
@@ -58,14 +56,14 @@ class IncFunctions {
     }
 
     // Function to handle redirection with an error message
-    public function redirectWithError(string $url, string $error): void {
+    function redirectWithError(string $url, string $error): void {
         $_SESSION['error_msg'] = $error;
         header('Location: ' . $url);
         exit();
     }
 
     // Function to get file information
-    public function getFileInfo($filePath) {
+    function getFileInfo($filePath) {
         $fileInfo = new SplFileInfo($filePath);
         return [
             'name' => $fileInfo->getFilename(),
@@ -76,31 +74,31 @@ class IncFunctions {
     }
 
     // Function to hash the password
-    public function hashPassword($password) {
+    function hashPassword($password) {
         return password_hash($password, PASSWORD_DEFAULT);
     }
 
     // Function to verify the password
-    public function verifyPassword($enteredPassword, $storedHashedPassword) {
+    function verifyPassword($enteredPassword, $storedHashedPassword) {
         return password_verify($enteredPassword, $storedHashedPassword);
     }
 
     // Function to display copyright information
-    public function copyRight() {
+    function copyRight() {
         $yr = date("Y");
         echo "<b>Copyright &copy; $yr MilanRohit</b>";
     }
 
     // Function to display designer and developer information
-    public function designdevelopeby() {
+    function designdevelopeby() {
         echo "<b>Designed & Developed by <a href='#'>MilanRohit</a></b>";
     }
 
     // Function to upload an image
-    public function imageUpload($productImg): string {
+    function imageUpload($productImg): string {
         try {
             if (isset($productImg) && $productImg['error'] === UPLOAD_ERR_OK) {
-                $uploadDir = self::PRODUCT_IMAGES_UPLOAD_DIR; // Directory to save uploaded images
+                $uploadDir = PRODUCT_IMAGES_UPLOAD_DIR; // Directory to save uploaded images
                 $uploadFile = $uploadDir . basename($productImg['name']);
 
                 // Allowed file types
@@ -133,7 +131,7 @@ class IncFunctions {
             return ''; // Return empty string on failure
         }
     }
-}
+
     // Path constants
     const BACK_END_PATH="/PDO_MVC_Ecommerce/backend/"; // BackendPath
     const FRONT_END_PATH="/PDO_MVC_Ecommerce/frontend/"; // FrontendPath

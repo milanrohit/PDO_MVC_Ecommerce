@@ -5,11 +5,9 @@
     include_once("../controller/ContactusController.php");
     include_once("../model/CategoryMasterModel.php");
 
-
     // Initialize database connection
     $database = new Database();
     $db = $database->getConnection();
-    $incFunctions = new IncFunctions($db);
     $ContactusModel = new ContactusModel($db);
 
     $type ="";
@@ -24,28 +22,28 @@
 
     
     if(isset($_GET['type']) && $_GET['type'] !=''){
-        $type = ($_GET['type']) ? $incFunctions->sanitizeString((string)$_GET['type']) : "" ;
+        $type = ($_GET['type']) ? sanitizeString((string)$_GET['type']) : "" ;
     }
 
     if(isset($_POST['contactus_name']) && $_POST['contactus_name'] !=''){
-        $contactus_name = ($_POST['contactus_name']) ? $incFunctions->sanitizeString((string)$_POST['contactus_name']) : "" ;
+        $contactus_name = ($_POST['contactus_name']) ? sanitizeString((string)$_POST['contactus_name']) : "" ;
     }
 
     if(isset($_POST['contactus_email']) && $_POST['contactus_email'] !=''){
-        $contactus_email = ($_POST['contactus_email']) ? $incFunctions->sanitizeString((string)$_POST['contactus_email']) : "" ;
+        $contactus_email = ($_POST['contactus_email']) ? sanitizeString((string)$_POST['contactus_email']) : "" ;
     }
 
     if(isset($_POST['contactus_mobile']) && $_POST['contactus_mobile'] !=''){
-        $contactus_mobile = ($_POST['contactus_mobile']) ? $incFunctions->sanitizeString((int)$_POST['contactus_mobile']) : "" ;
+        $contactus_mobile = ($_POST['contactus_mobile']) ? sanitizeString((int)$_POST['contactus_mobile']) : "" ;
     }
 
     if(isset($_POST['contactus_comment']) && $_POST['contactus_comment'] !=''){
-        $contactus_comment = ($_POST['contactus_comment']) ? $incFunctions->sanitizeString((string)$_POST['contactus_comment']) : "" ;
+        $contactus_comment = ($_POST['contactus_comment']) ? sanitizeString((string)$_POST['contactus_comment']) : "" ;
     }
 
     if(isset($_GET['contactus_id']) && $_GET['contactus_id'] !=''){
 
-        $contactus_id =  ($_GET['contactus_id']) ? $incFunctions->sanitizeString((int)$_GET['contactus_id']) : 0 ;
+        $contactus_id =  ($_GET['contactus_id']) ? sanitizeString((int)$_GET['contactus_id']) : 0 ;
 
         $ContactusDetails = $ContactusModel->getContactusDetails((int) $contactus_id);
         
@@ -56,20 +54,20 @@
             $contactus_mobile = ($ContactusDetails['contactus_mobile']) ? ((string)$ContactusDetails['contactus_mobile']) : "";
             $contactus_comment = ($ContactusDetails['contactus_comment']) ? ((string)$ContactusDetails['contactus_comment']) : "";
             
-            $contactus_id = ($_GET['contactus_id']) ? $incFunctions->sanitizeString((int)$_GET['contactus_id']) : 0 ;
+            $contactus_id = ($_GET['contactus_id']) ? sanitizeString((int)$_GET['contactus_id']) : 0 ;
         }else{
 
-            $incFunctions->redirect("contactus.php");
+            redirect("contactus.php");
         }
     }
     
     if(isset($_POST['submit'])){
 
         
-        $contactus_name = ($_POST['contactus_name']) ? $incFunctions->sanitizeString((string)$_POST['contactus_name']) : "";        
-        $contactus_email = ($_POST['contactus_email']) ? $incFunctions->sanitizeString((string)$_POST['contactus_email']) : "";        
-        $contactus_mobile = ($_POST['contactus_mobile']) ? $incFunctions->sanitizeString((string)$_POST['contactus_mobile']) : "";        
-        $contactus_comment = ($_POST['contactus_comment']) ? $incFunctions->sanitizeString((string)$_POST['contactus_comment']) : "";        
+        $contactus_name = ($_POST['contactus_name']) ? sanitizeString((string)$_POST['contactus_name']) : "";        
+        $contactus_email = ($_POST['contactus_email']) ? sanitizeString((string)$_POST['contactus_email']) : "";        
+        $contactus_mobile = ($_POST['contactus_mobile']) ? sanitizeString((string)$_POST['contactus_mobile']) : "";        
+        $contactus_comment = ($_POST['contactus_comment']) ? sanitizeString((string)$_POST['contactus_comment']) : "";        
         
 
         $chkduplicate = $ContactusModel->checkDuplicatercd((string) $contactus_name);
@@ -88,7 +86,7 @@
                     
                     // Check !empty
                     if (!empty($ResultContactusDetails)) {
-                        $incFunctions->redirect("contactus.php");
+                        redirect("contactus.php");
                     } else {
                         $successMessage = "Failed to update Contactus Name.";
                     }
@@ -97,15 +95,15 @@
                     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])){
                         // Insert contactus details
                     $data = [
-                        'contactus_name' => $incFunctions->sanitizeString((string)$_POST['contactus_name']),
-                        'contactus_email' => $incFunctions->sanitizeString((string)$_POST['contactus_email']),
-                        'contactus_mobile' => $incFunctions->sanitizeString((int)$_POST['contactus_email']),
-                        'contactus_comment' => $incFunctions->sanitizeString((string)$_POST['contactus_comment']),
+                        'contactus_name' => sanitizeString((string)$_POST['contactus_name']),
+                        'contactus_email' => sanitizeString((string)$_POST['contactus_email']),
+                        'contactus_mobile' => sanitizeString((int)$_POST['contactus_email']),
+                        'contactus_comment' => sanitizeString((string)$_POST['contactus_comment']),
                     ];
 
                     $AddCategory = $ContactusModel->addContactus((array) $data);
                     if (!empty($AddCategory)) {
-                        $incFunctions->redirect("contactus.php");
+                        redirect("contactus.php");
                     } else {
                         $successMessage = "Contactus not add";
                     }

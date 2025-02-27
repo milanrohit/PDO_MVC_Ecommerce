@@ -8,7 +8,6 @@ include_once("../model/ProductMasterModel.php");
   // Initialize database connection
   $database = new Database();
   $db = $database->getConnection();
-  $incFunctions = new IncFunctions($db);
 
 // Productmaster obj
 $productMasterModel = new ProductMasterModel($db);
@@ -19,15 +18,15 @@ $type = '';
 $operation ='';
 
 if(isset($_GET['type']) || isset($_GET['operation']) || isset($_GET['pId'])){
-    $type = $incFunctions->sanitizeString((string)$_GET['type']) ?? "";
-    $pId = $incFunctions->sanitizeString((int)$_GET['pId'])?? 0;
+    $type = sanitizeString((string)$_GET['type']) ?? "";
+    $pId = sanitizeString((int)$_GET['pId'])?? 0;
 }
 
 // Update Product master status
 if (isset($type) && !empty($type)) {
     if ($type === 'status') {
 
-        $operation = $incFunctions->sanitizeString((string)$_GET['operation'])?? "";
+        $operation = sanitizeString((string)$_GET['operation'])?? "";
 
         // Determine status based on operation
         $status = ($operation === 'active') ? 'A' : 'N';
@@ -37,7 +36,7 @@ if (isset($type) && !empty($type)) {
 
         // Check if update was successful
         if (!empty($productMaster)) {
-            $incFunctions->redirect("productmaster.php");
+            redirect("productmaster.php");
         } else {
             $successMessage = "Failed to update status.";
         }
@@ -48,7 +47,7 @@ if (isset($type) && !empty($type)) {
         $deleteProductMaster = $productMasterModel->deleteProductMaster((int)$pId);
         // Check if update was successful
         if (!empty($deleteProductMaster)) {
-            $incFunctions->redirect("productmaster.php");
+            redirect("productmaster.php");
         } else {
             $successMessage = " Product was deleted sucessfully From Product Master.";
         }
@@ -100,15 +99,15 @@ if (isset($type) && !empty($type)) {
                                                             <a href="#"><img src="images/avatar/1.jpg" alt="Avatar"></a>
                                                         </div>
                                                     </td>
-                                                    <td><?php echo $incFunctions->sanitizeString($val['Product_Name']); ?></td>
-                                                    <td><?php echo $incFunctions->sanitizeString($val['Categories_Name']); ?></td>
-                                                    <td><?php echo $incFunctions->sanitizeString($val['Product_Mrp']); ?></td>
-                                                    <td><?php echo $incFunctions->sanitizeString($val['Product_SellPrice']); ?></td>
-                                                    <td><?php echo $incFunctions->sanitizeString($val['Product_Qty']); ?></td>
-                                                    <td><?php echo $incFunctions->sanitizeString($val['Product_ShortDesc']); ?></td>
-                                                    <td><?php echo $incFunctions->sanitizeString($val['Product_LongDesc']); ?></td>
-                                                    <td><?php echo $incFunctions->sanitizeString($val['Product_MetaTitle']); ?></td>
-                                                    <td><?php echo $incFunctions->sanitizeString($val['Product_MetaDesc']); ?></td>
+                                                    <td><?php echo sanitizeString($val['Product_Name']); ?></td>
+                                                    <td><?php echo sanitizeString($val['Categories_Name']); ?></td>
+                                                    <td><?php echo sanitizeString($val['Product_Mrp']); ?></td>
+                                                    <td><?php echo sanitizeString($val['Product_SellPrice']); ?></td>
+                                                    <td><?php echo sanitizeString($val['Product_Qty']); ?></td>
+                                                    <td><?php echo sanitizeString($val['Product_ShortDesc']); ?></td>
+                                                    <td><?php echo sanitizeString($val['Product_LongDesc']); ?></td>
+                                                    <td><?php echo sanitizeString($val['Product_MetaTitle']); ?></td>
+                                                    <td><?php echo sanitizeString($val['Product_MetaDesc']); ?></td>
                                                     <td class="status-column">
                                                         <?php
                                                         $productStatus = $val['Product_Status'];

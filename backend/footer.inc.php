@@ -5,9 +5,8 @@
    // Initialize database connection
    $database = new Database();
    $db = $database->getConnection();
-   $incFunctions = new IncFunctions($db);
 
-   (isset($_SESSION['Admin_Login']) && $_SESSION['Admin_Login']!='') ?  : $incFunctions->redirect("login.php");
+   (isset($_SESSION['Admin_Login']) && $_SESSION['Admin_Login']!='') ?  : redirect("login.php");
 ?>
 <div class="clearfix"></div>
          <footer class="site-footer">

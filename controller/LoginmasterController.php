@@ -10,10 +10,10 @@ class LoginMasterController extends  LoginMasterModel{
         $this->conn = $db;
     }
 
-    public function getAdminmasterdetails(string $Admin_Username,string $Admin_Password):array {
-        $Adminmasterdetails = $this->LoginmasterModel->getAdminmasterdetails($Admin_Username, $Admin_Password);
+    public function getAdminmasterdetails(string $adminUsername,string $adminPassword):array {
+        $adminMasterDetails = $this->LoginmasterModel->getAdminmasterdetails($adminUsername, $adminPassword);
         
-        return $Adminmasterdetails ? $Adminmasterdetails : null;
+        return $adminMasterDetails ? $adminMasterDetails : null;
     }
 }
 
@@ -21,5 +21,4 @@ class LoginMasterController extends  LoginMasterModel{
 // Initialize database connection
 $database = new Database();
 $db = $database->getConnection();
-$incFunctions = new IncFunctions($db);
 ?>

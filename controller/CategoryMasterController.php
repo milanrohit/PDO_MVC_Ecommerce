@@ -10,12 +10,9 @@ class CategoryMasterController extends CategoryMasterModel {
     }
 }
 
-
 // Initialize database connection
 $database = new Database();
 $db = $database->getConnection();
-$incFunctions = new IncFunctions($db);
-
 
 // Categoriemaster objs
 $catMasterController = new CategoryMasterController($db);

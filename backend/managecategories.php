@@ -8,7 +8,6 @@
     // Initialize database connection
     $database = new Database();
     $db = $database->getConnection();
-    $incFunctions = new IncFunctions($db);
     $categoryMaster = new CategoryMasterModel($db);
 
     $type ="";
@@ -19,18 +18,18 @@
     $chkduplicate ="";
 
     if(isset($_GET['type'])){
-        $type = $incFunctions->sanitizeString((string)$_GET['type']) ?? "";
+        $type = sanitizeString((string)$_GET['type']) ?? "";
     }
 
 
     if(isset($_POST['Categories_Name'])){
-        $Categories_Name = $incFunctions->sanitizeString((string)$_POST['Categories_Name']) ?? "";
+        $Categories_Name = sanitizeString((string)$_POST['Categories_Name']) ?? "";
     }
     
 
     if(isset($_GET['categorieId']) && $_GET['categorieId'] !=''){
 
-        $categorieId = $incFunctions->sanitizeString((int)$_GET['categorieId']) ?? 0;
+        $categorieId = sanitizeString((int)$_GET['categorieId']) ?? 0;
 
         $CategoryMaster = $categoryMaster->getdataCategorie((int) $categorieId);
 
@@ -39,7 +38,7 @@
             $Categories_Name = ($CategoryMaster['Categories_Name']) ? ((string)$CategoryMaster['Categories_Name']) : "";
         }else{
 
-            $incFunctions->redirect("categoriemaster.php");
+            redirect("categoriemaster.php");
         }
     }
     
@@ -64,7 +63,7 @@
                     $updateCategoriesMaster = $categoryMaster->updateCategoriesMaster((int) $categorieId , (string)$Categories_Status = null);       
                     // Check !empty
                     if (!empty($updateCategoriesMaster)) {
-                        $incFunctions->redirect("categoriemaster.php");
+                        redirect("categoriemaster.php");
                     } else {
                         $successMessage = "Failed to update Categorie Name.";
                     }
@@ -72,7 +71,7 @@
     
                     $AddCategory = $categoryMaster->addCategory((string) $Categories_Name);
                     if (!empty($AddCategory)) {
-                        $incFunctions->redirect("categoriemaster.php");
+                        redirect("categoriemaster.php");
                     } else {
                         $successMessage = "Categorie Name not add";
                     }

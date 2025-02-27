@@ -17,10 +17,8 @@ class ContactusController extends ContactusModel {
 // Database obj
 $database = new Database();
 $db = $database->getConnection();
-$incFunctions = new IncFunctions($db);
 // Categoriemaster obj
 $ContactusModel = new ContactusModel($db);
 $contactus_id="";
 $ContactusDetails = $ContactusModel->getContactusDetails((int) $contactus_id);
-
 ?>
