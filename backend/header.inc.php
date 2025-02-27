@@ -19,19 +19,19 @@
                <ul class="nav navbar-nav">
                   <li class="menu-title">Menu</li>
                   <li class="menu-item-has-children dropdown">
-                     <a href="<?php echo BackendPath; ?>categoriemaster.php" > Categorie Master</a>
+                     <a href="<?php echo BACK_END_PATH; ?>categoriemaster.php" > Categorie Master</a>
                   </li>
                   <li class="menu-item-has-children dropdown">
-                     <a href="<?php echo BackendPath; ?>productmaster.php" > Product Master</a>
+                     <a href="<?php echo BACK_END_PATH; ?>productmaster.php" > Product Master</a>
                   </li>
 				      <li class="menu-item-has-children dropdown">
-                     <a href="<?php echo BackendPath; ?>ordermaster.php" > Order Master</a>
+                     <a href="<?php echo BACK_END_PATH; ?>ordermaster.php" > Order Master</a>
                   </li>
                   <li class="menu-item-has-children dropdown">
-                     <a href="<?php echo BackendPath; ?>usermaster.php" > User Master</a>
+                     <a href="<?php echo BACK_END_PATH; ?>usermaster.php" > User Master</a>
                   </li>
                   <li class="menu-item-has-children dropdown">
-                     <a href="<?php echo BackendPath; ?>contactus.php" > Contact Us</a>
+                     <a href="<?php echo BACK_END_PATH; ?>contactus.php" > Contact Us</a>
                   </li>
                </ul>
             </div>

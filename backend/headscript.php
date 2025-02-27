@@ -1,6 +1,6 @@
 <?php
    include_once("../config/connection.php");
-   include_once("../lib/function.inc.php");
+   include_once("../lib/Incfunctions.php");
 ?>
    <head>
       <meta charset="utf-8">
