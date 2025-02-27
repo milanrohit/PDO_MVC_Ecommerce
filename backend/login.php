@@ -1,15 +1,16 @@
 <?php 
 //use App\Config\Database;
    include_once("../config/connection.php");
-   include_once("../lib/function.inc.php");
+   include_once("../lib/Incfunctions.php");
    include_once("../controller/LoginMasterController.php");
    include_once("../model/LoginMasterModel.php");
-
-    // Database object
-    $database = new Database();
-    $db = $database->getConnection();
-
-    $LoginmasterModel = new LoginmasterModel($db);
+   
+   
+   // Initialize database connection
+   $database = new Database();
+   $db = $database->getConnection();
+   $incFunctions = new IncFunctions($db);
+   $LoginmasterModel = new LoginmasterModel($db);
 
     $errormsg ='';
    
@@ -24,7 +25,7 @@
          $Adminmasterdetails = $LoginmasterModel->getAdminmasterdetails($Admin_Username,$Admin_Password);
          
          if (count($Adminmasterdetails) > 0) {
-               redirect("categoriemaster.php");
+               $incFunctions->redirect("categoriemaster.php");
          } else {
                
             $errormsg = "Invalid username or password";
@@ -63,14 +64,14 @@
                         <label>Email address</label>
                         <input type="text" name="Admin_Username" class="form-control" placeholder="Admin Username" 
                         <?php if (!empty($Admin_Username)): ?>
-                        value="<?php echo sanitizeString((string) $Admin_Username ?? '', ENT_QUOTES); ?>" 
+                        value="<?php echo $incFunctions->sanitizeString((string) $Admin_Username ?? '', ENT_QUOTES); ?>" 
                         <?php endif; ?> required>
                      </div>
                      <div class="form-group">
                         <label>Password</label>
                         <input type="text" name="Admin_Password" class="form-control" placeholder="Admin Password" 
                         <?php if (!empty($Admin_Password)): ?>
-                        value="<?php echo sanitizeString((string) $Admin_Password ?? '', ENT_QUOTES); ?>" 
+                        value="<?php echo $incFunctions->sanitizeString((string) $Admin_Password ?? '', ENT_QUOTES); ?>" 
                         <?php endif; ?> required>
                      </div>
                      <button type="submit" name="submit" class="btn btn-success btn-flat m-b-30 m-t-30">Sign in</button>

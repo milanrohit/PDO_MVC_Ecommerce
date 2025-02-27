@@ -1,10 +1,16 @@
 <?php
 
 include_once("../config/connection.php");
-include_once("../lib/function.inc.php");
+include_once("../lib/Incfunctions.php");
 include_once("header.inc.php"); //Header menu calling
 include_once("../controller/CategoryMasterController.php");
 include_once("../model/CategoryMasterModel.php");
+
+// Initialize database connection
+$database = new Database();
+$db = $database->getConnection();
+
+$incFunctions = new IncFunctions($db);
 
 // CategoryMasterModel object
 $categoryMaster = new CategoryMasterModel($db);
@@ -16,9 +22,9 @@ $successMessage = "";
 
 if(isset($_GET['type']) || isset($_GET['operation']) || isset($_GET['categorieId'])){
 
-    $type = sanitizeString((string)$_GET['type']) ?? "";
-    $operation = sanitizeString((string)$_GET['operation'])?? "";
-    $categorieId = sanitizeString((int)$_GET['categorieId'])?? 0;
+    $type = $incFunctions->sanitizeString((string)$_GET['type']) ?? "";
+    $operation = $incFunctions->sanitizeString((string)$_GET['operation'])?? "";
+    $categorieId = $incFunctions->sanitizeString((int)$_GET['categorieId'])?? 0;
 }
 
 // Update category master status
@@ -26,7 +32,7 @@ if (isset($type) && !empty($type)) {
 
     if ($type === 'status') {
 
-        $operation = sanitizeString((string)$_GET['operation'])?? "";
+        $operation = $incFunctions->sanitizeString((string)$_GET['operation'])?? "";
 
         // Determine status based on operation
         $status = ($operation === 'active') ? 'A' : 'N';
@@ -36,7 +42,7 @@ if (isset($type) && !empty($type)) {
 
         // Check if update was successful
         if (!empty($CategoriesMaster)) {
-            redirect("categoriemaster.php");
+            $incFunctions->redirect("categoriemaster.php");
         } else {
             $successMessage = "Failed to update status.";
         }
@@ -49,7 +55,7 @@ if (isset($type) && !empty($type)) {
 
         // Check if update was successful
         if (!empty($CategoriesMasterStatus)) {
-            redirect("categoriemaster.php");
+            $incFunctions->redirect("categoriemaster.php");
         } else {
             $successMessage = "Failed to Delete the category CategoriesMaster.";
         }

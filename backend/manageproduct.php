@@ -1,14 +1,15 @@
 <?php
 // Including necessary files
 include_once("../config/connection.php");
-include_once("../lib/function.inc.php");
+include_once("../lib/Incfunctions.php");
 include_once("header.inc.php");
 include_once("../model/ProductMasterModel.php");
 include_once("../model/CategoryMasterModel.php");
 
-// Initialize database connection
-$database = new Database();
-$db = $database->getConnection();
+  // Initialize database connection
+  $database = new Database();
+  $db = $database->getConnection();
+  $incFunctions = new IncFunctions($db);
 
 // Initialize models
 $productMasterModel = new ProductMasterModel($db);
@@ -21,7 +22,7 @@ $pStatus = '';
 
 /* Start Insert a new product || Create a new product */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST['pId'])) {
-    $productName = sanitizeString($_POST['Product_Name'] ?? '');
+    $productName = $incFunctions->sanitizeString($_POST['Product_Name'] ?? '');
     $chkduplicateMsg = '';
     $insertArray = $productMasterModel->createProductArray($_POST);
     $errorMessage = '';
@@ -38,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST['pId'])) {
                 $productImg = $_FILES['Product_Img'] ?? '';
 
                 if (isset($productImg) && $productImg['error'] === UPLOAD_ERR_OK) {
-                    $productImg = $productMasterModel->imageUpload($productImg);
+                    $productImg = $incFunctions->imageUpload($productImg);
                     $insertArray['Product_Img'] = $productImg; // Add image path to the array
                 } else {
                     $insertArray['Product_Img'] = '';
@@ -48,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST['pId'])) {
                 $addProduct = $productMasterModel->insertMasterProduct($insertArray);
                 
                 if (!empty($addProduct)) {
-                    redirect("productmaster.php");
+                    $incFunctions->redirect("productmaster.php");
                 } else {
                     echo "<div class='alert alert-danger'>Product Name not added, something went wrong.</div>";
                     echo "<div class='alert alert-danger'>{$errorMessage}</div>";
@@ -62,32 +63,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST['pId'])) {
 
 if ($pId !== '' && $type === 'edit') {
 
-    $pId = sanitizeString((int)$pId ?? '');
+    $pId = $incFunctions->sanitizeString((int)$pId ?? '');
 
     if(!empty($pId)){
 
         $productMasterData = $productMasterModel->getProductMasterDetails($pId);
    
-        $pCategorieId = sanitizeString($productMasterData['Product_CategorieId']);
-        $pName = sanitizeString($productMasterData['Product_Name']);
-        $pMrp = sanitizeString($productMasterData['Product_Mrp']);
-        $pSellPrice = sanitizeString($productMasterData['Product_SellPrice']);
-        $pQty = sanitizeString($productMasterData['Product_Qty']);
-        $pShortDesc = sanitizeString($productMasterData['Product_ShortDesc']);
-        $pLongDesc = sanitizeString($productMasterData['Product_LongDesc']);
-        $pMetaTitle = sanitizeString($productMasterData['Product_MetaTitle']);
-        $pMetaDesc = sanitizeString($productMasterData['Product_MetaDesc']);
-        $pStatus = sanitizeString($productMasterData['Product_Status']);
+        $pCategorieId = $incFunctions->sanitizeString($productMasterData['Product_CategorieId']);
+        $pName = $incFunctions->sanitizeString($productMasterData['Product_Name']);
+        $pMrp = $incFunctions->sanitizeString($productMasterData['Product_Mrp']);
+        $pSellPrice = $incFunctions->sanitizeString($productMasterData['Product_SellPrice']);
+        $pQty = $incFunctions->sanitizeString($productMasterData['Product_Qty']);
+        $pShortDesc = $incFunctions->sanitizeString($productMasterData['Product_ShortDesc']);
+        $pLongDesc = $incFunctions->sanitizeString($productMasterData['Product_LongDesc']);
+        $pMetaTitle = $incFunctions->sanitizeString($productMasterData['Product_MetaTitle']);
+        $pMetaDesc = $incFunctions->sanitizeString($productMasterData['Product_MetaDesc']);
+        $pStatus = $incFunctions->sanitizeString($productMasterData['Product_Status']);
         $pImg = $productMasterData['Product_Img'];
     } else {
-        redirect("productmaster.php");
+        $incFunctions->redirect("productmaster.php");
     }
 }
 
 /* Start Update existing product | Update a product */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['pId'])) {
 
-    $pId =  isset($_POST['pId']) ? (int) $pId = sanitizeString((int) $_POST['pId']) : '';
+    $pId =  isset($_POST['pId']) ? (int) $pId = $incFunctions->sanitizeString((int) $_POST['pId']) : '';
 
     $updateArray = $productMasterModel->createProductArray($_POST);
 
@@ -111,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['pId'])) {
         $updateProduct = $productMasterModel->updateProductMaster($pId, $updateArray);
 
         if (!empty($updateProduct)) {
-            redirect("productmaster.php");
+            $incFunctions->redirect("productmaster.php");
         } else {
             $errorMessage = "Failed to update product.";
             echo "<div class='alert alert-danger'>{$errorMessage}</div>";
@@ -123,11 +124,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['pId'])) {
 
 // Delete a product
 if (isset($_GET['action']) && $_GET['action'] === 'delete' && !empty($_GET['pId'])) {
-    $pId = sanitizeString((int) $pId);
+    $pId = $incFunctions->sanitizeString((int) $pId);
     $deleteProduct = $productMasterModel->deleteProductMaster($pId);
 
     if (!empty($deleteProduct)) {
-        redirect("productmaster.php");
+        $incFunctions->redirect("productmaster.php");
     } else {
         $errorMessage = "Failed to delete product.";
         echo "<div class='alert alert-danger'>$errorMessage</div>";
@@ -156,8 +157,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && !empty($_GET['pId'
                                                 $catMasterDetails = $categoryMasterModel->getCategoryMasterDetails();
                                                 if (!empty($catMasterDetails) && is_array($catMasterDetails)) {
                                                     foreach ($catMasterDetails as $val) {
-                                                        $categoryId = sanitizeString($val['Categories_Id']);
-                                                        $categoryName = sanitizeString($val['Categories_Name']);
+                                                        $categoryId = $incFunctions->sanitizeString($val['Categories_Id']);
+                                                        $categoryName = $incFunctions->sanitizeString($val['Categories_Name']);
                                                         $selected = ($pCategorieId !== null && $pCategorieId === $categoryId) ? 'selected' : '';
                                                         echo '<option value="' . $categoryId . '" ' . $selected . '>' . $categoryName . '</option>';
                                                     }
