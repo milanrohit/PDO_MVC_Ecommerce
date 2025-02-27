@@ -69,7 +69,7 @@ if (isset($type) && !empty($type)) {
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title"><b>Category Master</b></h5>
-                        <p class="card-text"><?php echo Categorie_master_details; ?></p>
+                        <p class="card-text"><?php echo CATEGORIE_MASTER_DETAILS; ?></p>
                         <a href="managecategories.php" class="btn btn-primary float-right">Add Category</a>
                     </div>
 

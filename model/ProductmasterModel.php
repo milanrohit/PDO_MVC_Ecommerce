@@ -11,7 +11,7 @@ class ProductMasterModel {
     public function __construct($db) {
         $this->conn = $db;
     }
-
+    
     // Independent function to handle array creation
     public function createProductArray(array $postData): array {
         return [
@@ -249,43 +249,6 @@ class ProductMasterModel {
         }
         return $changedValues;
     }
-
-    public function imageUpload($productImg): string {
-        try {
-            if (isset($productImg) && $productImg['error'] === UPLOAD_ERR_OK) {
-                $uploadDir = PRODUCT_IMGES_UPLOAD_DIR; // Directory to save uploaded images
-                $uploadFile = $uploadDir . basename($productImg['name']);
-                
-                // Check if upload directory exists, if not create it
-                if (!is_dir($uploadDir)) {
-                    mkdir($uploadDir, 0777, true);
-                }
-                
-                // Allowed file types
-                $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-                $fileType = mime_content_type($productImg['tmp_name']);
-                
-                if (!in_array($fileType, $allowedTypes)) {
-                    throw new ImageUploadException('Only JPG, JPEG, and PNG files are allowed.');
-                }
-                
-                // Check file size (min 10KB, max 3MB)
-                $fileSize = filesize($productImg['tmp_name']);
-                if ($fileSize < 10240 || $fileSize > 3145728) {
-                    throw new ImageUploadException('File size must be between 10KB and 3MB.');
-                }
-    
-                if (!move_uploaded_file($productImg['tmp_name'], $uploadFile)) {
-                    throw new ImageUploadException('Failed to upload image.');
-                }
-            }
-            return ''; // If no image is uploaded, set it as empty
-        } catch (Exception $e) {
-            error_log($e->getMessage());
-            return ''; // Return empty string on failure
-        }
-    }
-    
 }
 
 // Database object

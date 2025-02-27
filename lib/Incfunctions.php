@@ -135,12 +135,12 @@ class IncFunctions {
     }
 }
     // Path constants
-    const BackendPath="/PDO_MVC_Ecommerce/backend/"; // BackendPath
-    const FrontendPath="/PDO_MVC_Ecommerce/frontend/"; // FrontendPath
-    const controller="/PDO_MVC_Ecommerce/controller/"; // controller
+    const BACK_END_PATH="/PDO_MVC_Ecommerce/backend/"; // BackendPath
+    const FRONT_END_PATH="/PDO_MVC_Ecommerce/frontend/"; // FrontendPath
+    const MASTER_CONTROLLER="/PDO_MVC_Ecommerce/controller/"; // controller
     const NO_RECORED_FOUND="No Record Found."; // NO_RECORED_FOUND
-    const Categorie_master_details="This is a categorie master where you can add & manage categories ."; // Categorie master details
-    const PRODUCTMASTERDETAILS="This is a product master where you can add & manage product ."; // Product master details
+    const CATEGORIE_MASTER_DETAILS="This is a categorie master where you can add & manage categories ."; // Categorie master details
+    const PRODUCT_MASTER_DETAILS="This is a product master where you can add & manage product ."; // Product master details
     const DUPLICATE_PRODUCT_NAME = "Duplicate Found. Product not inserted/updated."; // Product master
     const PRODUCT_IMAGES_UPLOAD_DIR = "images/productimanges/"; // Product master
 ?>

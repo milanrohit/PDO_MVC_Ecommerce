@@ -62,7 +62,7 @@ if (isset($type) && !empty($type)) {
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Product Master</h5>
-                        <p class="card-text"><?php echo PRODUCTMASTERDETAILS; ?></p>
+                        <p class="card-text"><?php echo PRODUCT_MASTER_DETAILS; ?></p>
                         <a href="manageproduct.php" class="btn btn-primary float-right">Add Product</a>
                     </div>
                     <?php if (!empty($productMasterDetails)) { ?>
