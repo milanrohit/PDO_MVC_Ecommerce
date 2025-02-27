@@ -34,20 +34,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST['pId'])) {
             $chkduplicateMsg = "<b>{$productName}</b> " . DUPLICATE_PRODUCT_NAME;
         } else {
             if ($chkduplicateMsg === '' && !empty($insertArray)) {
-                
-                /* Start productImg upload code */
-                $productImg = $_FILES['Product_Img'] ?? '';
 
-                if (isset($productImg) && $productImg['error'] === UPLOAD_ERR_OK) {
-                    $productImg = imageUpload($productImg);
+                /* Start productImg upload code */
+                if (isset($_FILES['Product_Img']) && is_array($_FILES['Product_Img']) && $_FILES['Product_Img']['error'] === UPLOAD_ERR_OK) {
+                    $productImg = imageUpload($_FILES['Product_Img']);
                     $insertArray['Product_Img'] = $productImg; // Add image path to the array
                 } else {
                     $insertArray['Product_Img'] = '';
                 }
                 /* End productImg upload code */
-                
+
                 $addProduct = $productMasterModel->insertMasterProduct($insertArray);
-                
+
                 if (!empty($addProduct)) {
                     redirect("productmaster.php");
                 } else {
@@ -61,30 +59,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST['pId'])) {
 /* End Insert a new product || Create a new product */
 
 
-if ($pId !== '' && $type === 'edit') {
+if (!empty($pId) && $type === 'edit') {
 
     $pId = sanitizeString((int)$pId ?? '');
 
-    if(!empty($pId)){
-
+    if (!empty($pId)) {
         $productMasterData = $productMasterModel->getProductMasterDetails($pId);
-   
-        // Trim all values in the array
-        $productMasterData = array_map('trim', $productMasterData);
+        
+        //_dx($productMasterData);
 
-        $pCategorieId = ($productMasterData['Product_CategorieId']);
-        $pName = ($productMasterData['Product_Name']);
-        $pMrp = ($productMasterData['Product_Mrp']);
-        $pSellPrice = ($productMasterData['Product_SellPrice']);
-        $pQty = ($productMasterData['Product_Qty']);
-        $pShortDesc = ($productMasterData['Product_ShortDesc']);
-        $pLongDesc = ($productMasterData['Product_LongDesc']);
-        $pMetaTitle = ($productMasterData['Product_MetaTitle']);
-        $pMetaDesc = ($productMasterData['Product_MetaDesc']);
-        $pStatus = ($productMasterData['Product_Status']);
-        $pImg = $productMasterData['Product_Img'];
+        if (!empty($productMasterData)) {
+            // Trim all values in the array
+            $productMasterData = array_map('trim', $productMasterData);
+           
+            $pCategorieId = $productMasterData['Product_CategorieId'] ?? null;
+            $pName = $productMasterData['Product_Name'] ?? null;
+            $pMrp = $productMasterData['Product_Mrp'] ?? null;
+            $pSellPrice = $productMasterData['Product_SellPrice'] ?? null;
+            $pQty = $productMasterData['Product_Qty'] ?? null;
+            $pShortDesc = $productMasterData['Product_ShortDesc'] ?? null;
+            $pLongDesc = $productMasterData['Product_LongDesc'] ?? null;
+            $pMetaTitle = $productMasterData['Product_MetaTitle'] ?? null;
+            $pMetaDesc = $productMasterData['Product_MetaDesc'] ?? null;
+            $pStatus = $productMasterData['Product_Status'] ?? null;
+            $pImg = $productMasterData['Product_Img'] ?? null;
+        }
     } else {
-       redirect("productmaster.php");
+        // Handle error, invalid product ID
+        redirect("productmaster.php");
     }
 }
 
@@ -213,10 +215,15 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && !empty($_GET['pId'
 
                                     <div class="form-group">
                                         <label for="Product_Img">Product Image Upload</label>
+                                        <?php if(!empty($pImg)){ ?>
+                                        <img src="<?php echo sanitizeString($pImg); ?>" alt="Product Img" class="img-thumbnail" style="width: 100px; height: 100px;">
+                                        <input type="hidden" name="existing_img" value="<?php echo sanitizeString($pImg); ?>">
+                                        <?php } else { ?>
                                         <input type="file" id="Product_Img" name="Product_Img" class="form-control-file" required>
-                                        <input type="hidden" name="existing_img" value="<?php echo $pImg; ?>">
                                         <div class="invalid-feedback">Please upload a product image.</div>
+                                        <?php } ?>
                                     </div>
+
 
                                     <div class="form-group">
                                         <label for="Product_Status">Product Status</label>
