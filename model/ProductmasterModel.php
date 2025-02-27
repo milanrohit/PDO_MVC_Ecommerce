@@ -15,6 +15,7 @@ class ProductMasterModel {
     // Independent function to handle array creation
     public function createProductArray(array $postData): array {
         return [
+            'Product_Id' => ($postData['Product_Id'] ?? null),
             'Product_CategorieId' => sanitizeString($postData['Product_CategorieId'] ?? null),
             'Product_Name' => sanitizeString($postData['Product_Name'] ?? null),
             'Product_Mrp' => sanitizeString($postData['Product_Mrp'] ?? null),
@@ -25,7 +26,7 @@ class ProductMasterModel {
             'Product_MetaTitle' => sanitizeString($postData['Product_MetaTitle'] ?? null),
             'Product_MetaDesc' => sanitizeString($postData['Product_MetaDesc'] ?? null),
             'Product_Status' => sanitizeString($postData['Product_Status'] ?? null),
-            'Product_Img' => $postData['Product_Img'] ?? null
+            'Product_Img' => $postData['Product_Img']['name'] ?? null
         ];
     }
 
@@ -133,7 +134,7 @@ class ProductMasterModel {
             $stmt->bindValue(':Product_MetaTitle', $data['Product_MetaTitle'], PDO::PARAM_STR);
             $stmt->bindValue(':Product_MetaDesc', $data['Product_MetaDesc'], PDO::PARAM_STR);
             $stmt->bindValue(':Product_Status', $data['Product_Status'], PDO::PARAM_INT);
-            $stmt->bindValue(':Product_Img', $data['Product_Img'], PDO::PARAM_LOB);
+            $stmt->bindValue(':Product_Img', $data['Product_Img'], PDO::PARAM_STR);
 
             $stmt->execute();
 
@@ -191,13 +192,14 @@ class ProductMasterModel {
     }
 
     // Delete function
-    public function deleteProductMaster($id) {
+    public function deleteProductMaster(int $pId): bool {
         try {
-            $id = sanitizeString((int)($id));
-            $sql = "DELETE FROM {$this->productMaster} WHERE Product_Id = :Product_Id";
+            $pId = sanitizeString($pId);
+            $sql = "DELETE FROM {$this->productMaster} WHERE Product_Id = :pId LIMIT 1";
             $stmt = $this->conn->prepare($sql);
-            $stmt->bindParam(':Product_Id', $id, PDO::PARAM_INT);
+            $stmt->bindParam(':pId', $pId, PDO::PARAM_INT);
             $stmt->execute();
+            return $stmt->rowCount() > 0;
         } catch (PDOException $e) {
             error_log($e->getMessage());
             return false;
@@ -247,6 +249,43 @@ class ProductMasterModel {
         }
         return $changedValues;
     }
+
+    public function imageUpload($productImg): string {
+        try {
+            if (isset($productImg) && $productImg['error'] === UPLOAD_ERR_OK) {
+                $uploadDir = PRODUCT_IMGES_UPLOAD_DIR; // Directory to save uploaded images
+                $uploadFile = $uploadDir . basename($productImg['name']);
+                
+                // Check if upload directory exists, if not create it
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+                
+                // Allowed file types
+                $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                $fileType = mime_content_type($productImg['tmp_name']);
+                
+                if (!in_array($fileType, $allowedTypes)) {
+                    throw new ImageUploadException('Only JPG, JPEG, and PNG files are allowed.');
+                }
+                
+                // Check file size (min 10KB, max 3MB)
+                $fileSize = filesize($productImg['tmp_name']);
+                if ($fileSize < 10240 || $fileSize > 3145728) {
+                    throw new ImageUploadException('File size must be between 10KB and 3MB.');
+                }
+    
+                if (!move_uploaded_file($productImg['tmp_name'], $uploadFile)) {
+                    throw new ImageUploadException('Failed to upload image.');
+                }
+            }
+            return ''; // If no image is uploaded, set it as empty
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            return ''; // Return empty string on failure
+        }
+    }
+    
 }
 
 // Database object

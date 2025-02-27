@@ -41,17 +41,14 @@ if (isset($type) && !empty($type)) {
         }
     }
 
-    if ($type === 'delete' && $type != '') {
+    if ($type === 'delete' && $type != '' && !empty($pId)) {
         // Delete the category ProductMaster
-        if(!empty($pId)){
-            $deleteProductMaster = $productMasterModel->deleteProductMaster((int)$pId);
-        }
+        $deleteProductMaster = $productMasterModel->deleteProductMaster((int)$pId);
         // Check if update was successful
         if (!empty($deleteProductMaster)) {
-            $successMessage = " Record IS Delete From Product Master.";
             redirect("productmaster.php");
         } else {
-            $successMessage = "Failed to Delete this Record from Product Master.";
+            $successMessage = " Product was deleted sucessfully From Product Master.";
         }
     }
 }
@@ -129,10 +126,10 @@ if (isset($type) && !empty($type)) {
                                                                     </div>';
                                                                 break;
                                                             case 'D':
-                                                                echo '<span class="badge badge-Deleted">Deleted</span>';
+                                                                echo '<div class="btn-group" role="group"><span class="badge badge-Deleted">Deleted</span></div>';
                                                                 break;
                                                             default:
-                                                                echo '<span class="badge badge-Unknown">Unknown Status</span>';
+                                                                echo '<div class="btn-group" role="group"><span class="badge badge-Unknown">Unknown Status</span></div>';
                                                                 break;
                                                         }
                                                         ?>
