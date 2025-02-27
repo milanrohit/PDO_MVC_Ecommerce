@@ -1,6 +1,6 @@
 <?php
   include_once("../config/connection.php");
-  include_once("../lib/function.inc.php");
+  include_once("../lib/Incfunctions.php");
 
 class ProductMasterModel {
 
@@ -254,4 +254,5 @@ class ProductMasterModel {
 // Database object
 $dataBase = new Database();
 $db = $dataBase->getConnection();
+$incFunctions = new IncFunctions($db);
 ?>

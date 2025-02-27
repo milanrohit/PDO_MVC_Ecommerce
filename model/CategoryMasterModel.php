@@ -1,17 +1,17 @@
 <?php
 
 include_once("../config/connection.php");
-include_once("../lib/function.inc.php");
+include_once("../lib/Incfunctions.php");
 
 class CategoryMasterModel {
 
     private $conn;
-    private $tableName = "categoriesmaster";
+    private string $tableName = "categoriesmaster";
 
     public function __construct($db) {
         $this->conn = $db;
     }
-
+    
     public function getCategoryMasterDetails(?int $catId = null): array {
         try {
             if (is_numeric($catId)) {
@@ -46,19 +46,12 @@ class CategoryMasterModel {
         }
     }
 
-    /**
-     * Update the status of a category.
-     * 
-     * @param int $Categories_Id
-     * @param string $Categories_Status
-     * @return bool
-     */
     public function updateCategoriesMaster(int $catId, string $catStatus): bool {
 
         try {
-            $catName = sanitizeString(((string)$_POST['Categories_Name']));
-            $catStatus = sanitizeString(((string)$catStatus));
-            $catId = sanitizeString(((int)$catId));
+            $catName = $incFunctions->sanitizeString(((string)$_POST['Categories_Name']));
+            $catStatus = $incFunctions->sanitizeString(((string)$catStatus));
+            $catId = $incFunctions->sanitizeString(((int)$catId));
 
             if(!empty($catId) && !empty($catStatus)){
                 // Prepare SQL query
@@ -86,25 +79,19 @@ class CategoryMasterModel {
         }
     }
 
-    /**
-     * Delete a category.
-     * 
-     * @param int $Categories_Id
-     */
-    public function deleteCategoriesMaster(int $Categories_Id) {
+    public function deleteCategoriesMaster(int $categoriesId) {
         try {
-            $categorieId ='';
-            $categorieId = sanitizeString(((int)$_GET['categorieId']));
+            $categorieId = $incFunctions->sanitizeString(((int)$_GET['categorieId']));
             
             if(!empty($categorieId)){
-                $query = "DELETE FROM $this->tableName WHERE Categories_Id = :Categories_Id";
+                $query = "DELETE FROM $this->tableName WHERE Categories_Id = :categoriesId";
                 $stmt = $this->conn->prepare($query);
 
                 // Bind parameter
-                $stmt->bindParam(':Categories_Id', $categorieId, PDO::PARAM_INT);
+                $stmt->bindParam(':categoriesId', $categoriesId, PDO::PARAM_INT);
                 // Execute the statement
                 if ($stmt->execute()) {
-                    return true; 
+                    return true;
                 }
             }else {
                 return false;
@@ -114,34 +101,32 @@ class CategoryMasterModel {
         }
     }
 
-    public function addCategory(string $Categories_Name) {
-        try{
-            // Prepare an SQL statement with a placeholder for the category name
-            $query = "INSERT INTO $this->tableName (Categories_Name) VALUES (:Categories_Name) LIMIT 1";
+    public function addCategory(string $categoriesName): bool {
+        try {
+            // Ensure the table name is properly sanitized and escaped (preferably predefined)
+            $query = "INSERT INTO {$this->tableName} (Categories_Name) VALUES (:categoriesName) LIMIT 1";
             $stmt = $this->conn->prepare($query);
-            
-            // Sanitize inputs
-            $Categories_Name = sanitizeString((string) $Categories_Name);
-
+    
+            // Sanitize and validate the category name
+            $categoriesName = $incFunctions->sanitizeString($categoriesName);
+    
             // Bind the category name to the placeholder
-            $stmt->bindParam(':Categories_Name', $Categories_Name, PDO::PARAM_STR);
-        
+            $stmt->bindParam(':categoriesName', $categoriesName, PDO::PARAM_STR);
+    
             // Execute the statement
             $stmt->execute();
-
-            if($stmt->rowCount() > 0) {
-                return true;
-            } else {
-                return false;
-            }
-        }catch (PDOException $e) {
-            echo "Failed to Add category: " . $e->getMessage();
+    
+            return $stmt->rowCount() > 0;
+        } catch (PDOException $e) {
+            // Use proper logging for error messages
+            error_log("Failed to add category: " . $e->getMessage());
+            return false;
         }
     }
 
     public function getdataCategorie(int $catId) {
         try{
-            $query = "SELECT Categories_Id, Categories_Name, Categories_Status FROM ".$this->tableName." WHERE Categories_Id = :Categories_Id LIMIT 1";
+            $query = "SELECT Categories_Id, Categories_Name, Categories_Status FROM $this->tableName WHERE Categories_Id = :Categories_Id LIMIT 1";
             $stmt = $this->conn->prepare($query);
             // Bind parameter
             $stmt->bindParam(':Categories_Id', $catId, PDO::PARAM_INT);
@@ -160,26 +145,26 @@ class CategoryMasterModel {
         }
     }
 
-    public function checkDuplicatercd($catName){
-
-        $catName ='';
-        $catName = sanitizeString($_POST['Categories_Name']) ?? null;
-        
-        if(!empty($catName)){
-            // Adding a duplicate check
-            $duplicateQuery = "SELECT COUNT(*) as cnt FROM " . $this->tableName . " WHERE Categories_Name = :Categories_Name";
-            $stmtDuplicate = $this->conn->prepare($duplicateQuery);
-            $stmtDuplicate->bindParam(':Categories_Name', $catName, PDO::PARAM_STR);
-            $stmtDuplicate->execute();
-            $duplicateCheck = $stmtDuplicate->fetch(PDO::FETCH_ASSOC);
-            
-            if (!empty($duplicateCheck['cnt']) > 0 ) {
-                return 1 ;
-            }else{
-                return 0;
+    public function checkDuplicateRecord(string $categoriesName): bool {
+        // Sanitize input
+        $categoriesName = $incFunctions->sanitizeString($categoriesName);
+    
+        if (!empty($categoriesName)) {
+            try {
+                // Adding a duplicate check
+                $duplicateQuery = "SELECT COUNT(*) as cnt FROM {$this->tableName} WHERE Categories_Name = :categoriesName";
+                $stmtDuplicate = $this->conn->prepare($duplicateQuery);
+                $stmtDuplicate->bindParam(':categoriesName', $categoriesName, PDO::PARAM_STR);
+                $stmtDuplicate->execute();
+                $duplicateCheck = $stmtDuplicate->fetch(PDO::FETCH_ASSOC);
+    
+                return !empty($duplicateCheck['cnt']) > 0;
+            } catch (PDOException $e) {
+                // Use proper logging for error messages
+                error_log("Failed to check duplicate record: " . $e->getMessage());
+                return false;
             }
-            
-        }else{
+        } else {
             return false;
         }
     }
@@ -197,21 +182,21 @@ class CategoryMasterModel {
             // Loop through each category master detail
             foreach ($catMasterDetails as $val) {
                 // Get the category ID and Name
-                $categoryId = sanitizeString($val['Categories_Id']);
-                $categoryName = sanitizeString($val['Categories_Name']);
+                $categoryId = $val['Categories_Id'];
+                $categoryName = $val['Categories_Name'];
                 
                 // Check if the category ID matches the selected category ID
                 $selected = (!empty($pCategorieId) && $pCategorieId == $categoryId) ? 'selected' : '';
                 $options .= '<option value="' . $categoryId . '" ' . $selected . '>' . $categoryName . '</option>';
             }
         }
-
         return $options;
     }
-
 }
 
-// Database object
+// Initialize database connection
 $database = new Database();
 $db = $database->getConnection();
+
+$incFunctions = new IncFunctions($db);
 ?>
