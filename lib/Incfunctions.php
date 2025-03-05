@@ -1,4 +1,12 @@
 <?php
+
+    // Debugging functions with exit
+    function _d($arr): void {
+        echo "<pre>";
+        print_r($arr);
+        echo "</pre>";
+    }
+
     // Debugging functions with exit
     function _dx($arr): void {
         echo "<pre>";
@@ -94,51 +102,66 @@
         echo "<b>Designed & Developed by <a href='#'>MilanRohit</a></b>";
     }
 
-    // Function to upload an image
-    function imageUpload($productImg): string {
-        try {
-            if (isset($productImg) && $productImg['error'] === UPLOAD_ERR_OK) {
-                $uploadDir = PRODUCT_IMAGES_UPLOAD_DIR; // Directory to save uploaded images
-                $uploadFile = $uploadDir . basename($productImg['name']);
-
-                // Allowed file types
-                $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-                $fileType = mime_content_type($productImg['tmp_name']);
-
-                // Check file type
-                if (!in_array($fileType, $allowedTypes)) {
-                    $msg = 'Only JPG, JPEG, and PNG files are allowed.';
-                    throw new ImageUploadException($msg);
-                }
-
-                // Check file size (min 10KB, max 3MB)
-                $fileSize = $productImg['size'];
-                if ($fileSize < 10240 || $fileSize > 3145728) {
-                    $msg = 'File size must be between 10KB and 3MB.';
-                    throw new ImageUploadException($msg);
-                }
-
-                if (move_uploaded_file($productImg['tmp_name'], $uploadFile)) {
-                    return $uploadFile;
-                } else {
-                    $msg = 'Failed to upload image.';
-                    throw new ImageUploadException($msg);
-                }
-            }
-            return ''; // If no image is uploaded, set it as empty
-        } catch (ImageUploadException $e) {
-            error_log($e->errorMessage());
-            return ''; // Return empty string on failure
+    function uploadImage(array $file): string {
+        // Check if the file is an image
+        if (!isset($file['type']) || strpos($file['type'], 'image/') !== 0) {
+            throw new Exception('Invalid file type. Only images are allowed.');
         }
+
+        // Check the mime type
+        $allowedMimeTypes = ['image/jpeg','image/jpg', 'image/png'];
+        if (!in_array($file['type'], $allowedMimeTypes, true)) {
+            throw new Exception('Invalid mime type. Only JPG, JPEG, and PNG are allowed.');
+        }
+
+        // Check the file size
+        $fileSize = $file['size'];
+        if ($fileSize < 1000 || $fileSize > 3145728) { // 10 KB to 3 MB
+            throw new Exception('File size must be between 10KB and 3MB.');
+        }
+
+        // Generate a unique file name and determine the target path
+        $fileName = uniqid('img_', true) .rand(0,999).''.$file['name'];
+        $targetPath = PRODUCT_IMAGES_UPLOAD_DIR . $fileName;
+
+        // Move the uploaded file to the target directory
+        if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
+            throw new Exception('Failed to upload the image.');
+        }
+
+        // Return only the image name
+        return $fileName;
     }
 
-    // Path constants
-    const BACK_END_PATH="/PDO_MVC_Ecommerce/backend/"; // BackendPath
-    const FRONT_END_PATH="/PDO_MVC_Ecommerce/frontend/"; // FrontendPath
-    const MASTER_CONTROLLER="/PDO_MVC_Ecommerce/controller/"; // controller
-    const NO_RECORED_FOUND="No Record Found."; // NO_RECORED_FOUND
-    const CATEGORIE_MASTER_DETAILS="This is a categorie master where you can add & manage categories ."; // Categorie master details
-    const PRODUCT_MASTER_DETAILS="This is a product master where you can add & manage product ."; // Product master details
-    const DUPLICATE_PRODUCT_NAME = "Duplicate Found. Product not inserted/updated."; // Product master
-    const PRODUCT_IMAGES_UPLOAD_DIR = "images/productimanges/"; // Product master
+    // Path Constants
+    const BACK_END_PATH = "/PDO_MVC_Ecommerce/backend/";  // BackendPath
+    const FRONT_END_PATH = "/PDO_MVC_Ecommerce/frontend/"; // FrontendPath
+    const MASTER_CONTROLLER = "/PDO_MVC_Ecommerce/controller/"; // controller
+
+    // Messages
+    const NO_RECORED_FOUND = "No Record Found.";
+    const CATEGORIE_MASTER_DETAILS = "Manage categories in the category master.";
+    const PRODUCT_MASTER_DETAILS = "Manage products in the product master.";
+    const DUPLICATE_PRODUCT_NAME = "Duplicate product name. Operation failed.";
+    const INVALID_PRODUCT_DATA = "<div class='alert alert-danger'>Invalid Product Data.</div>";
+    const INVALID_PRODUCT_ID = "<div class='alert alert-danger'>Invalid Product ID.</div>";
+    const PRODUCT_NAME_REQUIRED = "<div class='alert alert-danger'>Product Name is required.</div>";
+
+
+    // Image & File Operations
+    const PRODUCT_IMAGES_UPLOAD_DIR = "images/productimanges/";
+    const FAILED_TO_FILE_REMOVE_DIR = "Failed to delete the file.";
+    const FILE_NOT_FOUND_DIR = "File not found.";
+
+    // Success Messages
+    const PRODUCT_ADDED_SUCCESSFULLY_MSG = "<div class='alert alert-success'>Product added successfully.</div>";
+    const PRODUCT_NOT_ADDED_UNSUCCESSFULLY_MSG = "<div class='alert alert-danger'>Product update failed, something went wrong.</div>";
+    const PRODUCT_UPDATED_SUCCESSFULLY_MSG = "<div class='alert alert-success'>Product update successfully.</div>";
+    
+    // Failed Messages
+    const PRODUCT_CREATION_FAILED_MSG = "<div class='alert alert-danger'>Product update failed, something went wrong.</div>";
+    const PRODUCT_NOT_ADDED_SONMETHING_WRONG_MSG = "<div class='alert alert-danger'>Product not added, something went wrong.</div>";
+    const FAILED_TO_DELETE_PRODUCT = "<div class='alert alert-danger'>Failed to delete product.</div>";
 ?>
+
+

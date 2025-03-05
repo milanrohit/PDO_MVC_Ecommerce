@@ -96,7 +96,7 @@ if (isset($type) && !empty($type)) {
                                                     <td class="serial"><?php echo $index; ?>.</td>
                                                     <td class="avatar">
                                                         <div class="round-img">
-                                                            <a href="#"><img src="images/avatar/1.jpg" alt="Avatar"></a>
+                                                            <a href="#"><img src="<?php echo PRODUCT_IMAGES_UPLOAD_DIR.sanitizeString($val['Product_Img']); ?>" alt="Avatar"></a>
                                                         </div>
                                                     </td>
                                                     <td><?php echo sanitizeString($val['Product_Name']); ?></td>

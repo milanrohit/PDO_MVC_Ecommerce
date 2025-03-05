@@ -196,17 +196,36 @@ class ProductMasterModel {
         }
     }
 
-    // Delete function
     public function deleteProductMaster(int $pId): bool {
         try {
-            $pId = sanitizeString($pId);
+
+            $data = $this->getProductById($pId);
+            // Use a prepared statement to prevent SQL injection
             $sql = "DELETE FROM {$this->productMaster} WHERE Product_Id = :pId LIMIT 1";
             $stmt = $this->conn->prepare($sql);
             $stmt->bindParam(':pId', $pId, PDO::PARAM_INT);
             $stmt->execute();
-            return $stmt->rowCount() > 0;
-        } catch (PDOException $e) {
-            error_log($e->getMessage());
+    
+            // Check if the row was deleted
+            if ($stmt->rowCount() > 0) {
+                if (!empty($data)) {
+                    $imageName = $data['Product_Img'];
+                    // Delete the associated image
+                    $filePath = PRODUCT_IMAGES_UPLOAD_DIR . $imageName;
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    } else {
+                        error_log("Image file not found: {$filePath}");
+                    }
+                }
+                return true;
+            }
+    
+            // No rows deleted
+            return false;
+        } catch (Exception $e) {
+            // Log error for debugging
+            error_log("Error in deleteProductMaster: " . $e->getMessage());
             return false;
         }
     }
