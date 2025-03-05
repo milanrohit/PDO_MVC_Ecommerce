@@ -46,6 +46,5 @@ class LoginMasterModel {
 // Initialize database connection
 $database = new Database();
 $db = $database->getConnection();
-
-$LoginMasterModel = new LoginMasterModel();
+$LoginMasterModel = new LoginMasterModel($db);
 ?>

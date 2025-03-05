@@ -155,4 +155,7 @@ class ContactusModel {
 // Initialize database connection
 $database = new Database();
 $db = $database->getConnection();
+$ContactusModel = new ContactusModel($db);
+
+
 ?>
