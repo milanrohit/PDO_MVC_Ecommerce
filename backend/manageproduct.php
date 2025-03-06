@@ -21,6 +21,7 @@ $chkduplicateMsg = '';
 $pId = isset($_GET['pId'])? sanitizeString((int)$_GET['pId']) : 0;
 $type = isset($_GET['type'])? sanitizeString((int)$_GET['type']) : null;
 $pImg='';
+$pName='';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -45,81 +46,87 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pImg ='';
     }
 
-    if ($pId === 0) {
-        // Prevent duplicate product names during insertion
-        if ($productMasterModel->checkDuplicateRcd($pName) > 0) {
-            $chkduplicateMsg = sprintf('<b>%s</b>: %s',sanitizeString($pName),DUPLICATE_PRODUCT_NAME);
-        }
+    $data = $productMasterModel->checkDuplicateRcd($pName);
+    // Prevent duplicate product names during insertion
+    if ($data > 0) {
+        $chkduplicateMsg = sprintf('<b>%s</b>: %s',sanitizeString($pName),DUPLICATE_PRODUCT_NAME);
+    }
 
-        $data = [
-            'Product_CategorieId' => $pCategorieId ?? null,
-            'Product_Name'        => $pName ?? '',
-            'Product_Mrp'         => $pMrp ?? 0.0,
-            'Product_SellPrice'   => $pSellPrice ?? 0.0,
-            'Product_Qty'         => $pQty ?? 0,
-            'Product_ShortDesc'   => $pShortDesc ?? '',
-            'Product_LongDesc'    => $pLongDesc ?? '',
-            'Product_MetaTitle'   => $pMetaTitle ?? '',
-            'Product_MetaDesc'    => $pMetaDesc ?? '',
-            'Product_Status'      => $pStatus ?? false,
-            'Product_Img'         => $pImg ?? ''
-        ];
-        // Insert the product data
-        $insertData = $productMasterModel->insertMasterProduct($data);
-        if ($insertData != false && $insertData > 0) {
-            redirect('productmaster.php');
-        } else {
-            echo FAILED_PRODUCT_ADDED_MSG;
-            exit; // Halt on failure
+    if ($pId === 0) {
+
+        if ($chkduplicateMsg === '' || $chkduplicateMsg === null) {
+
+            $data = [
+                'Product_CategorieId' => $pCategorieId ?? null,
+                'Product_Name'        => $pName ?? '',
+                'Product_Mrp'         => $pMrp ?? 0.0,
+                'Product_SellPrice'   => $pSellPrice ?? 0.0,
+                'Product_Qty'         => $pQty ?? 0,
+                'Product_ShortDesc'   => $pShortDesc ?? '',
+                'Product_LongDesc'    => $pLongDesc ?? '',
+                'Product_MetaTitle'   => $pMetaTitle ?? '',
+                'Product_MetaDesc'    => $pMetaDesc ?? '',
+                'Product_Status'      => $pStatus ?? false,
+                'Product_Img'         => $pImg ?? ''
+            ];
+            // Insert the product data
+            $insertData = $productMasterModel->insertMasterProduct($data);
+            if ($insertData != false && $insertData > 0) {
+                redirect('productmaster.php');
+            } else {
+                echo FAILED_PRODUCT_ADDED_MSG;
+                exit; // Halt on failure
+            }
         }
     } else {
-        
-        // Prevent duplicate product names during update
-        if ($productMasterModel->checkDuplicateRcd($pName) > 0) {
-            // Construct a message indicating the duplicate entry
-            $chkduplicateMsg = sprintf('<b>%s</b>: %s',sanitizeString($pName),DUPLICATE_PRODUCT_NAME);
-        }
+        if ($chkduplicateMsg === '' || $chkduplicateMsg === null) {
+            // Prepare data for update
+            $dataUpdateArr = [
+                'Product_CategorieId' => $pCategorieId ?? null,
+                'Product_Mrp'         => $pMrp ?? 0.0,
+                'Product_SellPrice'   => $pSellPrice ?? 0.0,
+                'Product_Qty'         => $pQty ?? 0,
+                'Product_ShortDesc'   => $pShortDesc ?? '',
+                'Product_LongDesc'    => $pLongDesc ?? '',
+                'Product_MetaTitle'   => $pMetaTitle ?? '',
+                'Product_MetaDesc'    => $pMetaDesc ?? '',
+                'Product_Status'      => $pStatus ?? false,
+            ];
 
-        // Prepare data for update
-        $dataUpdateArr = [
-            'Product_CategorieId' => $pCategorieId ?? null,
-            'Product_Name'        => $pName ?? '',
-            'Product_Mrp'         => $pMrp ?? 0.0,
-            'Product_SellPrice'   => $pSellPrice ?? 0.0,
-            'Product_Qty'         => $pQty ?? 0,
-            'Product_ShortDesc'   => $pShortDesc ?? '',
-            'Product_LongDesc'    => $pLongDesc ?? '',
-            'Product_MetaTitle'   => $pMetaTitle ?? '',
-            'Product_MetaDesc'    => $pMetaDesc ?? '',
-            'Product_Status'      => $pStatus ?? false,
-        ];
+            if (!empty($pId) && $pId > 0){
+                $prodData = $productMasterModel->getProductById($pId);
+                $productImg = sanitizeString($prodData['Product_Img']);
+                $productName = sanitizeString($prodData['Product_Name']);
+            }
 
-        if (!empty($pId) && $pId > 0){
-            $prodData = $productMasterModel->getProductById($pId);
-            $productImg = sanitizeString($prodData['Product_Img']);
-        }
+            // If an image file is being uploaded, add it to the update array
+            // Merge the update data with the existing image if one exists
+            $addArray = [];
+            if($pImg!== null && $pImg!== '' && $productImg!== $pImg){
+                $addArray =['Product_Img' => $pImg ?? ''];
+                $dataUpdateArr = array_merge($dataUpdateArr,$addArray);
+            }
 
-        // If an image file is being uploaded, add it to the update array
-        // Merge the update data with the existing image if one exists
-        $addArray = [];
-        if($pImg!== null && $pImg!== '' && $productImg!== $pImg){
-            $addArray =['Product_Img' => $pImg ?? ''];
-            $dataUpdateArr = array_merge($dataUpdateArr,$addArray);
-        }
+            // If the product name has changed, add it to the update array
+            if($pName!== null && $pName!== '' && $productName!== $pName){
+                $addArray =['Product_Name' => $pName ?? ''];
+                $dataUpdateArr = array_merge($dataUpdateArr,$addArray);
+            }
 
-        if (!empty($pId) && $pId > 0) {
-            // Update the product record
-            $updateData = $productMasterModel->updateProductMaster($pId,$dataUpdateArr);
-        
-            if(!empty($updateData)){
-                redirect('productmaster.php');
+            if (!empty($pId) && $pId > 0) {
+                // Update the product record
+                $updateData = $productMasterModel->updateProductMaster($pId,$dataUpdateArr);
+            
+                if(!empty($updateData)){
+                    redirect('productmaster.php');
+                }else{
+                    echo FAILED_PRODUCT_UPDATE_MSG;
+                    exit;
+                }
             }else{
                 echo FAILED_PRODUCT_UPDATE_MSG;
                 exit;
             }
-        }else{
-            echo FAILED_PRODUCT_UPDATE_MSG;
-            exit;
         }
     }
 }
@@ -128,8 +135,7 @@ if($pId!= '' && $type!= ''){
 
     // Get product details for edit
     $productData = $productMasterModel->getProductMasterDetails($pId);
-   
-
+    // Validate product data before displaying the edit form
     if (!empty($productData) && is_array($productData)) {
         
         $productData = array_map('trim', $productData);
@@ -157,7 +163,7 @@ if($pId!= '' && $type!= ''){
                 <div class="card">
                     <div class="card-header"><strong>Product Master Manage</strong></div>
                     <?php if (!empty($chkduplicateMsg)): ?>
-                    <br/><div class="alert alert-warning" id="chkduplicateMsg" role="alert"> <?php echo $chkduplicateMsg;exit; ?> </div>
+                    <br/><div class="alert alert-warning" id="chkduplicateMsg" role="alert"> <?php echo $chkduplicateMsg; ?> </div>
                     <?php endif; ?>
                     <form method="POST" action="" enctype="multipart/form-data" class="needs-validation" novalidate>
                         <div class="container mt-5">
@@ -269,7 +275,7 @@ if($pId!= '' && $type!= ''){
         // Remove the error message after 2 seconds
         setTimeout(function() {
             $('#chkduplicateMsg').remove();
-        }, 200000);
+        }, 3000);
 
         $('#Product_Status').on('change', function() {
             const validStatuses = ['A', 'N', 'D'];

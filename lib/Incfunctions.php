@@ -142,7 +142,7 @@
     const NO_RECORED_FOUND = "No Record Found.";
     const CATEGORIE_MASTER_DETAILS = "Manage categories in the category master.";
     const PRODUCT_MASTER_DETAILS = "Manage products in the product master.";
-    const DUPLICATE_PRODUCT_NAME = "Duplicate product name. Insert/Update failed.";
+    const DUPLICATE_PRODUCT_NAME = "Duplicate product name. Only uniqe product name are allowed to Insert/Update.";
     const INVALID_PRODUCT_DATA = "<div class='alert alert-danger'>Invalid Product Data.</div>";
     const INVALID_PRODUCT_ID = "<div class='alert alert-danger'>Invalid Product ID.</div>";
     const PRODUCT_NAME_REQUIRED = "<div class='alert alert-danger'>Product Name is required.</div>";
