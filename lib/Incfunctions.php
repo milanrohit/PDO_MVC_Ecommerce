@@ -121,7 +121,7 @@
         }
 
         // Generate a unique file name and determine the target path
-        $fileName = uniqid('img_', true) .rand(0,999).''.$file['name'];
+        $fileName = uniqid('img_', true).rand(0,999).$file['name'];
         $targetPath = PRODUCT_IMAGES_UPLOAD_DIR . $fileName;
 
         // Move the uploaded file to the target directory
@@ -142,7 +142,7 @@
     const NO_RECORED_FOUND = "No Record Found.";
     const CATEGORIE_MASTER_DETAILS = "Manage categories in the category master.";
     const PRODUCT_MASTER_DETAILS = "Manage products in the product master.";
-    const DUPLICATE_PRODUCT_NAME = "Duplicate product name. Operation failed.";
+    const DUPLICATE_PRODUCT_NAME = "Duplicate product name. Insert/Update failed.";
     const INVALID_PRODUCT_DATA = "<div class='alert alert-danger'>Invalid Product Data.</div>";
     const INVALID_PRODUCT_ID = "<div class='alert alert-danger'>Invalid Product ID.</div>";
     const PRODUCT_NAME_REQUIRED = "<div class='alert alert-danger'>Product Name is required.</div>";
@@ -155,13 +155,14 @@
 
     // Success Messages
     const PRODUCT_ADDED_SUCCESSFULLY_MSG = "<div class='alert alert-success'>Product added successfully.</div>";
-    const PRODUCT_NOT_ADDED_UNSUCCESSFULLY_MSG = "<div class='alert alert-danger'>Product update failed, something went wrong.</div>";
     const PRODUCT_UPDATED_SUCCESSFULLY_MSG = "<div class='alert alert-success'>Product update successfully.</div>";
-    
+   
+
     // Failed Messages
-    const PRODUCT_CREATION_FAILED_MSG = "<div class='alert alert-danger'>Product update failed, something went wrong.</div>";
-    const PRODUCT_NOT_ADDED_SONMETHING_WRONG_MSG = "<div class='alert alert-danger'>Product not added, something went wrong.</div>";
+    const FAILED_PRODUCT_ADDED_MSG = "<div class='alert alert-danger'>Product Insert failed, something went wrong.</div>";
+    const FAILED_PRODUCT_UPDATE_MSG = "<div class='alert alert-danger'>Product not added, something went wrong.</div>";
     const FAILED_TO_DELETE_PRODUCT = "<div class='alert alert-danger'>Failed to delete product.</div>";
-?>
+    const PRODUCT_NOT_FOUND = "<div class='alert alert-danger' role='alert'>Product not found</div>";
+?> 
 
 

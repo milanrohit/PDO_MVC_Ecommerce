@@ -95,11 +95,6 @@ class ProductMasterModel {
 
     public function insertMasterProduct(array $data): int {
         try {
-            // Check for duplicate product name
-            if ($this->checkDuplicateRcd($data['Product_Name']) > 0) {
-                return 0;
-            }
-
             // Prepare the SQL statement
             $insertSql = "INSERT INTO {$this->productMaster} (
                             Product_CategorieId,
