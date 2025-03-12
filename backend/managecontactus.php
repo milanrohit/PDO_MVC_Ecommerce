@@ -1,118 +1,69 @@
 <?php
-    include_once("../config/connection.php");
-    include_once("../lib/Incfunctions.php");
-    include_once("header.inc.php");
-    include_once("../controller/ContactusController.php");
-    include_once("../model/CategoryMasterModel.php");
+include_once("../config/connection.php");
+include_once("../lib/Incfunctions.php");
+include_once("header.inc.php");
+include_once("../model/ContactusModel.php");
 
-    // Initialize database connection
-    $database = new Database();
-    $db = $database->getConnection();
-    $ContactusModel = new ContactusModel($db);
+// Initialize database connection
+$database = new Database();
+$db = $database->getConnection();
+$ContactusModel = new ContactusModel($db);
 
-    $type ="";
-    $contactus_id = "";
-    $contactus_name ="";
-    $contactus_email ="";
-    $contactus_mobile ="";
-    $contactus_comment ="";
-    $AddCategory = "";
-    $ResultContactusDetails = "";
-    $chkduplicate ="";
+$type = $_GET['type'] ?? '';
+$contactus_id = (int)($_GET['contactus_id'] ?? 0);
+$chkduplicateMsg = '';
 
-    
-    if(isset($_GET['type']) && $_GET['type'] !=''){
-        $type = ($_GET['type']) ? sanitizeString((string)$_GET['type']) : "" ;
+if ($contactus_id) {
+    $ContactusDetails = $ContactusModel->getContactusDetails($contactus_id);
+
+    if (!empty($ContactusDetails)) {
+        $contactus_name = (string)($ContactusDetails['contactus_name'] ?? '');
+        $contactus_email = (string)($ContactusDetails['contactus_email'] ?? '');
+        $contactus_mobile = (string)($ContactusDetails['contactus_mobile'] ?? '');
+        $contactus_comment = (string)($ContactusDetails['contactus_comment'] ?? '');
+    } else {
+        redirect("contactus.php");
     }
+}
 
-    if(isset($_POST['contactus_name']) && $_POST['contactus_name'] !=''){
-        $contactus_name = ($_POST['contactus_name']) ? sanitizeString((string)$_POST['contactus_name']) : "" ;
-    }
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    if(isset($_POST['contactus_email']) && $_POST['contactus_email'] !=''){
-        $contactus_email = ($_POST['contactus_email']) ? sanitizeString((string)$_POST['contactus_email']) : "" ;
-    }
+    $contactus_name = sanitizeString($_POST['contactus_name'] ?? '');
+    $contactus_email = sanitizeString($_POST['contactus_email'] ?? '');
+    $contactus_mobile = sanitizeString((int)($_POST['contactus_mobile'] ?? ''));
+    $contactus_comment = sanitizeString($_POST['contactus_comment'] ?? '');
 
-    if(isset($_POST['contactus_mobile']) && $_POST['contactus_mobile'] !=''){
-        $contactus_mobile = ($_POST['contactus_mobile']) ? sanitizeString((int)$_POST['contactus_mobile']) : "" ;
-    }
+    $data = [
+        'contactus_name' => $contactus_name,
+        'contactus_email' => $contactus_email,
+        'contactus_mobile' => $contactus_mobile,
+        'contactus_comment' => $contactus_comment,
+    ];
 
-    if(isset($_POST['contactus_comment']) && $_POST['contactus_comment'] !=''){
-        $contactus_comment = ($_POST['contactus_comment']) ? sanitizeString((string)$_POST['contactus_comment']) : "" ;
-    }
+    if ($ContactusModel->checkDuplicatercd($contactus_name)) {
+        $chkduplicateMsg = $contactus_name . " : Contact available";
+    } else {
+        if ($contactus_id) {
 
-    if(isset($_GET['contactus_id']) && $_GET['contactus_id'] !=''){
+            $ResultContactusDetails = $ContactusModel->updateContactus((int) $contactus_id,(array) $data);
 
-        $contactus_id =  ($_GET['contactus_id']) ? sanitizeString((int)$_GET['contactus_id']) : 0 ;
-
-        $ContactusDetails = $ContactusModel->getContactusDetails((int) $contactus_id);
-        
-        if(!empty($contactus_id) && !empty($ContactusDetails)){
-
-            $contactus_name = ($ContactusDetails['contactus_name']) ? ((string)$ContactusDetails['contactus_name']) : "";
-            $contactus_email = ($ContactusDetails['contactus_email']) ? ((string)$ContactusDetails['contactus_email']) : "";
-            $contactus_mobile = ($ContactusDetails['contactus_mobile']) ? ((string)$ContactusDetails['contactus_mobile']) : "";
-            $contactus_comment = ($ContactusDetails['contactus_comment']) ? ((string)$ContactusDetails['contactus_comment']) : "";
-            
-            $contactus_id = ($_GET['contactus_id']) ? sanitizeString((int)$_GET['contactus_id']) : 0 ;
-        }else{
-
-            redirect("contactus.php");
-        }
-    }
-    
-    if(isset($_POST['submit'])){
-
-        
-        $contactus_name = ($_POST['contactus_name']) ? sanitizeString((string)$_POST['contactus_name']) : "";        
-        $contactus_email = ($_POST['contactus_email']) ? sanitizeString((string)$_POST['contactus_email']) : "";        
-        $contactus_mobile = ($_POST['contactus_mobile']) ? sanitizeString((string)$_POST['contactus_mobile']) : "";        
-        $contactus_comment = ($_POST['contactus_comment']) ? sanitizeString((string)$_POST['contactus_comment']) : "";        
-        
-
-        $chkduplicate = $ContactusModel->checkDuplicatercd((string) $contactus_name);
-        
-        $chkduplicate_msg = "";
-           
-        if($chkduplicate == 1){
-
-            $chkduplicate_msg = $contactus_name.' : '." Contact availble";
-        }else{
-            if($chkduplicate_msg ==''){
-
-                if(isset($contactus_id) && $contactus_id !=''){
-
-                    $ResultContactusDetails = $ContactusModel->updateContactusDetails((int) $contactus_id , (string)$Categories_Status = null);     
-                    
-                    // Check !empty
-                    if (!empty($ResultContactusDetails)) {
-                        redirect("contactus.php");
-                    } else {
-                        $successMessage = "Failed to update Contactus Name.";
-                    }
-                }else{
-    
-                    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])){
-                        // Insert contactus details
-                    $data = [
-                        'contactus_name' => sanitizeString((string)$_POST['contactus_name']),
-                        'contactus_email' => sanitizeString((string)$_POST['contactus_email']),
-                        'contactus_mobile' => sanitizeString((int)$_POST['contactus_email']),
-                        'contactus_comment' => sanitizeString((string)$_POST['contactus_comment']),
-                    ];
-
-                    $AddCategory = $ContactusModel->addContactus((array) $data);
-                    if (!empty($AddCategory)) {
-                        redirect("contactus.php");
-                    } else {
-                        $successMessage = "Contactus not add";
-                    }
-                    }
+            if ($ResultContactusDetails) {
+                redirect("contactus.php");
+            } else {
+                $successMessage = "Failed to update Contactus Name.";
+            }
+        } else {
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $AddCategory = $ContactusModel->addContactus($data);
+                if ($AddCategory) {
+                    redirect("contactus.php");
+                } else {
+                    $successMessage = "Contactus not added.";
                 }
             }
         }
     }
-    
+}
 ?>
 <div class="content pb-0">
     <div class="animated fadeIn">
@@ -120,6 +71,9 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-header"><strong>Contactus Form</strong></div>
+                    <?php if (!empty($chkduplicateMsg)): ?>
+                    <br/><div class="alert alert-warning" id="chkduplicateMsg" role="alert"> <?php echo $chkduplicateMsg; ?> </div>
+                    <?php endif; ?>
                     <form method="POST">
                         <div class="card-body card-block">
                             <div class="form-group">
@@ -145,12 +99,6 @@
                             <button id="payment-button" name="submit"  type="submit" class="btn btn-lg btn-info btn-block">
                                 <span id="payment-button-amount" >Submit</span>
                             </button>
-
-                            <?php if(!empty($chkduplicate_msg)){?>
-                            <div class="container mt-5" id="chkduplicate_msg">
-                                <div class="alert alert-warning" role="alert"><?php echo ($chkduplicate_msg) ?? "";?> </div>
-                            </div>
-                            <?php }?>
                         </div>
                     </form>
                 </div>
@@ -162,8 +110,8 @@
          $(document).ready(function() {
                // Remove the error message
                setTimeout(function () {
-                  $('#chkduplicate_msg').remove();
-               },2000);
+                  $('#chkduplicateMsg').remove();
+               },2500);
          });
       </script>
 

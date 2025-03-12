@@ -3,7 +3,7 @@
 include_once("../config/connection.php");
 include_once("../lib/Incfunctions.php");
 include_once("header.inc.php"); //Header menu calling
-include_once("../controller/ContactusController.php");
+include_once("../model/ContactusModel.php");
 
 // Initialize database connection
 $database = new Database();
@@ -16,28 +16,25 @@ $ContactusDetails = $Contactus->getContactusDetails();
 
 $successMessage = "";
 
-if(isset($_GET['type']) || isset($_GET['operation']) || isset($_GET['contactus_id'])){
+if (isset($_GET['type'], $_GET['operation'], $_GET['contactus_id'])) {
 
-    $type = ($_GET['type']) ? sanitizeString((string)$_GET['type']) : "" ;
-    $operation =  ($_GET['operation']) ? sanitizeString((string)$_GET['operation']) : "" ;
-    $contactus_id = ($_GET['contactus_id']) ? sanitizeString((int)$_GET['contactus_id']) : 0 ;
+    $type = sanitizeString($_GET['type'] ?? "");
+    $operation = sanitizeString($_GET['operation'] ?? "");
+    $contactus_id = (int)($_GET['contactus_id'] ?? 0);
 }
 
 // Update contactus status
 if (isset($type) && !empty($type)) {
 
-    if ($type === 'status') {
-
-        $operation = sanitizeString((string)$_GET['operation'])?? "";
-
-        // Determine status based on operation
+    if (!empty($type) && $type === 'status') {
         $status = ($operation === 'active') ? 'A' : 'N';
 
         // Update the category status
-        $ContactusMaster = $Contactus->updateContactusDetails((int)$contactus_id, (string)$status);
+        $data = ['contactus_status' => $status];
+        $ContactusMaster = $Contactus->updateContactus((int) $contactus_id,(array) $data);
 
         // Check if update was successful
-        if (!empty($ContactusMaster)) {
+        if ($ContactusMaster) {
             redirect("contactus.php");
         } else {
             $successMessage = "Failed to update status.";
@@ -92,7 +89,7 @@ if (isset($type) && !empty($type)) {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php 
+                                        <?php
                                         $index = 0;
                                         foreach ($ContactusDetails as $Val):
                                             $index ++;
@@ -148,6 +145,36 @@ if (isset($type) && !empty($type)) {
             $('#successMessage').remove();
         }, 3000);
     });
+
+    $(document).ready(function() {
+        $('.update-status').click(function() {
+            let type = $(this).data('type');
+            let operation = $(this).data('operation');
+            let contactus_id = $(this).data('id');
+
+            $.ajax({
+                url: 'contactus.php', // Change this to the actual PHP script path
+                type: 'GET',
+                data: {
+                    type: type,
+                    operation: operation,
+                    contactus_id: contactus_id
+                },
+                success: function(response) {
+                    let result = JSON.parse(response);
+                    if (result.success) {
+                        alert('Status updated successfully!');
+                    } else {
+                        alert('Failed to update status.');
+                    }
+                },
+                error: function() {
+                    alert('An error occurred while updating status.');
+                }
+            });
+        });
+    });
+
 </script>
 
 <?php include_once("footer.inc.php"); // Footer calling ?>

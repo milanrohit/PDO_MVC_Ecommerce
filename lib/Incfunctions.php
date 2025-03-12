@@ -1,14 +1,13 @@
 <?php
-
     // Debugging functions with exit
-    function _d($arr): void {
+    function _debug($arr): void {
         echo "<pre>";
         print_r($arr);
         echo "</pre>";
     }
 
     // Debugging functions with exit
-    function _dx($arr): void {
+    function _debugx($arr): void {
         echo "<pre>";
         print_r($arr);
         echo "</pre>";
@@ -133,6 +132,10 @@
         return $fileName;
     }
 
+    function cleanAlphanumeric($input) {
+        return preg_replace('/[^a-zA-Z0-9]/', '', $input);
+    }
+
     // Path Constants
     const BACK_END_PATH = "/PDO_MVC_Ecommerce/backend/";  // BackendPath
     const FRONT_END_PATH = "/PDO_MVC_Ecommerce/frontend/"; // FrontendPath
@@ -163,6 +166,8 @@
     const FAILED_PRODUCT_UPDATE_MSG = "<div class='alert alert-danger'>Product not added, something went wrong.</div>";
     const FAILED_TO_DELETE_PRODUCT = "<div class='alert alert-danger'>Failed to delete product.</div>";
     const PRODUCT_NOT_FOUND = "<div class='alert alert-danger' role='alert'>Product not found</div>";
-?> 
+
+?>
+
 
 

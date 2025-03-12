@@ -1,0 +1,1 @@
+ALTER TABLE contactus MODIFY COLUMN contactus_mobile DECIMAL(12,0);

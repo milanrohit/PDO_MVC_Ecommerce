@@ -55,29 +55,20 @@ class ContactusModel {
         }
     }
 
-    public function updateContactusDetails(int $contactusId, string $contactus_status): bool {
+    public function updateContactus(int  $contactusId, array $data): bool {
         try {
-            // Ensure proper sanitization
-            $contactusName = isset($_POST['contactus_name']) ? sanitizeString((string)$_POST['contactus_name']) : "";
-            $contactus_status = sanitizeString((string)$contactus_status);
+            $setPart = array_map(fn($key) => "$key = :$key", array_keys($data));
+            $setPart = implode(', ', $setPart);
 
-            if ($contactusId && $contactus_status) {
-                // Update status query
-                $query = "UPDATE $this->tableName SET contactus_status = :contactUsstatus WHERE contactus_id = :contactusId";
-                $stmt = $this->conn->prepare($query);
-                $stmt->bindParam(':contactUsstatus', $contactus_status, PDO::PARAM_STR);
-            } else {
-                // Update name query
-                $query = "UPDATE $this->tableName SET contactus_name = :contactusName WHERE contactus_id = :contactUSId";
-                $stmt = $this->conn->prepare($query);
-                $stmt->bindParam(':contactusName', $contactusName, PDO::PARAM_STR);
+            $sql = "UPDATE {$this->tableName} SET $setPart WHERE contactus_id = :contactusId";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':contactusId', $contactusId, PDO::PARAM_INT);
+            foreach ($data as $key => $value) {
+                $stmt->bindValue(":$key", $value);
             }
-
-            $stmt->bindParam(':contactUSId', $contactusId, PDO::PARAM_INT);
-
             return $stmt->execute();
         } catch (PDOException $e) {
-            echo "Failed to update contact: " . $e->getMessage();
+            error_log($e->getMessage());
             return false;
         }
     }
@@ -99,20 +90,19 @@ class ContactusModel {
 
     public function addContactus(array $data): bool {
         try {
-            // Validate and sanitize input fields
-            $contactusName = isset($data['contactus_name']) ? sanitizeString((string)$data['contactus_name']) : '';
-            $contactusEmail = isset($data['contactus_email']) ? sanitizeString((string)$data['contactus_email']) : '';
-            $contactusMobile = isset($data['contactus_mobile']) ? sanitizeString((string)$data['contactus_mobile']) : '';
-            $contactusComment = isset($data['contactus_comment']) ? sanitizeString((string)$data['contactus_comment']) : '';
-
-            $query = "INSERT INTO $this->tableName (contactus_name, contactus_email, contactus_mobile, contactus_comment) VALUES (:contactUsname, :contactUsemail, :contactUsmobile, :contactUscomment)";
+            // Sanitize input fields
+            $data = array_map(fn($value) => sanitizeString($value), $data);
+    
+            // Prepare the insert query
+            $query = "INSERT INTO {$this->tableName} (contactus_name, contactus_email, contactus_mobile, contactus_comment) 
+                      VALUES (:contactus_name, :contactus_email, :contactus_mobile, :contactus_comment)";
             $stmt = $this->conn->prepare($query);
-
-            $stmt->bindParam(':contactUsname', $contactusName, PDO::PARAM_STR);
-            $stmt->bindParam(':contactUsemail', $contactusEmail, PDO::PARAM_STR);
-            $stmt->bindParam(':contactUsmobile', $contactusMobile, PDO::PARAM_STR);
-            $stmt->bindParam(':contactUscomment', $contactusComment, PDO::PARAM_STR);
-
+    
+            // Bind parameters
+            foreach ($data as $field => $value) {
+                $stmt->bindValue(":$field", $value);
+            }
+    
             return $stmt->execute();
         } catch (PDOException $e) {
             echo "Failed to add contact: " . $e->getMessage();

@@ -144,6 +144,7 @@ class ProductMasterModel {
             // Log the error
             error_log($e->getMessage());
             return 0;
+            
         }
     }
     
@@ -273,5 +274,3 @@ $dataBase = new Database();
 $db = $dataBase->getConnection();
 $productMasterModel = new ProductMasterModel($db);
 ?>
-
-
