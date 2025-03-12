@@ -2,7 +2,7 @@
 include_once("../config/connection.php");
 include_once("../lib/Incfunctions.php");
 
-class AdminMasterModel
+class UsersMasterModel
 {
     private $conn;
     public $tableName = "usersmaster";
@@ -13,7 +13,7 @@ class AdminMasterModel
     }
 
     // Create
-    public function create(array $data): bool
+    public function addUsersmaster(array $data): bool
     {
         $columns = implode(", ", array_keys($data));
         $placeholders = implode(", ", array_map(fn($key) => ":$key", array_keys($data)));
@@ -71,53 +71,25 @@ class AdminMasterModel
     }
 
     // Update
-    public function update(int $id, array $data): bool
-    {
-        $updates = implode(", ", array_map(fn($key) => "$key = :$key", array_keys($data)));
+    public function updateUsers(int  $usersid, array $data): bool {
+        try {
+            $setPart = array_map(fn($key) => "$key = :$key", array_keys($data));
+            $setPart = implode(', ', $setPart);
 
-        $sql = "UPDATE {$this->tableName} SET $updates WHERE Users_ID = :id";
-        $stmt = $this->conn->prepare($sql);
-
-        foreach ($data as $key => $value) {
-            $stmt->bindValue(":$key", $value);
+            $sql = "UPDATE {$this->tableName} SET $setPart WHERE Users_ID = :usersid";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':usersid', $usersid, PDO::PARAM_INT);
+            foreach ($data as $key => $value) {
+                $stmt->bindValue(":$key", $value);
+            }
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+            return false;
         }
-        $stmt->bindValue(":id", $id, \PDO::PARAM_INT);
-
-        return $stmt->execute();
     }
     
-    public function updateAdminMasterModel(int $userId, string $usersStatus): bool
-    {
-        try {
-            $usersName = sanitizeString((string)$_POST['Users_Name']);
-            $usersStatus = sanitizeString($usersStatus);
-            $userId = sanitizeString($userId);
-
-            if (empty($userId) || empty($usersStatus)) {
-                $query = "UPDATE {$this->tableName} SET Users_Name = :usersName WHERE Users_ID = :userId";
-                $stmt = $this->conn->prepare($query);
-                $stmt->bindParam(':usersName', $usersName, PDO::PARAM_STR);
-            } else {
-                $query = "UPDATE {$this->tableName} SET Users_Status = :usersStatus WHERE Users_ID = :userId";
-                $stmt = $this->conn->prepare($query);
-                $stmt->bindParam(':usersStatus', $usersStatus, PDO::PARAM_STR);
-            }
-
-            $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
-
-            if ($stmt->execute()) {
-                return true;
-            }
-
-            printf("Error: %s.\n", $stmt->errorInfo()[2]);
-            return false;
-        } catch (PDOException $e) {
-            echo "Failed to update admin master model: " . $e->getMessage();
-            return false;
-        }
-    }
-
-
+   
     // Delete
     public function delete(int $id): bool
     {
@@ -127,10 +99,28 @@ class AdminMasterModel
 
         return $stmt->execute();
     }
+
+    public function checkDuplicatercd(string $userName): bool {
+        try {
+            $userName = sanitizeString($userName);
+            if (!empty($userName)) {
+                $duplicateQuery = "SELECT COUNT(*) as cnt FROM $this->tableName WHERE Users_Name = :userName";
+                $stmtDuplicate = $this->conn->prepare($duplicateQuery);
+                $stmtDuplicate->bindParam(':userName', $userName, PDO::PARAM_STR);
+                $stmtDuplicate->execute();
+                $duplicateCheck = $stmtDuplicate->fetch(PDO::FETCH_ASSOC);
+                return $duplicateCheck['cnt'] > 0;
+            }
+            return false;
+        } catch (PDOException $e) {
+            echo "Failed to check duplicate User: " . $e->getMessage();
+            return false;
+        }
+    }
 }
 // Initialize database connection
 $database = new Database();
 $db = $database->getConnection();
-$adminMasterModel = new AdminMasterModel($db);
+$UsersMasterModel = new UsersMasterModel($db);
 
 ?>

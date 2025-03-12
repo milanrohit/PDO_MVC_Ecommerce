@@ -63,7 +63,7 @@ if (isset($type) && !empty($type)) {
             <div class="col-xl-12">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title"><b>Category Master</b></h5>
+                        <h5 class="card-title"><b>Contactus Master</b></h5>
                         <p class="card-text"><?php  ?></p>
                         <a href="managecontactus.php" class="btn btn-primary float-right">Add Contact</a>
                     </div>

@@ -119,14 +119,14 @@
             throw new Exception('File size must be between 10KB and 3MB.');
         }
 
-        // Generate a unique file name and determine the target path
-        $fileName = uniqid('img_', true).rand(0,999).$file['name'];
-        $targetPath = PRODUCT_IMAGES_UPLOAD_DIR . $fileName;
-
         // Move the uploaded file to the target directory
         if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
             throw new Exception('Failed to upload the image.');
         }
+        
+        // Generate a unique file name and determine the target path
+        $fileName = uniqid('img_', true).rand(0,999).$file['name'];
+        $targetPath = PRODUCT_IMAGES_UPLOAD_DIR . $fileName;
 
         // Return only the image name
         return $fileName;
@@ -144,6 +144,7 @@
     // Messages
     const NO_RECORED_FOUND = "No Record Found.";
     const CATEGORIE_MASTER_DETAILS = "Manage categories in the category master.";
+    const USER_MASTER_DETAILS = "Manage user in the user master.";
     const PRODUCT_MASTER_DETAILS = "Manage products in the product master.";
     const DUPLICATE_PRODUCT_NAME = "Duplicate product name. Only uniqe product name are allowed to Insert/Update.";
     const INVALID_PRODUCT_DATA = "<div class='alert alert-danger'>Invalid Product Data.</div>";
