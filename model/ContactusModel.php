@@ -88,6 +88,28 @@ class ContactusModel {
         }
     }
 
+    public function deleteCategoriesMaster(int $categoriesId) {
+        try {
+            $categorieId = sanitizeString(((int)$_GET['categorieId']));
+            
+            if(!empty($categorieId)){
+                $query = "DELETE FROM $this->tableName WHERE Categories_Id = :categoriesId";
+                $stmt = $this->conn->prepare($query);
+
+                // Bind parameter
+                $stmt->bindParam(':categoriesId', $categoriesId, PDO::PARAM_INT);
+                // Execute the statement
+                if ($stmt->execute()) {
+                    return true;
+                }
+            }else {
+                return false;
+            }
+        } catch (PDOException $e) {
+            echo "Failed to delete category: " . $e->getMessage();
+        }
+    }
+
     public function addContactus(array $data): bool {
         try {
             // Sanitize input fields

@@ -15,18 +15,20 @@ $Contactus = new ContactusModel($db);
 $ContactusDetails = $Contactus->getContactusDetails();
 
 $successMessage = "";
+$type ="";
+$operation ="";
+$contactus_id ="";
 
-if (isset($_GET['type'], $_GET['operation'], $_GET['contactus_id'])) {
+$type = isset($_GET['type']) ? sanitizeString($_GET['type']) : "";
+$operation = isset($_GET['operation']) ? sanitizeString($_GET['operation']) : "";
+$contactus_id = isset($_GET['contactus_id']) ? sanitizeString($_GET['contactus_id']) : "";
 
-    $type = sanitizeString($_GET['type'] ?? "");
-    $operation = sanitizeString($_GET['operation'] ?? "");
-    $contactus_id = (int)($_GET['contactus_id'] ?? 0);
-}
 
 // Update contactus status
 if (isset($type) && !empty($type)) {
 
-    if (!empty($type) && $type === 'status') {
+
+    if (!empty($type) && $type === 'status' && $operation != '' && $contactus_id != '') {
         $status = ($operation === 'active') ? 'A' : 'N';
 
         // Update the category status
@@ -41,10 +43,10 @@ if (isset($type) && !empty($type)) {
         }
     }
 
-    if ($type === 'delete' && $type != '') {
+    if ($type === 'delete' && $type != '' && $contactus_id != '') {
 
         // Delete the category CategoriesMaster
-        $DeleteContactus = $Contactus->deleteContactus((int)$contactus_id);
+        $DeleteContactus = $Contactus->deleteContactus((int) $contactus_id);
 
         // Check if update was successful
         if (!empty($DeleteContactus)) {

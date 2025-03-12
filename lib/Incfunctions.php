@@ -167,6 +167,22 @@
     const FAILED_TO_DELETE_PRODUCT = "<div class='alert alert-danger'>Failed to delete product.</div>";
     const PRODUCT_NOT_FOUND = "<div class='alert alert-danger' role='alert'>Product not found</div>";
 
+
+
+    /*
+        1. Ternary Operator (Before PHP 7)
+        $var = isset($var) ? $var : "default";
+
+        2. Null Coalescing Operator (PHP 7+)
+        $var = $var ?? "default";
+
+        3. Null Coalescing Assignment Operator (PHP 7.4+)
+        $var ??= "default";
+
+        4. Ternary Operator Shorthand (PHP 5.3+)
+        isset($var) ?: $var = 'default';
+    */
+
 ?>
 
 
