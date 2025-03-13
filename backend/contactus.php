@@ -107,23 +107,33 @@ if (isset($type) && !empty($type)) {
                                                 <td><span class="name"><?php echo $Val['contactus_name']; ?></span></td>
                                                 <td><span class="name"><?php echo $Val['contactus_email']; ?></span></td>
                                                 <td><span class="name"><?php echo $Val['contactus_mobile']; ?></span></td>
-                                                <td>
+                                                <td class="status-column">
                                                     <?php
-                                                    $contactus_status = $Val['contactus_status'];
-                                                    switch ($contactus_status) {
-                                                        case 'A':
-                                                            echo '<a href="?type=status&operation=inactive&contactus_id=' . $Val['contactus_id'] . '"><span class="badge badge-Active"><b>Active</b></span></a> | <a href="managecontactus.php?type=edit&contactus_id=' . $Val['contactus_id'] . '"><span class="badge badge-Edit"><b>Edit</b></span></a> | <a href="?type=delete&contactus_id=' . $Val['contactus_id'] . '"><span class="badge badge-Deleted"><b>Delete</b></span></a>';
-                                                            break;
-                                                        case 'N':
-                                                            echo '<a href="?type=status&operation=active&contactus_id=' . $Val['contactus_id'] . '"><span class="badge badge-Inactive"><b>Inactive</b></span></a> | <a href="managecontactus.php?type=edit&contactus_id=' . $Val['contactus_id'] . '"><span class="badge badge-Edit"><b>Edit</b></span></a> | <a href="?type=delete&contactus_id=' . $Val['contactus_id'] . '"><span class="badge badge-Deleted"><b>Delete</b></span></a>';
-                                                            break;
-                                                        case 'D':
-                                                            echo '<span class="badge badge-Deleted"><b>Deleted</b></span>';
-                                                            break;
-                                                    }
+                                                        $contactus_status = $Val['contactus_status'];
+                                                        switch ($contactus_status) {
+                                                            case 'A':
+                                                                echo '<div class="btn-group" role="group">
+                                                                        <a href="?type=status&operation=inactive&contactus_id=' . ($Val['contactus_id']) . '" class="btn btn-success">Active</a>
+                                                                        <a href="managecontactus.php?type=edit&contactus_id=' . ($Val['contactus_id']) . '" class="btn btn-primary">Edit</a>
+                                                                        <a href="?type=delete&contactus_id=' . ($Val['contactus_id']) . '" class="btn btn-danger">Delete</a>
+                                                                    </div>';
+                                                                break;
+                                                            case 'N':
+                                                                echo '<div class="btn-group" role="group">
+                                                                        <a href="?type=status&operation=active&contactus_id=' . ($Val['contactus_id']) . '" class="btn btn-warning">Inactive</a>
+                                                                        <a href="managecontactus.php?type=edit&contactus_id=' . ($Val['contactus_id']) . '" class="btn btn-primary">Edit</a>
+                                                                        <a href="?type=delete&contactus_id=' . ($Val['contactus_id']) . '" class="btn btn-danger">Delete</a>
+                                                                    </div>';
+                                                                break;
+                                                            case 'D':
+                                                                echo '<div class="btn-group" role="group"><span class="badge badge-Deleted">Deleted</span></div>';
+                                                                break;
+                                                            default:
+                                                                echo '<div class="btn-group" role="group"><span class="badge badge-Unknown">Unknown Status</span></div>';
+                                                                break;
+                                                        }
                                                     ?>
                                                 </td>
-                                            </tr>
                                         <?php endforeach; ?>
                                     </tbody>
                                 </table>

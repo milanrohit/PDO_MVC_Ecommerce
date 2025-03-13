@@ -106,23 +106,31 @@ if (isset($type) && !empty($type)) {
                                                 </td>
                                                 <td><span class="count"><?php echo $cat['Categories_Id']; ?></span></td>
                                                 <td><span class="name"><?php echo $cat['Categories_Name']; ?></span></td>
-                                                <td>
+                                                <td class="status-column">
                                                     <?php
-                                                    $Categories_Status = $cat['Categories_Status'];
-                                                    switch ($Categories_Status) {
-                                                        case 'A':
-                                                            echo '<a href="?type=status&operation=inactive&categorieId=' . $cat['Categories_Id'] . '"><span class="badge badge-Active"><b>Active</b></span></a> | <a href="managecategories.php?type=edit&categorieId=' . $cat['Categories_Id'] . '"><span class="badge badge-Edit"><b>Edit</b></span></a> | <a href="?type=delete&categorieId=' . $cat['Categories_Id'] . '"><span class="badge badge-Deleted"><b>Delete</b></span></a>';
-                                                            break;
-                                                        case 'N':
-                                                            echo '<a href="?type=status&operation=active&categorieId=' . $cat['Categories_Id'] . '"><span class="badge badge-Inactive"><b>Inactive</b></span></a> | <a href="managecategories.php?type=edit&categorieId=' . $cat['Categories_Id'] . '"><span class="badge badge-Edit"><b>Edit</b></span></a> | <a href="?type=delete&categorieId=' . $cat['Categories_Id'] . '"><span class="badge badge-Deleted"><b>Delete</b></span></a>';
-                                                            break;
-                                                        case 'D':
-                                                            echo '<span class="badge badge-Deleted"><b>Deleted</b></span>';
-                                                            break;
-                                                        default:
-                                                            echo '<span class="badge badge-Unknown"><b>Unknown Status</b></span>';
-                                                            break;
-                                                    }
+                                                        $Categories_Status = $cat['Categories_Status'];
+                                                        switch ($Categories_Status) {
+                                                            case 'A':
+                                                                echo '<div class="btn-group" role="group">
+                                                                        <a href="?type=status&operation=inactive&categorieId=' . ($cat['Categories_Id']) . '" class="btn btn-success">Active</a>
+                                                                        <a href="managecategories.php?type=edit&categorieId=' . ($cat['Categories_Id']) . '" class="btn btn-primary">Edit</a>
+                                                                        <a href="?type=delete&categorieId=' . ($cat['Categories_Id']) . '" class="btn btn-danger">Delete</a>
+                                                                    </div>';
+                                                                break;
+                                                            case 'N':
+                                                                echo '<div class="btn-group" role="group">
+                                                                        <a href="?type=status&operation=active&categorieId=' . ($cat['Categories_Id']) . '" class="btn btn-warning">Inactive</a>
+                                                                        <a href="managecategories.php?type=edit&categorieId=' . ($cat['Categories_Id']) . '" class="btn btn-primary">Edit</a>
+                                                                        <a href="?type=delete&categorieId=' . ($cat['Categories_Id']) . '" class="btn btn-danger">Delete</a>
+                                                                    </div>';
+                                                                break;
+                                                            case 'D':
+                                                                echo '<div class="btn-group" role="group"><span class="badge badge-Deleted">Deleted</span></div>';
+                                                                break;
+                                                            default:
+                                                                echo '<div class="btn-group" role="group"><span class="badge badge-Unknown">Unknown Status</span></div>';
+                                                                break;
+                                                        }
                                                     ?>
                                                 </td>
                                             </tr>
