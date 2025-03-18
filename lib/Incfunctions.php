@@ -139,6 +139,20 @@
         return preg_replace('/[^a-zA-Z0-9]/', '', $input);
     }
 
+    function arrayToJson(array $inputArray): string {
+        // Validate the input is not empty
+        if (empty($inputArray)) {
+            throw new InvalidArgumentException('Input array cannot be empty.');
+        }
+        try {
+            // Convert array to JSON
+            return json_encode($inputArray, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT, 512);
+        } catch (JsonException $e) {
+            // Handle JSON encoding errors gracefully
+            throw new RuntimeException('Failed to convert array to JSON: ' . $e->getMessage());
+        }
+    }
+
     // Path Constants
     const BACK_END_PATH = "/PDO_MVC_Ecommerce/backend/";  // BackendPath
     const FRONT_END_PATH = "/PDO_MVC_Ecommerce/frontend/"; // FrontendPath
