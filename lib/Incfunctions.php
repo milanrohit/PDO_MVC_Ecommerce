@@ -1,13 +1,13 @@
 <?php
     // Debugging functions with exit
-    function _debug($arr): void {
+    function _d($arr): void {
         echo "<pre>";
         print_r($arr);
         echo "</pre>";
     }
 
     // Debugging functions with exit
-    function _debugx($arr): void {
+    function _dx($arr): void {
         echo "<pre>";
         print_r($arr);
         echo "</pre>";
@@ -102,6 +102,7 @@
     }
 
     function uploadImage(array $file): string {
+
         // Check if the file is an image
         if (!isset($file['type']) || strpos($file['type'], 'image/') !== 0) {
             throw new Exception('Invalid file type. Only images are allowed.');
@@ -119,17 +120,19 @@
             throw new Exception('File size must be between 10KB and 3MB.');
         }
 
-        // Move the uploaded file to the target directory
-        if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
-            throw new Exception('Failed to upload the image.');
-        }
-        
-        // Generate a unique file name and determine the target path
-        $fileName = uniqid('img_', true).rand(0,999).$file['name'];
-        $targetPath = PRODUCT_IMAGES_UPLOAD_DIR . $fileName;
+        if(!empty($file['name']) && !empty($file['size']) && !empty($file['tmp_name'])) {
 
-        // Return only the image name
-        return $fileName;
+            // Generate a unique file name and determine the target path
+            $fileName = uniqid('img_', true).rand(0,999).$file['name'];
+
+            // Move the uploaded file to the target directory
+            move_uploaded_file($file['tmp_name'], PRODUCT_IMAGES_UPLOAD_DIR . $fileName);
+            
+            // Return the file name
+            return $fileName;
+        }else {
+            throw new Exception('Invalid file name or file size.');
+        }
     }
 
     function cleanAlphanumeric($input) {
