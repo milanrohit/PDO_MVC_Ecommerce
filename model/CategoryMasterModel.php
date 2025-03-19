@@ -192,6 +192,36 @@ class CategoryMasterModel {
         }
         return $options;
     }
+
+    // Function to fetch categories for frontend
+    public  function fetchCategoriesForFrontend(): string {
+        try {
+            // Use a parameterized query for safety and clarity
+            $sql = "SELECT Categories_id, Categories_Name
+                FROM {$this->tableName}
+                WHERE Categories_Status = :status
+                ORDER BY Categories_Name ASC";
+
+            // Prepare the statement
+            $stmt = $this->conn->prepare($sql);
+
+            // Bind parameters
+            $stmt->bindValue(':status', 'A', PDO::PARAM_STR);
+
+            // Execute the query
+            $stmt->execute();
+
+            // Fetch the results
+            $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Convert the results to JSON
+            return arrayToJson($categories);
+        } catch (PDOException $e) {
+            // Handle database errors gracefully
+            error_log("Error fetching categories: " . $e->getMessage());
+            return [];
+        }
+    }
 }
 
 // Initialize database connection

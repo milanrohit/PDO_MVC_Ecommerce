@@ -153,6 +153,24 @@
         }
     }
 
+    function decodeJson(string $jsonData): array {
+        try {
+            // Decode JSON into an associative array
+            $decodedData = json_decode($jsonData, true, 512, JSON_THROW_ON_ERROR);
+
+            // Check if the decoded data is an array and not empty
+            if (empty($decodedData)) {
+                throw new InvalidArgumentException('Decoded JSON is empty or invalid.');
+            }
+
+            return $decodedData;
+        } catch (JsonException $e) {
+            // Handle JSON decoding errors gracefully
+            error_log("JSON decoding error: " . $e->getMessage());
+            throw new RuntimeException('Failed to decode JSON: ' . $e->getMessage());
+        }
+    }
+
     // Path Constants
     const BACK_END_PATH = "/PDO_MVC_Ecommerce/backend/";  // BackendPath
     const FRONT_END_PATH = "/PDO_MVC_Ecommerce/frontend/"; // FrontendPath
@@ -170,7 +188,7 @@
 
 
     // Image & File Operations
-    const PRODUCT_IMAGES_UPLOAD_DIR = "images/productimanges/";
+    const PRODUCT_IMAGES_UPLOAD_DIR = "img/";
     const FAILED_TO_FILE_REMOVE_DIR = "Failed to delete the file.";
     const FILE_NOT_FOUND_DIR = "File not found.";
 

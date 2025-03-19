@@ -61,5 +61,5 @@ $CategoryMasterAPIModel = new CategoryMasterAPIModel($db);
 
 $id = null;
 $categoryDetails = $CategoryMasterAPIModel->getCategoryMasterDetails($id); // Pass category ID (optional)
-//echo json_encode($categoryDetails);
+echo (json_encode($categoryDetails));
 ?>
