@@ -1,4 +1,7 @@
 <?php
+
+    define('PRODUCT_IMAGES_UPLOAD_DIR', '../Img/productImages/'); // image directory
+
     // Debugging functions with exit
     function _d($arr): void {
         echo "<pre>";
@@ -107,31 +110,37 @@
         if (!isset($file['type']) || strpos($file['type'], 'image/') !== 0) {
             throw new Exception('Invalid file type. Only images are allowed.');
         }
-
+    
         // Check the mime type
-        $allowedMimeTypes = ['image/jpeg','image/jpg', 'image/png'];
+        $allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png'];
         if (!in_array($file['type'], $allowedMimeTypes, true)) {
             throw new Exception('Invalid mime type. Only JPG, JPEG, and PNG are allowed.');
         }
-
+    
         // Check the file size
         $fileSize = $file['size'];
-        if ($fileSize < 1000 || $fileSize > 3145728) { // 10 KB to 3 MB
+        if ($fileSize < 1024 || $fileSize > 3145728) {
+            // 10KB - 3MB
             throw new Exception('File size must be between 10KB and 3MB.');
         }
+    
+        // Check if required file fields are not empty
+        if (!empty($file['name']) && $file['error'] === UPLOAD_ERR_OK) {
 
-        if(!empty($file['name']) && !empty($file['size']) && !empty($file['tmp_name'])) {
-
-            // Generate a unique file name and determine the target path
-            $fileName = uniqid('img_', true).rand(0,999).$file['name'];
-
+            // Generate a unique file name
+            $uniqueFileName = uniqid('img_', true) . basename($file['name']);
+                
             // Move the uploaded file to the target directory
-            move_uploaded_file($file['tmp_name'], PRODUCT_IMAGES_UPLOAD_DIR . $fileName);
-            
-            // Return the file name
-            return $fileName;
-        }else {
-            throw new Exception('Invalid file name or file size.');
+            if (!empty($uniqueFileName)) {
+
+                move_uploaded_file($file['tmp_name'],PRODUCT_IMAGES_UPLOAD_DIR.$uniqueFileName);
+
+                return $uniqueFileName;
+            }else{
+                throw new Exception('Failed to move uploaded file.');
+            }
+        } else {
+            throw new Exception('Error: Invalid file or missing fields.');
         }
     }
 
@@ -175,6 +184,14 @@
     const BACK_END_PATH = "/PDO_MVC_Ecommerce/backend/";  // BackendPath
     const FRONT_END_PATH = "/PDO_MVC_Ecommerce/frontend/"; // FrontendPath
     const MASTER_CONTROLLER = "/PDO_MVC_Ecommerce/controller/"; // controller
+    const SITE_DIR = "PDO_MVC_Ecommerce/"; // Site Directory
+    const SITE_URL = "http://localhost/"; // Site URL
+    const SITE_NAME = "PDO_MVC_Ecommerce";
+
+    const NEW_ARRIVALS = "New Arrivals";
+    const BEST_SELLER = "Best Seller";
+    
+
 
     // Messages
     const NO_RECORED_FOUND = "No Record Found.";
@@ -186,9 +203,7 @@
     const INVALID_PRODUCT_ID = "<div class='alert alert-danger'>Invalid Product ID.</div>";
     const PRODUCT_NAME_REQUIRED = "<div class='alert alert-danger'>Product Name is required.</div>";
 
-
     // Image & File Operations
-    const PRODUCT_IMAGES_UPLOAD_DIR = "img/";
     const FAILED_TO_FILE_REMOVE_DIR = "Failed to delete the file.";
     const FILE_NOT_FOUND_DIR = "File not found.";
 
@@ -205,6 +220,9 @@
 
 
 
+    //Frontend Message
+
+    const ABOUT_US = "MTechnology is a forward-thinking tech company dedicated to innovation and excellence. We specialize in delivering cutting-edge solutions that empower businesses and enhance everyday experiences. Our mission is to shape the future with technology that truly matters.";
     /*
         1. Ternary Operator (Before PHP 7)
         $var = isset($var) ? $var : "default";

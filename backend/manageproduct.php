@@ -114,6 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             if (!empty($pId) && $pId > 0) {
+
                 // Update the product record
                 $updateData = $productMasterModel->updateProductMaster($pId,$dataUpdateArr);
             
@@ -137,7 +138,7 @@ if($pId!= '' && $type!= ''){
     $productData = $productMasterModel->getProductMasterDetails($pId);
     // Validate product data before displaying the edit form
     if (!empty($productData) && is_array($productData)) {
-        
+
         $productData = array_map('trim', $productData);
 
         $pCategorieId = $productData['Product_CategorieId'] ?? null;
@@ -232,7 +233,7 @@ if($pId!= '' && $type!= ''){
                                         <label for="Product_Img">Product Image Upload</label>
                                         <?php if (!empty($pImg)) { ?>
                                             <!-- Show the existing image -->
-                                            <img src="<?php echo PRODUCT_IMAGES_UPLOAD_DIR . $pImg; ?>" alt="Product Img" class="img-thumbnail" style="width: 100px; height: 100px;">
+                                            <img src="<?php echo PRODUCT_IMAGES_UPLOAD_DIR.$pImg; ?>" alt="Product Img" class="img-thumbnail" style="width: 100px; height: 100px;">
                                             <!-- Hidden field to retain the existing image -->
                                             <input type="hidden" name="existing_img" value="<?php echo $pImg; ?>">
                                         <?php } ?>
@@ -252,7 +253,7 @@ if($pId!= '' && $type!= ''){
                                                     'D' => 'Deleted'
                                                 ];
                                                 foreach ($statusOptions as $key => $value) {
-                                                    $sanitizedValue = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+                                                    $sanitizedValue = sanitizeString($value);
                                                     $selected = ($pStatus === $key) ? 'selected' : '';
                                                     echo '<option value="' . $key . '" ' . $selected . '>' . $sanitizedValue . '</option>';
                                                 }

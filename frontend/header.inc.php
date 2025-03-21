@@ -80,7 +80,7 @@
                                             if (is_array($categoryList) && !empty($categoryList)) {
                                                 // Loop through the array to display each category
                                                 foreach ($categoryList as $category) {
-                                                    echo '<li><a href="#">' . sanitizeString($category['Categories_Name']) . '</a></li>';
+                                                    echo '<li><a href="categories.php?cid=' . sanitizeString($category['Categories_id']) . '">' . sanitizeString($category['Categories_Name']) . '</a></li>';
                                                 }
                                             } else {
                                                 // Optionally, you can display a message or an empty placeholder
@@ -95,6 +95,18 @@
                                     <nav id="mobile_dropdown">
                                         <ul>
                                             <li><a href="index.php">Home</a></li>
+                                            <?php
+                                                // Check if $categories is set and is an array
+                                                if (is_array($categoryList) && !empty($categoryList)) {
+                                                    // Loop through the array to display each category
+                                                    foreach ($categoryList as $category) {
+                                                        echo '<li><a href="categories.php?cid=' . sanitizeString($category['Categories_id']) . '">' . sanitizeString($category['Categories_Name']) . '</a></li>';
+                                                    }
+                                                } else {
+                                                    // Optionally, you can display a message or an empty placeholder
+                                                    echo '<li>No categories available</li>';
+                                                }
+                                            ?>
                                             <li><a href="blog.html">blog</a></li>
                                             <li><a href="#">pages</a>
                                                 <ul>

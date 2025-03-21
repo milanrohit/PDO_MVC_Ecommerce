@@ -4,10 +4,9 @@ include_once("../lib/Incfunctions.php");
 include_once("header.inc.php");
 include_once("../model/ProductMasterModel.php");
 
-// Database object
-  // Initialize database connection
-  $database = new Database();
-  $db = $database->getConnection();
+// Initialize database connection
+$database = new Database();
+$db = $database->getConnection();
 
 // Productmaster obj
 $productMasterModel = new ProductMasterModel($db);
@@ -163,4 +162,3 @@ if (isset($type) && !empty($type)) {
 <?php
 include_once("footer.inc.php");
 ?>
-
