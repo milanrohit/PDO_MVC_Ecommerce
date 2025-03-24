@@ -6,18 +6,14 @@ include_once "header.inc.php"; // Header menu inclusion
 include_once("../model/AdminMasterModel.php");
 
 // Initialize database connection
-$database = new Database();
-$db = $database->getConnection();
+$db = (new Database())->getConnection();
+// AdminMasterModel object and fetch admin master details
+$adminMasterDetails = (new AdminMasterModel($db))->getUsersMasterDetails();
 
-
+// Initialize variables
 $successMessage = "";
-$adminMasterModel = "";
-$adminMasterDetails = "";
-$adminMaster  = ""
+$adminMaster = "";
 
-;// AdminMasterModel object
-$adminMasterModel = new AdminMasterModel($db);
-$adminMasterDetails = $adminMasterModel->getUsersMasterDetails();
 
 // Check for query parameters
 $type = isset($_GET['type']) ? sanitizeString((string)$_GET['type']) : "";
