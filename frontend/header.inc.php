@@ -1,19 +1,16 @@
 <?php
-   include_once("../config/connection.php");
-   include_once("../lib/Incfunctions.php");
-   include_once("../model/CategoryMasterModel.php");
-
-   $database = new Database();
-   $db = $database->getConnection();
-
-   $categoryMaster = new CategoryMasterModel($db);
-   $categoryList ='';
-   $categoryList = $categoryMaster->fetchCategoriesForFrontend();
-   if(!empty($categoryList)) {
-       $categoryList = decodeJson($categoryList);
-   } else {
-       $categoryList = '';
-   }
+// Include necessary files
+foreach ([
+    "../config/connection.php",
+    "../lib/Incfunctions.php",
+    "../model/CategoryMasterModel.php"
+] as $file) {
+    include_once $file;
+}
+    // Initialize database connection
+    $db = (new Database())->getConnection();
+    $categoryList = (new CategoryMasterModel($db))->fetchCategoriesForFrontend();
+    $categoryList = !empty($categoryList) ? decodeJson($categoryList) : '';
 ?>
 
 <!doctype html>

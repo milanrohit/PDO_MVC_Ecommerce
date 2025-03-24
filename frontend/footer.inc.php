@@ -1,10 +1,14 @@
 <?php
-   include_once("../config/connection.php");
-   include_once("../lib/Incfunctions.php");
-   
-   // Initialize database connection
-   $database = new Database();
-   $db = $database->getConnection();
+// Include necessary files
+foreach ([
+    "../config/connection.php",
+    "../lib/Incfunctions.php"
+] as $file) {
+    include_once $file;
+}
+
+// Initialize database connection
+$db = (new Database())->getConnection();
 ?>
 <!-- Start Footer Area -->
 <footer id="htc__footer">

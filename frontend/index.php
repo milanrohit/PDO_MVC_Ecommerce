@@ -1,8 +1,12 @@
 <?php
-    include_once("../config/connection.php");
-    include_once("../lib/Incfunctions.php");
-    include_once("header.inc.php");
-    include_once("../model/ProductMasterModel.php");
+// Include necessary files
+foreach ([
+    "../config/connection.php",
+    "../lib/Incfunctions.php",
+    "../model/ProductMasterModel.php"
+] as $file) {
+    include_once $file;
+}
 
     // Initialize database connection
     $db = (new Database())->getConnection();

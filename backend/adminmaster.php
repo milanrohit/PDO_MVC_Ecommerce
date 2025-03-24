@@ -1,24 +1,28 @@
 <?php
 // Include necessary files
-include_once "../config/connection.php";
-include_once "../lib/Incfunctions.php";
-include_once "header.inc.php"; // Header menu inclusion
-include_once("../model/AdminMasterModel.php");
+foreach ([
+    "../config/connection.php",
+    "../lib/Incfunctions.php",
+    "header.inc.php",
+    "../model/AdminMasterModel.php"
+] as $file) {
+    include_once $file;
+}
 
 // Initialize database connection
 $db = (new Database())->getConnection();
-// AdminMasterModel object and fetch admin master details
+
+// Fetch admin master details
 $adminMasterDetails = (new AdminMasterModel($db))->getUsersMasterDetails();
 
 // Initialize variables
 $successMessage = "";
 $adminMaster = "";
 
-
-// Check for query parameters
-$type = isset($_GET['type']) ? sanitizeString((string)$_GET['type']) : "";
-$operation = isset($_GET['operation']) ? sanitizeString((string)$_GET['operation']) : "";
-$usersId = isset($_GET['usersId']) ? sanitizeString((int)$_GET['usersId']) : 0;
+// Check for query parameters with null coalescing operator
+$type = sanitizeString($_GET['type'] ?? "");
+$operation = sanitizeString($_GET['operation'] ?? "");
+$usersId = sanitizeString((int)($_GET['usersId'] ?? 0));
 
 // Update users master status
 if (!empty($type)) {
