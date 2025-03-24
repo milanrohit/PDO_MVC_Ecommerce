@@ -4,18 +4,11 @@
     include_once("header.inc.php");
     include_once("../model/ProductMasterModel.php");
 
-    $database = new Database();
-    $db = $database->getConnection();
+    // Initialize database connection
+    $db = (new Database())->getConnection();
 
-    // Productmaster obj
-    $productMasterModel = new ProductMasterModel($db);
-    $pMstrDetails = $productMasterModel->fetchProductForFrontend();
-
-    if(!empty($pMstrDetails)) {
-        $pMstrDetails = decodeJson($pMstrDetails);
-    } else {
-        $pMstrDetails = '';
-    }
+    // Fetch ProductMaster details
+    $pMstrDetails = (new ProductMasterModel($db))->getProductMasterDetails() ?? '';
  ?>
         <div class="body__overlay"></div>
         <!-- Start Offset Wrapper -->

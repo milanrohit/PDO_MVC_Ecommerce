@@ -267,49 +267,6 @@ class ProductMasterModel {
         }
         return $changedValues;
     }
-
-    // Function to fetch product for frontend
-    public  function fetchProductForFrontend(): string {
-        try {
-            // Use a parameterized query for safety and clarity
-            $sql = "SELECT
-                        Product_Id,
-                        Product_CategorieId,
-                        Product_Name,
-                        Product_Mrp,
-                        Product_SellPrice,
-                        Product_Qty,
-                        Product_Img,
-                        Product_ShortDesc,
-                        Product_LongDesc,
-                        Product_MetaTitle,
-                        Product_MetaDesc,
-                        Product_Status,
-                        Product_datetime
-                    FROM
-                        {$this->productMaster}
-                    WHERE Product_Status = :status
-                    ORDER BY Product_Name ASC";
-            // Prepare the statement
-            $stmt = $this->conn->prepare($sql);
-
-            // Bind parameters
-            $stmt->bindValue(':status', 'A', PDO::PARAM_STR);
-
-            // Execute the query
-            $stmt->execute();
-
-            // Fetch the results
-            $product = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            // Convert the results to JSON
-            return arrayToJson($product);
-        } catch (PDOException $e) {
-            // Handle database errors gracefully
-            error_log("Error fetching product: " . $e->getMessage());
-            return [];
-        }
-    }
 }
 
 // Database object
