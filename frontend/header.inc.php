@@ -1,12 +1,10 @@
 <?php
-// Include necessary files
-foreach ([
-    "../config/connection.php",
-    "../lib/Incfunctions.php",
-    "../model/CategoryMasterModel.php"
-] as $file) {
-    include_once $file;
-}
+include_once("../config/connection.php");
+include_once("../lib/Incfunctions.php");
+include_once("../model/CategoryMasterModel.php");
+
+// Initialize database connection
+$db = (new Database())->getConnection();
     // Initialize database connection
     $db = (new Database())->getConnection();
     $categoryList = (new CategoryMasterModel($db))->fetchCategoriesForFrontend();

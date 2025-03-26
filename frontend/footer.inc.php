@@ -1,11 +1,6 @@
 <?php
-// Include necessary files
-foreach ([
-    "../config/connection.php",
-    "../lib/Incfunctions.php"
-] as $file) {
-    include_once $file;
-}
+include_once("../config/connection.php");
+include_once("../lib/Incfunctions.php");
 
 // Initialize database connection
 $db = (new Database())->getConnection();
