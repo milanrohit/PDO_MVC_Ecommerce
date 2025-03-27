@@ -46,36 +46,53 @@ class CategoryMasterModel {
         }
     }
 
-    public function updateCategoriesMaster(int $catId, string $catStatus): bool {
-
+    public function updateCategoriesMaster(int $catId, ?string $catStatus): bool {
         try {
-            $catName = sanitizeString(((string)$_POST['Categories_Name']));
-            $catStatus = sanitizeString(((string)$catStatus));
-            $catId = sanitizeString(((int)$catId));
+            // Sanitize inputs
+            $catName = $_POST['Categories_Name'] ?? "";
+            $catStatus = sanitizeString($catStatus);
+            $catId = sanitizeString($catId);
 
-            if(!empty($catId) && !empty($catStatus)){
-                // Prepare SQL query
-                $query = "UPDATE $this->tableName SET Categories_Status = :catStatus WHERE Categories_Id = :catId";
-                $stmt = $this->conn->prepare($query);
-                $stmt->bindParam(':catStatus', $catStatus, PDO::PARAM_STR);
-            }else{
-                $query = "UPDATE $this->tableName SET Categories_Name = :catName WHERE Categories_Id = :catId";
-                $stmt = $this->conn->prepare($query);
-                $stmt->bindParam(':catName', $catName, PDO::PARAM_STR);
+            // Initialize the query and parameters
+            $query = "UPDATE $this->tableName SET ";
+            $params = [];
+
+            // Determine which field to update
+            switch (true) {
+                case !empty($catId) && !empty($catStatus):
+                    $query .= "Categories_Status = :catStatus";
+                    $params[':catStatus'] = $catStatus;
+                    break;
+
+                case !empty($catName):
+                    $query .= "Categories_Name = :catName";
+                    $params[':catName'] = sanitizeString($catName);
+                    break;
+
+                default:
+                    // If neither condition is met, return false or throw an exception
+                    return false;
             }
-           
-            // Bind parameters
-            $stmt->bindParam(':catId', $catId, PDO::PARAM_INT);
 
-            // Execute the statement
+            // Append the WHERE clause
+            $query .= " WHERE Categories_Id = :catId";
+            $params[':catId'] = $catId;
+
+            // Prepare and execute the statement
+            $stmt = $this->conn->prepare($query);
+            foreach ($params as $key => $value) {
+                $stmt->bindValue($key, $value);
+            }
+
             if ($stmt->execute()) {
                 return true;
             } else {
-                printf("Error: %s.\n", $stmt->errorInfo()[2]);
+                error_log("Database update error: " . implode(", ", $stmt->errorInfo()));
                 return false;
             }
         } catch (PDOException $e) {
-            echo "Failed to Update a category: " . $e->getMessage();
+            error_log("Failed to update a category: " . $e->getMessage());
+            return false; // Return false on exception
         }
     }
 
