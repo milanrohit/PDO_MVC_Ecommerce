@@ -18,9 +18,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
     if ($adminUsername && $adminPassword) {
         $Adminmasterdetails = $LoginmasterModel->getAdminmasterdetails( $adminUsername, $adminPassword);
         
+        // Assuming 'Admin_Login' and 'Admin_Id' are fields in the database table 'adminmaster'
+        if ($Adminmasterdetails === false) {
+            $errormsg = "Invalid username or password or db connection error";
+        } else {
          $adminLogin = $Adminmasterdetails['Admin_Login'];
          $adminId = $Adminmasterdetails['Admin_Id'];
-         
+        }
          // Assuming getAdminmasterdetails returns an associative array with a hashed password
         if (!empty($Adminmasterdetails) && $adminLogin === 'YES' && $adminId === 1 && $Adminmasterdetails['Admin_Password'] === $adminPassword) {
             redirect("categoriemaster.php");
