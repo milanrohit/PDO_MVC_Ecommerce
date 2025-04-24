@@ -6,7 +6,9 @@
    $database = new Database();
    $db = $database->getConnection();
 
-   session_start();
+   if (session_status() === PHP_SESSION_NONE) {
+       session_start();
+   }
 
    unset($_SESSION['Admin_Login']);
    unset($_SESSION['Admin_Username']);

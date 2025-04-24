@@ -44,7 +44,7 @@ class Database {
 
 // Create an instance of the Database class and call the testConnection method
 $database = new Database();
-echo $database->testConnection();
+//echo $database->testConnection();
 ?>
 
 
