@@ -4,11 +4,12 @@
 session_start();
 
 class Database {
-    //private $host = 'localhost'; // Localhost for local development
-    private $host = 'mysql'; // Docker container name for MySQL
+    private $host = 'localhost'; // Docker container name for MySQL
     private $db = 'phpecommerce';
-    private $user = 'admin';
-    private $pass = 'admin@123';
+    //private $user = 'admin';
+    //private $pass = 'admin@123';
+    private $user = 'root';
+    private $pass = '';
     private $charset = 'utf8mb4';
     private $pdo;
     private $error;

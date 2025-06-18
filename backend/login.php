@@ -22,14 +22,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
         if ($Adminmasterdetails === false) {
             $errormsg = "Invalid username or password or db connection error";
         } else {
-         $adminLogin = $Adminmasterdetails['Admin_Login'];
-         $adminId = $Adminmasterdetails['Admin_Id'];
-        }
-         // Assuming getAdminmasterdetails returns an associative array with a hashed password
-        if (!empty($Adminmasterdetails) && $adminLogin === 'YES' && $adminId === 1 && $Adminmasterdetails['Admin_Password'] === $adminPassword) {
-            redirect("categoriemaster.php");
-        } else {
-            $errormsg = "Invalid username or password";
+            // Initialize variables with default values
+            $adminLogin = isset($Adminmasterdetails['Admin_Login']) ? $Adminmasterdetails['Admin_Login'] : '';
+            $adminId = isset($Adminmasterdetails['Admin_Id']) ? $Adminmasterdetails['Admin_Id'] : 0;
+            
+            // Check all conditions for valid login
+            if (!empty($Adminmasterdetails) && 
+                isset($Adminmasterdetails['Admin_Password']) && 
+                $adminLogin === 'YES' && 
+                $adminId === 1 && 
+                password_verify($Adminmasterdetails['Admin_Password'] , $adminPassword) ){
+                redirect("categoriemaster.php");
+            } else {
+                $errormsg = "Invalid username or password";
+            }
+
         }
     } else {
         $errormsg = "Please fill in all fields.";
