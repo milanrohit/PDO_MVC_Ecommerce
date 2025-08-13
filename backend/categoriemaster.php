@@ -109,28 +109,30 @@ if (isset($type) && !empty($type)) {
                                                 <td class="status-column">
                                                     <?php
                                                         $Categories_Status = $cat['Categories_Status'];
+                                                        $categoryId = $cat['Categories_Id'];
+
+                                                        echo '<div class="btn-group" role="group">';
+
                                                         switch ($Categories_Status) {
                                                             case 'A':
-                                                                echo '<div class="btn-group" role="group">
-                                                                        <a href="?type=status&operation=inactive&categorieId=' . ($cat['Categories_Id']) . '" class="btn btn-success">Active</a>
-                                                                        <a href="managecategories.php?type=edit&categorieId=' . ($cat['Categories_Id']) . '" class="btn btn-primary">Edit</a>
-                                                                        <a href="?type=delete&categorieId=' . ($cat['Categories_Id']) . '" class="btn btn-danger">Delete</a>
-                                                                    </div>';
+                                                                echo '<button class="btn btn-success change-status" data-id="' . $categoryId . '" data-operation="inactive">Active</button>';
                                                                 break;
                                                             case 'N':
-                                                                echo '<div class="btn-group" role="group">
-                                                                        <a href="?type=status&operation=active&categorieId=' . ($cat['Categories_Id']) . '" class="btn btn-warning">Inactive</a>
-                                                                        <a href="managecategories.php?type=edit&categorieId=' . ($cat['Categories_Id']) . '" class="btn btn-primary">Edit</a>
-                                                                        <a href="?type=delete&categorieId=' . ($cat['Categories_Id']) . '" class="btn btn-danger">Delete</a>
-                                                                    </div>';
+                                                                echo '<button class="btn btn-warning change-status" data-id="' . $categoryId . '" data-operation="active">Inactive</button>';
                                                                 break;
                                                             case 'D':
-                                                                echo '<div class="btn-group" role="group"><span class="badge badge-Deleted">Deleted</span></div>';
+                                                                echo '<span class="badge badge-Deleted">Deleted</span>';
                                                                 break;
                                                             default:
-                                                                echo '<div class="btn-group" role="group"><span class="badge badge-Unknown">Unknown Status</span></div>';
+                                                                echo '<span class="badge badge-Unknown">Unknown Status</span>';
                                                                 break;
                                                         }
+
+                                                        if ($Categories_Status !== 'D') {
+                                                            echo '<a href="managecategories.php?type=edit&categorieId=' . $categoryId . '" class="btn btn-primary">Edit</a>';
+                                                            echo '<button class="btn btn-danger delete-category" data-id="' . $categoryId . '">Delete</button>';
+                                                        }
+                                                        echo '</div>';
                                                     ?>
                                                 </td>
                                             </tr>
@@ -151,12 +153,74 @@ if (isset($type) && !empty($type)) {
 </div>
 
 <script>
-    $(document).ready(function() {
-        // Remove the success message
-        setTimeout(function() {
-            $('#successMessage').remove();
-        }, 3000);
-    });
-</script>
+$(document).ready(function () {
+    // ✅ Handle status toggle
+    $('.change-status').on('click', function () {
+        const button = $(this);
+        const categoryId = button.data('id');
+        const operation = button.data('operation');
 
-<?php include_once("footer.inc.php"); // Footer calling ?>
+        $.ajax({
+            url: 'ajax_category_action.php',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                type: 'status',
+                operation: operation,
+                categorieId: categoryId
+            },
+            success: function (response) {
+                if (response.status === 'A') {
+                    button
+                        .removeClass('btn-warning')
+                        .addClass('btn-success')
+                        .text('Active')
+                        .data('operation', 'inactive');
+                } else if (response.status === 'N') {
+                    button
+                        .removeClass('btn-success')
+                        .addClass('btn-warning')
+                        .text('Inactive')
+                        .data('operation', 'active');
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function () {
+                alert('Failed to update status. Please try again.');
+            }
+        });
+    });
+
+    // ✅ Handle delete button click
+    $('.delete-category').on('click', function () {
+        const categoryId = $(this).data('id');
+        if (confirm('Are you sure you want to delete this category?')) {
+            $.ajax({
+                url: 'ajax_category_action.php',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    type: 'delete',
+                    categorieId: categoryId
+                },
+                success: function (response) {
+                    if (response.status === 'success') {
+                        // Option 1: Reload page
+                        location.reload();
+
+                        // Option 2: Remove row without reload
+                        // $(this).closest('tr').remove();
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function () {
+                    alert('Failed to delete category. Please try again.');
+                }
+            });
+        }
+    });
+});
+</script>
+<?php include_once("footer.inc.php");?>

@@ -1,5 +1,4 @@
 <?php
-
 include_once("../config/connection.php");
 include_once("../lib/Incfunctions.php");
 
@@ -246,4 +245,3 @@ $database = new Database();
 $db = $database->getConnection();
 $CategoryMasterModel = new CategoryMasterModel($db);
 ?>
-

@@ -14,6 +14,7 @@ class CategoryMasterController extends CategoryMasterModel {
 $database = new Database();
 $db = $database->getConnection();
 
+_dx($db);
 // Categoriemaster objs
 $catMasterController = new CategoryMasterController($db);
 $catMasterModel = new CategoryMasterModel($db);

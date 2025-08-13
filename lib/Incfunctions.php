@@ -1,6 +1,6 @@
 <?php
     declare(strict_types=1);
-
+    
     define('PRODUCT_IMAGES_UPLOAD_DIR', '../Img/productImages/'); // image directory
 
     // Debugging function (non-disruptive)
@@ -154,13 +154,21 @@
     }
 
     // Base project root (two levels up from /lib)
-    define('PROJECT_ROOT', dirname(__DIR__, 1)); // C:\xampp\htdocs\PDO_MVC_Ecommerce
+    //define('PROJECT_ROOT', dirname(__DIR__, 1)); // C:\xampp\htdocs\PDO_MVC_Ecommerce
+    //define('PROJECT_ROOT', realpath(__DIR__ . '/../'));
+
+    // Absolute filesystem path to project root
+    define('PROJECT_ROOT', realpath(dirname(__FILE__, 2)));
 
     // Path Constants
     define('BACK_END_PATH', PROJECT_ROOT . '/backend/');
     define('FRONT_END_PATH', PROJECT_ROOT . '/frontend/');
     define('MASTER_CONTROLLER', PROJECT_ROOT . '/controller/');
+    define('MODEL_PATH', PROJECT_ROOT . '/model/');
+    define('CONFIG_PATH', PROJECT_ROOT . '/config/');
     define('JS_CDN', PROJECT_ROOT . '/js_cdn/');
+
+    
 
     define('BKEND_CSS_DIR', 'bkend_css/bkend_css.css');
 
@@ -176,6 +184,7 @@
     const INVALID_PRODUCT_DATA = "<div class='alert alert-danger'>Invalid Product Data.</div>";
     const INVALID_PRODUCT_ID = "<div class='alert alert-danger'>Invalid Product ID.</div>";
     const PRODUCT_NAME_REQUIRED = "<div class='alert alert-danger'>Product Name is required.</div>";
+    const STATUS_UPDATE = "Status updated successfully";
 
     // Image & File Operations
     const FAILED_TO_FILE_REMOVE_DIR = "Failed to delete the file.";
