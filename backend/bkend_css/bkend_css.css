@@ -1,0 +1,55 @@
+/* === Base Styles === */
+body {
+  background-color: #f8f9fa;
+  padding: 50px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #212529;
+}
+
+/* === Layout: Top Right Container === */
+.top-right {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 20px;
+  margin-bottom: 30px;
+}
+
+/* === Custom Blue Button (.cblue) === */
+.cblue {
+  background-color: #007bff; /* Bootstrap primary blue */
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-weight: 600;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px rgba(0, 123, 255, 0.2);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.cblue:hover,
+.cblue:focus {
+  background-color: #0056b3;
+  box-shadow: 0 6px 10px rgba(0, 86, 179, 0.3);
+  color: #fff;
+  text-decoration: none;
+}
+
+/* === Dropdown Menu Styling (Optional Enhancement) === */
+.dropdown-menu {
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-width: 160px;
+}
+
+.dropdown-item {
+  font-size: 14px;
+  padding: 10px 15px;
+  transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #f1f1f1;
+  color: #007bff;
+}

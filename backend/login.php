@@ -1,49 +1,46 @@
-<?php 
-include_once("../config/connection.php");
-include_once("../lib/Incfunctions.php");
-include_once("../controller/LoginMasterController.php");
-include_once("../model/LoginMasterModel.php");
+<?php
+declare(strict_types=1);
+ob_start();
+require_once '../config/connection.php';
+require_once '../lib/Incfunctions.php';
+require_once '../controller/LoginMasterController.php';
+require_once '../model/LoginMasterModel.php';
+
+$errormsg = '';
+$adminUsername = '';
+$adminPassword = '';
 
 // Initialize database connection
 $database = new Database();
 $db = $database->getConnection();
 $LoginmasterModel = new LoginmasterModel($db);
 
-$errormsg = '';
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
-    $adminUsername = !empty($_POST['Admin_Username']) ? trim($_POST['Admin_Username']) : '';
-    $adminPassword = !empty($_POST['Admin_Password']) ? trim($_POST['Admin_Password']) : '';
+    $adminUsername = trim($_POST['Admin_Username'] ?? '');
+    $adminPassword = trim($_POST['Admin_Password'] ?? '');
 
-    if ($adminUsername && $adminPassword) {
-        $Adminmasterdetails = $LoginmasterModel->getAdminmasterdetails( $adminUsername, $adminPassword);
+    if ($adminUsername === '' || $adminPassword === '') {
+        $errormsg = 'Please fill in all fields.';
+    } else {
+        // Only query by username, not password
+        $adminDetails = $LoginmasterModel->getAdminmasterdetails($adminUsername);
         
-        // Assuming 'Admin_Login' and 'Admin_Id' are fields in the database table 'adminmaster'
-        if ($Adminmasterdetails === false) {
-            $errormsg = "Invalid username or password or db connection error";
+        if (!$adminDetails || !isset($adminDetails['Admin_Password'])) {
+            $errormsg = 'Invalid username or password.';
         } else {
-            // Initialize variables with default values
-            $adminLogin = isset($Adminmasterdetails['Admin_Login']) ? $Adminmasterdetails['Admin_Login'] : '';
-            $adminId = isset($Adminmasterdetails['Admin_Id']) ? $Adminmasterdetails['Admin_Id'] : 0;
-            
-            // Check all conditions for valid login
-            if (!empty($Adminmasterdetails) && 
-                isset($Adminmasterdetails['Admin_Password']) && 
-                $adminLogin === 'YES' && 
-                $adminId === 1 && 
-                password_verify($Adminmasterdetails['Admin_Password'] , $adminPassword) ){
+            $adminLogin = $adminDetails['Admin_Login'] ?? '';
+            $adminId = (int) ($adminDetails['Admin_Id'] ?? 0);
+            $hashedPassword = $adminDetails['Admin_Password'];
+
+            if ($adminId === 1 && $adminPassword === $hashedPassword) {
                 redirect("categoriemaster.php");
             } else {
-                $errormsg = "Invalid username or password";
+                $errormsg = 'Invalid username or password.';
             }
-
         }
-    } else {
-        $errormsg = "Please fill in all fields.";
     }
 }
 ?>
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -102,5 +99,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
             }, 3000);
         });
     </script>
-
 </html>

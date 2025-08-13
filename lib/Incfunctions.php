@@ -1,79 +1,68 @@
 <?php
+    declare(strict_types=1);
 
     define('PRODUCT_IMAGES_UPLOAD_DIR', '../Img/productImages/'); // image directory
 
-    // Debugging functions with exit
-    function _d($arr): void {
-        echo "<pre>";
-        print_r($arr);
-        echo "</pre>";
+    // Debugging function (non-disruptive)
+    function _d(mixed $data): void {
+        if (defined('DEBUG') && DEBUG) {
+            echo '<pre>';
+            print_r($data);
+            echo '</pre>';
+        }
     }
 
-    // Debugging functions with exit
-    function _dx($arr): void {
-        echo "<pre>";
-        print_r($arr);
-        echo "</pre>";
-        exit;
+    // Debugging with exit (use cautiously)
+    function _dx(mixed $data): void {
+        if (defined('DEBUG') && DEBUG) {
+            echo '<pre>';
+            print_r($data);
+            echo '</pre>';
+            exit;
+        }
     }
 
     // Convert array to object
     function arrayToObject(array $array): object {
         $object = new stdClass();
         foreach ($array as $key => $value) {
-            if (is_array($value)) {
-                $value = $this->arrayToObject($value);
-            }
-            $object->$key = $value;
+            $object->$key = is_array($value) ? arrayToObject($value) : $value;
         }
         return $object;
     }
 
     // Convert object to array
-    function objectToArray($object): array {
-        if (is_object($object)) {
-            $object = get_object_vars($object);
-        }
-        if (is_array($object)) {
-            return array_map([$this, 'objectToArray'], $object);
-        } else {
-            return $object;
-        }
+    function objectToArray(object|array $input): array {
+        $input = is_object($input) ? get_object_vars($input) : $input;
+        return array_map(fn($item) => is_object($item) || is_array($item) ? objectToArray($item) : $item, $input);
     }
 
-    // Return PDO fetch associative constant
+    // PDO fetch associative constant
     function fetchAssociative(): int {
         return PDO::FETCH_ASSOC;
     }
 
-    // Function to handle redirection
+    // Safe redirection
     function redirect(string $url): void {
-        header('Location: ' . $url);
-        exit();
+        if (!headers_sent()) {
+            header('Location: ' . $url);
+            exit;
+        }
     }
 
-    // Function to sanitize input
-    function sanitizeString(string $input): string {
-        $input = trim($input);
-
-        // Remove HTML tags
-        $sanitized = strip_tags($input);
-
-        // Encode special characters
-        $sanitized = htmlspecialchars($sanitized, ENT_QUOTES, 'UTF-8');
-
-        return $sanitized;
-    }
-
-    // Function to handle redirection with an error message
+    // Redirection with error message
     function redirectWithError(string $url, string $error): void {
         $_SESSION['error_msg'] = $error;
-        header('Location: ' . $url);
-        exit();
+        redirect($url);
     }
 
-    // Function to get file information
-    function getFileInfo($filePath) {
+    // Sanitize input string
+    function sanitizeString(string $input): string {
+        return htmlspecialchars(strip_tags(trim($input)), ENT_QUOTES, 'UTF-8');
+    }
+
+    // Get file metadata
+    function getFileInfo(string $filePath): array {
         $fileInfo = new SplFileInfo($filePath);
         return [
             'name' => $fileInfo->getFilename(),
@@ -83,116 +72,101 @@
         ];
     }
 
-    // Function to hash the password
-    function hashPassword($password) {
+    // Password hashing
+    function hashPassword(string $password): string {
         return password_hash($password, PASSWORD_DEFAULT);
     }
 
-    // Function to verify the password
-    function verifyPassword($enteredPassword, $storedHashedPassword) {
-        return password_verify($enteredPassword, $storedHashedPassword);
+    // Password verification
+    function verifyPassword(string $enteredPassword, string $storedHash): bool {
+        return password_verify($enteredPassword, $storedHash);
     }
 
-    // Function to display copyright information
-    function copyRight() {
-        $yr = date("Y");
-        echo "<b>Copyright &copy; $yr MilanRohit</b>";
+    // Return copyright string
+    function getCopyright(): string {
+        return '© ' . date('Y') . ' MilanRohit';
     }
 
-    // Function to display designer and developer information
-    function designdevelopeby() {
-        echo "<b>Designed & Developed by <a href='#'>MilanRohit</a></b>";
+    // Return designer/developer credit
+    function getDesignerCredit(): string {
+        return 'Designed & Developed by <a href="#">MilanRohit</a>';
     }
 
+    // Upload image with validation
     function uploadImage(array $file): string {
-
-        // Check if the file is an image
         if (!isset($file['type']) || strpos($file['type'], 'image/') !== 0) {
-            throw new Exception('Invalid file type. Only images are allowed.');
+            throw new InvalidArgumentException('Invalid file type. Only images are allowed.');
         }
-    
-        // Check the mime type
+
         $allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png'];
         if (!in_array($file['type'], $allowedMimeTypes, true)) {
-            throw new Exception('Invalid mime type. Only JPG, JPEG, and PNG are allowed.');
+            throw new InvalidArgumentException('Invalid mime type. Only JPG, JPEG, and PNG are allowed.');
         }
-    
-        // Check the file size
-        $fileSize = $file['size'];
-        if ($fileSize < 1024 || $fileSize > 3145728) {
-            // 10KB - 3MB
-            throw new Exception('File size must be between 10KB and 3MB.');
+
+        if ($file['size'] < 10240 || $file['size'] > 3145728) {
+            throw new InvalidArgumentException('File size must be between 10KB and 3MB.');
         }
-    
-        // Check if required file fields are not empty
+
         if (!empty($file['name']) && $file['error'] === UPLOAD_ERR_OK) {
+            $uniqueFileName = uniqid('img_', true) . '_' . basename($file['name']);
+            $targetPath = PRODUCT_IMAGES_UPLOAD_DIR . $uniqueFileName;
 
-            // Generate a unique file name
-            $uniqueFileName = uniqid('img_', true) . basename($file['name']);
-                
-            // Move the uploaded file to the target directory
-            if (!empty($uniqueFileName)) {
-
-                move_uploaded_file($file['tmp_name'],PRODUCT_IMAGES_UPLOAD_DIR.$uniqueFileName);
-
-                return $uniqueFileName;
-            }else{
-                throw new Exception('Failed to move uploaded file.');
+            if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
+                throw new RuntimeException('Failed to move uploaded file.');
             }
-        } else {
-            throw new Exception('Error: Invalid file or missing fields.');
+
+            return $uniqueFileName;
         }
+
+        throw new RuntimeException('Error: Invalid file or missing fields.');
     }
 
-    function cleanAlphanumeric($input) {
-        return preg_replace('/[^a-zA-Z0-9]/', '', $input);
+    // Clean string to alphanumeric only
+    function cleanAlphanumeric(string $input): string {
+        return preg_replace('/[^a-zA-Z0-9]/', '', $input) ?? '';
     }
 
+    // Convert array to JSON safely
     function arrayToJson(array $inputArray): string {
-        // Validate the input is not empty
         if (empty($inputArray)) {
             throw new InvalidArgumentException('Input array cannot be empty.');
         }
+
         try {
-            // Convert array to JSON
-            return json_encode($inputArray, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT, 512);
+            return json_encode($inputArray, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT);
         } catch (JsonException $e) {
-            // Handle JSON encoding errors gracefully
             throw new RuntimeException('Failed to convert array to JSON: ' . $e->getMessage());
         }
     }
 
+    // Decode JSON safely
     function decodeJson(string $jsonData): array {
         try {
-            // Decode JSON into an associative array
-            $decodedData = json_decode($jsonData, true, 512, JSON_THROW_ON_ERROR);
-
-            // Check if the decoded data is an array and not empty
-            if (empty($decodedData)) {
+            $decoded = json_decode($jsonData, true, 512, JSON_THROW_ON_ERROR);
+            if (empty($decoded)) {
                 throw new InvalidArgumentException('Decoded JSON is empty or invalid.');
             }
-
-            return $decodedData;
+            return $decoded;
         } catch (JsonException $e) {
-            // Handle JSON decoding errors gracefully
-            error_log("JSON decoding error: " . $e->getMessage());
+            error_log('JSON decoding error: ' . $e->getMessage());
             throw new RuntimeException('Failed to decode JSON: ' . $e->getMessage());
         }
     }
 
+    // Base project root (two levels up from /lib)
+    define('PROJECT_ROOT', dirname(__DIR__, 1)); // C:\xampp\htdocs\PDO_MVC_Ecommerce
+
     // Path Constants
-    const BACK_END_PATH = "/PDO_MVC_Ecommerce/backend/";  // BackendPath
-    const FRONT_END_PATH = "/PDO_MVC_Ecommerce/frontend/"; // FrontendPath
-    const MASTER_CONTROLLER = "/PDO_MVC_Ecommerce/controller/"; // controller
-    const SITE_DIR = "PDO_MVC_Ecommerce/"; // Site Directory
-    const SITE_URL = "http://localhost/"; // Site URL
-    const SITE_NAME = "PDO_MVC_Ecommerce";
+    define('BACK_END_PATH', PROJECT_ROOT . '/backend/');
+    define('FRONT_END_PATH', PROJECT_ROOT . '/frontend/');
+    define('MASTER_CONTROLLER', PROJECT_ROOT . '/controller/');
+    define('JS_CDN', PROJECT_ROOT . '/js_cdn/');
+
+    define('BKEND_CSS_DIR', 'bkend_css/bkend_css.css');
 
     const NEW_ARRIVALS = "New Arrivals";
     const BEST_SELLER = "Best Seller";
     
-
-
     // Messages
     const NO_RECORED_FOUND = "No Record Found.";
     const CATEGORIE_MASTER_DETAILS = "Manage categories in the category master.";
@@ -210,15 +184,13 @@
     // Success Messages
     const PRODUCT_ADDED_SUCCESSFULLY_MSG = "<div class='alert alert-success'>Product added successfully.</div>";
     const PRODUCT_UPDATED_SUCCESSFULLY_MSG = "<div class='alert alert-success'>Product update successfully.</div>";
-   
+  
 
     // Failed Messages
     const FAILED_PRODUCT_ADDED_MSG = "<div class='alert alert-danger'>Product Insert failed, something went wrong.</div>";
     const FAILED_PRODUCT_UPDATE_MSG = "<div class='alert alert-danger'>Product not added, something went wrong.</div>";
     const FAILED_TO_DELETE_PRODUCT = "<div class='alert alert-danger'>Failed to delete product.</div>";
     const PRODUCT_NOT_FOUND = "<div class='alert alert-danger' role='alert'>Product not found</div>";
-
-
 
     //Frontend Message
 
@@ -236,8 +208,4 @@
         4. Ternary Operator Shorthand (PHP 5.3+)
         isset($var) ?: $var = 'default';
     */
-
 ?>
-
-
-

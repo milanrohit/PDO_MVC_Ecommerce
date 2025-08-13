@@ -4,12 +4,11 @@
 session_start();
 
 class Database {
-    private $host = 'localhost'; // Docker container name for MySQL
+    //private $host = 'localhost'; //
+    private $host = 'mysql'; // Docker container name for MySQL
     private $db = 'phpecommerce';
-    //private $user = 'admin';
-    //private $pass = 'admin@123';
     private $user = 'root';
-    private $pass = '';
+    private $pass = 'root';
     private $charset = 'utf8mb4';
     private $pdo;
     private $error;
@@ -42,10 +41,3 @@ class Database {
         }
     }
 }
-
-// Create an instance of the Database class and call the testConnection method
-$database = new Database();
-//echo $database->testConnection();
-?>
-
-

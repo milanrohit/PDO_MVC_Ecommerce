@@ -10,35 +10,20 @@ class LoginMasterModel {
         $this->conn = $db;
     }
     
-    public function getAdminmasterdetails(string $adminUsername, string $adminPassword): array {
+    public function getAdminmasterdetails(string $adminUsername): array|false{
+    
+        // Use prepared statements to prevent SQL injection
         try {
-            // Prepare SQL query
-            $query = "SELECT * FROM " . $this->tableName . " WHERE Admin_Username = :adminUsername AND Admin_Password = :adminPassword LIMIT 1";
-            
+            $query = "SELECT * FROM {$this->tableName} WHERE Admin_Username = :adminUsername LIMIT 1";
             $stmt = $this->conn->prepare($query);
-
-            // Bind parameters
             $stmt->bindParam(':adminUsername', $adminUsername, PDO::PARAM_STR);
-            $stmt->bindParam(':adminPassword', $adminPassword, PDO::PARAM_STR);
-            
-            // Execute the statement
             $stmt->execute();
-            $adminResult = $stmt->fetch(PDO::FETCH_ASSOC);
-               
-            // Verify the password if the user exists
-            if ($adminResult) {
-                $_SESSION['Admin_Login'] = 'YES';
-                $_SESSION["adminUsername"] = $adminUsername;
-                $_SESSION["adminPassword"] = $adminPassword;
 
-                return array_merge($_SESSION, $adminResult);
-            } else {
-                // Return an empty array if no user is found
-                return [];
-            }
+            return $stmt->fetch(PDO::FETCH_ASSOC) ?: false;
         } catch (PDOException $e) {
-            echo "Failed to Login: " . $e->getMessage();
-            return [];
+            // Log error instead of echoing it
+            error_log("Login error: " . $e->getMessage());
+            return false;
         }
     }
 }
@@ -47,4 +32,3 @@ class LoginMasterModel {
 $database = new Database();
 $db = $database->getConnection();
 $LoginMasterModel = new LoginMasterModel($db);
-?>

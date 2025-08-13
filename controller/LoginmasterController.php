@@ -10,10 +10,10 @@ class LoginMasterController extends  LoginMasterModel{
         $this->conn = $db;
     }
 
-    public function getAdminmasterdetails(string $adminUsername,string $adminPassword):array {
-        $adminMasterDetails = $this->LoginmasterModel->getAdminmasterdetails($adminUsername, $adminPassword);
-        
-        return $adminMasterDetails ? $adminMasterDetails : null;
+    // In LoginMasterController.php
+    public function getAdminmasterdetails(string $adminUsername): array|false
+    {
+        return $this->model->getAdminmasterdetails($adminUsername);
     }
 }
 

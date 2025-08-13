@@ -5,9 +5,9 @@ services:
       dockerfile: ./Dockerfile
     container_name: php_apache_container
     volumes:
-      - "/c/xampp/htdocs/PDO_MVC_Ecommerce:/var/www/html"
+      - "C:/xampp/htdocs/PDO_MVC_Ecommerce:/var/www/html"
     ports:
-      - "8080:80"
+      - "8081:80"  # PHP Apache accessible at localhost:8081
     depends_on:
       - mysql
     environment:
@@ -17,14 +17,23 @@ services:
     image: mysql:8.2
     container_name: mysql_container
     environment:
-      MYSQL_ROOT_PASSWORD: 
       MYSQL_DATABASE: phpecommerce
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_USER: root
-      MYSQL_PASSWORD:
+      MYSQL_PASSWORD: root
+
     ports:
-      - "3206:3306"
+      - "3206:3306"   # Map MySQL default port 3306 inside container to 3206 on host
     volumes:
       - db_data:/var/lib/mysql
+    restart: unless-stopped
+
+  adminer:
+    image: adminer
+    container_name: adminer_container
+    restart: unless-stopped
+    ports:
+      - "8080:8080"  # Adminer available at localhost:8080
 
 volumes:
   db_data:
